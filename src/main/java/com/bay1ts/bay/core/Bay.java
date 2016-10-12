@@ -57,28 +57,28 @@ public class Bay {
         getInstance().get(path,action);
     }
     public static void post(final String path, final Action action){
-
+        getInstance().post(path,action);
     }
     public static void put(final String path, final Action action){
-
+        getInstance().put(path,action);
     }
     public static void patch(final String path, final Action action){
-
+        getInstance().patch(path,action);
     }
     public static void delete(final String path, final Action action){
-
+        getInstance().delete(path,action);
     }
     public static void head(final String path, final Action action){
-
+        getInstance().head(path,action);
     }
     public static void trace(final String path, final Action action){
-
+        getInstance().trace(path,action);
     }
     public static void connect(final String path, final Action action){
-
+        getInstance().connect(path,action);
     }
     public static void options(final String path, final Action action){
-
+        getInstance().options(path,action);
     }
 
 

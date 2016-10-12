@@ -15,14 +15,13 @@ import io.netty.util.CharsetUtil;
  */
 public class Router {
     protected Routes routes;
-    public  void get(final String path, final Action action){
-        addRoute("get",RouteImpl.create(path,action));
-    }
+
 
     // TODO: 2016/10/12  得有post等等全部的method
     public void addRoute(String httpMethod,RouteImpl route){
         routes.add(httpMethod,route);
         //此处有优化可能. 参看 文档注释
+
     }
 
     public static  Action getAction(String path){
@@ -38,5 +37,40 @@ public class Router {
             };
         }
         return action;
+    }
+
+    public  void get(final String path, final Action action){
+        addRoute(HttpMethod.get.name(),RouteImpl.create(path,action));
+    }
+    public void post(String path, Action action) {
+        addRoute(HttpMethod.post.name(),RouteImpl.create(path,action));
+    }
+
+    public void put(String path, Action action) {
+        addRoute(HttpMethod.put.name(),RouteImpl.create(path,action));
+    }
+
+    public void patch(String path, Action action) {
+        addRoute(HttpMethod.patch.name(),RouteImpl.create(path,action));
+    }
+
+    public void delete(String path, Action action) {
+        addRoute(HttpMethod.delete.name(),RouteImpl.create(path,action));
+    }
+
+    public void head(String path, Action action) {
+        addRoute(HttpMethod.head.name(),RouteImpl.create(path,action));
+    }
+
+    public void trace(String path, Action action) {
+        addRoute(HttpMethod.trace.name(),RouteImpl.create(path,action));
+    }
+
+    public void connect(String path, Action action) {
+        addRoute(HttpMethod.connect.name(),RouteImpl.create(path,action));
+    }
+
+    public void options(String path, Action action) {
+        addRoute(HttpMethod.options.name(),RouteImpl.create(path,action));
     }
 }

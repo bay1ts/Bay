@@ -17,7 +17,7 @@ public class Router {
     protected Routes routes;
 
 
-    // TODO: 2016/10/12  得有post等等全部的method
+
     public void addRoute(String httpMethod,RouteImpl route){
         routes.add(httpMethod,route);
         //此处有优化可能. 参看 文档注释
@@ -73,4 +73,5 @@ public class Router {
     public void options(String path, Action action) {
         addRoute(HttpMethod.options.name(),RouteImpl.create(path,action));
     }
+    // TODO: 2016/10/12 像beego学习,加上any
 }

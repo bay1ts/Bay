@@ -28,12 +28,12 @@ class RouteEntry {
 
     boolean matches(HttpMethod httpMethod, String path) {
         //不清楚 怎么用的这个
-//        if ((httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
-//                && (this.httpMethod == httpMethod)
-//                && this.path.equals(SparkUtils.ALL_PATHS)) {
-//            // Is filter and matches all
-//            return true;
-//        }
+        if ((httpMethod == HttpMethod.before || httpMethod == HttpMethod.after)
+                && (this.httpMethod == httpMethod)
+                && this.path.equals(SparkUtils.ALL_PATHS)) {
+            // Is filter and matches all
+            return true;
+        }
         boolean match = false;
         if (this.httpMethod == httpMethod) {
             match = matchPath(path);

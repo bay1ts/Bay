@@ -1,5 +1,8 @@
 package com.bay1ts.bay.core;
 
+import com.bay1ts.bay.core.Request;
+
+import javax.servlet.http.HttpSession;
 import java.util.Enumeration;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,8 +20,6 @@ public class Session {
      * @throws IllegalArgumentException If the session or the request is null.
      */
     Session(HttpSession session, Request request) {
-        Assert.notNull(session, "session cannot be null");
-        Assert.notNull(request, "request cannot be null");
         this.session = session;
         this.request = request;
     }

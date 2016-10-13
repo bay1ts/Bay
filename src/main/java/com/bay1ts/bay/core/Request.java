@@ -17,10 +17,17 @@
 package com.bay1ts.bay.core;
 
 import com.bay1ts.bay.route.match.RouteMatch;
+import com.bay1ts.bay.utils.IOUtils;
 import com.bay1ts.bay.utils.SparkUtils;
+import com.bay1ts.bay.utils.StringUtils;
+import com.bay1ts.bay.utils.Utils;
+import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.ssl.SslHandler;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,16 +49,13 @@ public class Request {
 
 
     private static final String USER_AGENT = "user-agent";
-
     private Map<String, String> params;
     private List<String> splat;
     private QueryParamsMap queryMap;
-
     private FullHttpRequest fullHttpRequest;
 
     private Session session = null;
     private boolean validSession = false;
-
 
     /* Lazy loaded stuff */
     private String body = null;
@@ -153,7 +157,11 @@ public class Request {
      */
     public String scheme() {
 //        return fullHttpRequest.getScheme();
-        return fullHttpRequest.
+        return isSecure()?"https":"http";
+    }
+
+    public boolean isSecure(){
+        return ChannelThreadLocal.get().pipeline().get(SslHandler.class)!=null;
     }
 
     /**
@@ -176,8 +184,8 @@ public class Request {
      * @return the server port
      */
     public int port() {
-        return fullHttpRequest
-        return fullHttpRequest.getServerPort();
+        InetSocketAddress address=(InetSocketAddress) ChannelThreadLocal.get().localAddress();
+        return address.getPort();
     }
 
 
@@ -186,7 +194,9 @@ public class Request {
      * Example return: "/example/foo"
      */
     public String pathInfo() {
-        return fullHttpRequest.getPathInfo();
+        QueryStringDecoder queryStringDecoder=new QueryStringDecoder(fullHttpRequest.uri());
+        return queryStringDecoder.path();
+//        return fullHttpRequest.getPathInfo();
     }
 
     /**
@@ -207,21 +217,24 @@ public class Request {
      * @return the URL string
      */
     public String url() {
-        return fullHttpRequest.getRequestURL().toString();
+        return fullHttpRequest.uri();
     }
 
     /**
      * @return the content type of the body
      */
     public String contentType() {
-        return fullHttpRequest.getContentType();
+        return fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE);
     }
 
     /**
      * @return the client's IP address
      */
     public String ip() {
-        return fullHttpRequest.getRemoteAddr();
+        InetSocketAddress addr = (InetSocketAddress) ChannelThreadLocal.get()
+                .remoteAddress();
+        return addr.getAddress().getHostAddress();
+//        return fullHttpRequest.getRemoteAddr();
     }
 
     /**
@@ -230,7 +243,8 @@ public class Request {
     public String body() {
 
         if (body == null) {
-            body = StringUtils.toString(bodyAsBytes(), fullHttpRequest.getCharacterEncoding());
+
+            body = StringUtils.toString(bodyAsBytes(), Utils.getCharsetFromContentType(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE)));
         }
 
         return body;
@@ -245,9 +259,14 @@ public class Request {
 
     private void readBodyAsBytes() {
         try {
-            bodyAsBytes = IOUtils.toByteArray(fullHttpRequest.getInputStream());
+//            bodyAsBytes = IOUtils.toByteArray(fullHttpRequest.getInputStream());
+            ByteBuf buf=fullHttpRequest.content();
+            //麻蛋不自信是正确的.这里没有初始化.会溢出的.
+            bodyAsBytes=new byte[buf.readableBytes()];
+            buf.readBytes(bodyAsBytes);
+//            bodyAsBytes=IOUtils.toByteArray()
         } catch (Exception e) {
-            LOG.warn("Exception when reading body", e);
+//            LOG.warn("Exception when reading body", e);
         }
     }
 
@@ -255,7 +274,8 @@ public class Request {
      * @return the length of request.body
      */
     public int contentLength() {
-        return fullHttpRequest.getContentLength();
+        //// TODO: 2016/10/13 测试一下这个API吧.又不自信了
+        return Integer.valueOf(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH));
     }
 
     /**
@@ -265,8 +285,18 @@ public class Request {
      * @return the value of the provided queryParam
      * Example: query parameter 'id' from the following request URI: /hello?id=foo
      */
+    //// TODO: 2016/10/13 要是有俩怎么办.求测试
     public String queryParams(String queryParam) {
-        return fullHttpRequest.getParameter(queryParam);
+        String[] values = getParameterValues(queryParam);
+        return values != null ? values[0] : null;
+    }
+
+    //// TODO: 2016/10/13 把fullhttprequest弄成一个 别老创建实例了
+    public String[] getParameterValues(String name) {
+        List<String> values = new QueryStringDecoder(fullHttpRequest.uri()).parameters().get(name);
+        if (values == null || values.isEmpty())
+            return null;
+        return values.toArray(new String[values.size()]);
     }
 
     /**
@@ -277,7 +307,11 @@ public class Request {
      * @return the values of the provided queryParam, null if it doesn't exists
      */
     public String[] queryParamsValues(String queryParam) {
-        return fullHttpRequest.getParameterValues(queryParam);
+//        return fullHttpRequest.getParameterValues(queryParam);
+        List<String> values = this.queryStringDecoder.parameters().get(name);
+        if (values == null || values.isEmpty())
+            return null;
+        return values.toArray(new String[values.size()]);
     }
 
     /**
@@ -287,7 +321,7 @@ public class Request {
      * @return the value of the provided header
      */
     public String headers(String header) {
-        return fullHttpRequest.getHeader(header);
+        return fullHttpRequest.headers().get(header);
     }
 
     /**
@@ -303,6 +337,7 @@ public class Request {
     public Set<String> headers() {
         if (headers == null) {
             headers = new TreeSet<>();
+            httphead
             Enumeration<String> enumeration = fullHttpRequest.getHeaderNames();
             while (enumeration.hasMoreElements()) {
                 headers.add(enumeration.nextElement());

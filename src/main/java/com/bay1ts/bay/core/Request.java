@@ -26,6 +26,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.CookieDecoder;
+import io.netty.handler.codec.http.cookie.CookieEncoder;
+import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.ssl.SslHandler;
 
 import javax.servlet.http.HttpSession;
@@ -45,6 +49,7 @@ import java.util.TreeSet;
  * Provides information about the HTTP request
  *
  * @author Per Wendel
+ * bay1ts 修改
  */
 public class Request {
 
@@ -56,6 +61,7 @@ public class Request {
     private QueryParamsMap queryMap;
     private FullHttpRequest fullHttpRequest;
     private QueryStringDecoder queryStringDecoder;
+    private String queryString;
     private Session session = null;
     private boolean validSession = false;
     private Map<String, Object> attributes;
@@ -203,16 +209,29 @@ public class Request {
 
     /**
      * @return the servlet path
+     * https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
+     * line 247
      */
     public String servletPath() {
-        return fullHttpRequest.getServletPath();
+        // TODO: 2016/10/13 测试
+        return this.pathInfo();
+//        return fullHttpRequest.getServletPath();
     }
 
     /**
      * @return the context path
+     * https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
+     * line 201
      */
     public String contextPath() {
-        return fullHttpRequest.getContextPath();
+        String uri=fullHttpRequest.uri();
+        int slashIndex = uri.indexOf("/", 1);
+        int queIndex = uri.indexOf("?", 0);
+        if (slashIndex > queIndex && queIndex != -1) {
+            slashIndex = -1;
+        }
+        return uri.substring(0, slashIndex == -1 ? (queIndex == -1 ? uri.length() : queIndex) : slashIndex);
+//        return fullHttpRequest.getContextPath();
     }
 
     /**
@@ -334,24 +353,32 @@ public class Request {
     }
 
     /**
+     *
      * @return all headers
+     * 参考
+     * https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
      */
     public Set<String> headers() {
         if (headers == null) {
-            headers = new TreeSet<>();
-            Enumeration<String> enumeration = fullHttpRequest.getHeaderNames();
-            while (enumeration.hasMoreElements()) {
-                headers.add(enumeration.nextElement());
-            }
+            headers=fullHttpRequest.headers().names();
         }
         return headers;
     }
 
     /**
      * @return the query string
+     * 参考 https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
+     * line 204的实现方式
      */
     public String queryString() {
-        return fullHttpRequest.getQueryString();
+        if (queryString == null) {
+            String[] uriArray = this.fullHttpRequest.uri().split("\\?", 2);
+            if (uriArray.length >= 2) {
+                queryString = uriArray[1];
+            }
+        }
+        return queryString;
+//        return fullHttpRequest.getQueryString();
     }
 
     /**
@@ -475,7 +502,7 @@ public class Request {
         Cookie[] cookies = fullHttpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                result.put(cookie.getName(), cookie.getValue());
+                result.put(cookie.name(), cookie.value());
             }
         }
         return result;
@@ -488,11 +515,15 @@ public class Request {
      * @return cookie value or null if the cookie was not found
      */
     public String cookie(String name) {
-        Cookie[] cookies = fullHttpRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(name)) {
-                    return cookie.getValue();
+        String cookieString=fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
+        Set<Cookie> cookieSet=null;
+        if (cookieString!=null){
+            cookieSet=ServerCookieDecoder.STRICT.decode(cookieString);
+        }
+        if (cookieSet!=null&&!cookieSet.isEmpty()){
+            for (Cookie cookie:cookieSet){
+                if (cookie.name().equals(name)) {
+                    return cookie.value();
                 }
             }
         }

@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
-public class ServletContextImpl extends ConfigAdapter implements ServletContext {
+public class ServletContextImpl implements ServletContext {
 
 //    private static final Logger log = LoggerFactory
 //            .getLogger(ServletContextImpl.class);
@@ -37,7 +37,7 @@ public class ServletContextImpl extends ConfigAdapter implements ServletContext 
     }
 
     private ServletContextImpl() {
-        super("Netty Servlet Bridge");
+//        super("Netty Servlet Bridge");
     }
 
     @Override
@@ -77,7 +77,18 @@ public class ServletContextImpl extends ConfigAdapter implements ServletContext 
 
     @Override
     public String getServerInfo() {
-        return super.getOwnerName();
+//        return super.getOwnerName();
+        return null;
+    }
+
+    @Override
+    public String getInitParameter(String name) {
+        return null;
+    }
+
+    @Override
+    public Enumeration getInitParameterNames() {
+        return null;
     }
 
     @Override
@@ -157,15 +168,16 @@ public class ServletContextImpl extends ConfigAdapter implements ServletContext 
 
     @Override
     public RequestDispatcher getNamedDispatcher(String name) {
-        Collection<ServletConfiguration> colls = ServletBridgeWebapp.get().getWebappConfig().getServletConfigurations();
-        HttpServlet servlet = null;
-        for (ServletConfiguration configuration : colls) {
-            if (configuration.getConfig().getServletName().equals(name)) {
-                servlet = configuration.getHttpComponent();
-            }
-        }
-
-        return new RequestDispatcherImpl(name, null, servlet);
+//        Collection<ServletConfiguration> colls = ServletBridgeWebapp.get().getWebappConfig().getServletConfigurations();
+//        HttpServlet servlet = null;
+//        for (ServletConfiguration configuration : colls) {
+//            if (configuration.getConfig().getServletName().equals(name)) {
+//                servlet = configuration.getHttpComponent();
+//            }
+//        }
+//
+//        return new RequestDispatcherImpl(name, null, servlet);
+        return null;
     }
 
     @Override
@@ -187,17 +199,18 @@ public class ServletContextImpl extends ConfigAdapter implements ServletContext 
 
     @Override
     public RequestDispatcher getRequestDispatcher(String path) {
-        Collection<ServletConfiguration> colls = ServletBridgeWebapp.get().getWebappConfig().getServletConfigurations();
-        HttpServlet servlet = null;
-        String servletName = null;
-        for (ServletConfiguration configuration : colls) {
-            if (configuration.matchesUrlPattern(path)) {
-                servlet = configuration.getHttpComponent();
-                servletName = configuration.getHttpComponent().getServletName();
-            }
-        }
-
-        return new RequestDispatcherImpl(servletName, path, servlet);
+//        Collection<ServletConfiguration> colls = ServletBridgeWebapp.get().getWebappConfig().getServletConfigurations();
+//        HttpServlet servlet = null;
+//        String servletName = null;
+//        for (ServletConfiguration configuration : colls) {
+//            if (configuration.matchesUrlPattern(path)) {
+//                servlet = configuration.getHttpComponent();
+//                servletName = configuration.getHttpComponent().getServletName();
+//            }
+//        }
+//
+//        return new RequestDispatcherImpl(servletName, path, servlet);
+        return null;
     }
 
 }

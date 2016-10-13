@@ -59,7 +59,9 @@ public class ServletSessionImpl implements HttpSession {
 
     @Override
     public ServletContext getServletContext() {
-        return ServletContextImpl.get();
+        //// TODO: 2016/10/13 return null
+//        return ServletContextImpl.get();
+        return null;
     }
 
     @Override

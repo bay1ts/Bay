@@ -499,12 +499,22 @@ public class Request {
      */
     public Map<String, String> cookies() {
         Map<String, String> result = new HashMap<>();
-        Cookie[] cookies = fullHttpRequest.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
+        String cookieString=fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
+        Set<Cookie> cookieSet=null;
+        if (cookieString!=null){
+            cookieSet=ServerCookieDecoder.STRICT.decode(cookieString);
+        }
+        if (cookieSet!=null&&!cookieSet.isEmpty()){
+            for (Cookie cookie : cookieSet) {
                 result.put(cookie.name(), cookie.value());
             }
         }
+//        Cookie[] cookies = fullHttpRequest.getCookies();
+//        if (cookies != null) {
+//            for (Cookie cookie : cookies) {
+//                result.put(cookie.name(), cookie.value());
+//            }
+//        }
         return result;
     }
 
@@ -543,7 +553,7 @@ public class Request {
      * @return Returns the name and version of the protocol the request uses
      */
     public String protocol() {
-        return fullHttpRequest.getProtocol();
+        return fullHttpRequest.protocolVersion().text();
     }
 
     private static Map<String, String> getParams(List<String> request, List<String> matched) {

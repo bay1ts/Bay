@@ -28,33 +28,7 @@ final class Routes {
             //哎是我大意了.从此多事了
             //哎是我大意了.从此多事了
             //哎是我大意了.从此多事了
-
-            RouteImpl route = ((RouteImpl) target);
-
-            if (context.requestWrapper().getDelegate() == null) {
-                Request request = RequestResponseFactory.create(match, context.httpRequest());
-                context.requestWrapper().setDelegate(request);
-            } else {
-                context.requestWrapper().changeMatch(match);
-            }
-
-            context.responseWrapper().setDelegate(context.response());
-            //请注意 是这里调用的
-            Object element = route.handle(context.requestWrapper(), context.responseWrapper());
-            result = route.render(element);
-
-
-            if (result != null) {
-                content = result;
-
-                if (content instanceof String) {
-                    String contentStr = (String) content;
-
-                    if (!contentStr.equals("")) {
-                        context.responseWrapper().body(contentStr);
-                    }
-                }
-            }
+            action.handle(context.)
         }
 
         context.body().set(content);

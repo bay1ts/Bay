@@ -1,6 +1,6 @@
 package com.bay1ts.bay.handler;
 
-import com.bay1ts.bay.route.*;
+import com.bay1ts.bay.route.match.*;
 import com.bay1ts.bay.route.HttpMethod;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -22,7 +22,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         // TODO: 2016/10/12 静态资源的处理 参看 spark.http.matching.MatcherFilter 100行左右
         HttpMethod httpMethod= HttpMethod.valueOf(fullHttpRequest.method().name());
         String uri=fullHttpRequest.uri();
-        String acceptType=fullHttpRequest.headers().get("Accept");
+        String acceptType=fullHttpRequest.headers().get(HttpHeaderNames.ACCEPT);
 
         // TODO: 2016/10/12 routecontext package spark.http.matching.MatcherFilter line 112
 //        Routecontext context=

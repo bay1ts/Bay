@@ -16,6 +16,7 @@
  */
 package com.bay1ts.bay.core;
 
+import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.bay1ts.bay.route.match.RouteMatch;
 import com.bay1ts.bay.utils.IOUtils;
 import com.bay1ts.bay.utils.SparkUtils;
@@ -27,6 +28,7 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.ssl.SslHandler;
 
+import javax.servlet.http.HttpSession;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -53,10 +55,10 @@ public class Request {
     private List<String> splat;
     private QueryParamsMap queryMap;
     private FullHttpRequest fullHttpRequest;
-
+    private QueryStringDecoder queryStringDecoder;
     private Session session = null;
     private boolean validSession = false;
-
+    private Map<String, Object> attributes;
     /* Lazy loaded stuff */
     private String body = null;
     private byte[] bodyAsBytes = null;
@@ -98,6 +100,7 @@ public class Request {
      */
     Request(RouteMatch match, FullHttpRequest request) {
         this.fullHttpRequest = request;
+        this.queryStringDecoder=new QueryStringDecoder(request.uri());
         changeMatch(match);
     }
 
@@ -194,7 +197,6 @@ public class Request {
      * Example return: "/example/foo"
      */
     public String pathInfo() {
-        QueryStringDecoder queryStringDecoder=new QueryStringDecoder(fullHttpRequest.uri());
         return queryStringDecoder.path();
 //        return fullHttpRequest.getPathInfo();
     }
@@ -291,9 +293,8 @@ public class Request {
         return values != null ? values[0] : null;
     }
 
-    //// TODO: 2016/10/13 把fullhttprequest弄成一个 别老创建实例了
     public String[] getParameterValues(String name) {
-        List<String> values = new QueryStringDecoder(fullHttpRequest.uri()).parameters().get(name);
+        List<String> values = queryStringDecoder.parameters().get(name);
         if (values == null || values.isEmpty())
             return null;
         return values.toArray(new String[values.size()]);
@@ -308,7 +309,7 @@ public class Request {
      */
     public String[] queryParamsValues(String queryParam) {
 //        return fullHttpRequest.getParameterValues(queryParam);
-        List<String> values = this.queryStringDecoder.parameters().get(name);
+        List<String> values = this.queryStringDecoder.parameters().get(queryParam);
         if (values == null || values.isEmpty())
             return null;
         return values.toArray(new String[values.size()]);
@@ -328,7 +329,8 @@ public class Request {
      * @return all query parameters
      */
     public Set<String> queryParams() {
-        return fullHttpRequest.getParameterMap().keySet();
+//        return fullHttpRequest.getParameterMap().keySet();
+        return this.queryStringDecoder.parameters().keySet();
     }
 
     /**
@@ -337,7 +339,6 @@ public class Request {
     public Set<String> headers() {
         if (headers == null) {
             headers = new TreeSet<>();
-            httphead
             Enumeration<String> enumeration = fullHttpRequest.getHeaderNames();
             while (enumeration.hasMoreElements()) {
                 headers.add(enumeration.nextElement());
@@ -360,7 +361,10 @@ public class Request {
      * @param value     The attribute value
      */
     public void attribute(String attribute, Object value) {
-        fullHttpRequest.setAttribute(attribute, value);
+        if (this.attributes == null)
+            this.attributes = new HashMap<String, Object>();
+
+        this.attributes.put(attribute, value);
     }
 
     /**
@@ -371,7 +375,10 @@ public class Request {
      * @return the value for the provided attribute
      */
     public <T> T attribute(String attribute) {
-        return (T) fullHttpRequest.getAttribute(attribute);
+        if (attributes != null)
+            return (T)this.attributes.get(attribute);
+
+        return null;
     }
 
 
@@ -380,7 +387,7 @@ public class Request {
      */
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<>();
-        Enumeration<String> attributes = (Enumeration<String>) fullHttpRequest.getAttributeNames();
+        Enumeration<String> attributes = (Enumeration<String>) Utils.enumerationFromKeys(this.attributes);
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
         }
@@ -426,7 +433,8 @@ public class Request {
     public Session session() {
         if (session == null || !validSession) {
             validSession(true);
-            session = new Session(fullHttpRequest.getSession(), this);
+//            session = new Session(fullHttpRequest.getSession(), this);
+            session = new Session(HttpSessionThreadLocal.getOrCreate(), this);
         }
         return session;
     }
@@ -442,7 +450,13 @@ public class Request {
      */
     public Session session(boolean create) {
         if (session == null || !validSession) {
-            HttpSession httpSession = fullHttpRequest.getSession(create);
+            //
+            HttpSession sessionTemp = HttpSessionThreadLocal.get();
+            if (sessionTemp == null && create) {
+                sessionTemp = HttpSessionThreadLocal.getOrCreate();
+            }
+            //
+            HttpSession httpSession = sessionTemp;
             if (httpSession != null) {
                 validSession(true);
                 session = new Session(httpSession, this);
@@ -489,7 +503,9 @@ public class Request {
      * @return the part of this request's URL from the protocol name up to the query string in the first line of the HTTP request.
      */
     public String uri() {
-        return fullHttpRequest.getRequestURI();
+        // TODO: 2016/10/13 存疑 测试
+        return this.queryStringDecoder.uri();
+//        return fullHttpRequest.getRequestURI();
     }
 
     /**

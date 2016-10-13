@@ -1,6 +1,7 @@
 package com.bay1ts.bay.route.match;
 
 import com.bay1ts.bay.Action;
+import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.route.HttpMethod;
 
 public final class DoRoute {
@@ -35,7 +36,8 @@ public final class DoRoute {
             //2016年10月13日17:02:53
             //存疑 package spark.http.matching.Routes.java line 61
             //context的requestwarpper明明没什么东西啊,response没啥东西很正常.
-            result =action.handle(null,context.response());
+            context.withRequest(new Request(match,context.httpRequest()));
+            result =action.handle(context.request(),context.response());
             if (result != null) {
                 content = result;
 

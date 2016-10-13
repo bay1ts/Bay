@@ -77,7 +77,9 @@ public final class RouteContext {
         this.httpMethod = httpMethod;
         return this;
     }
-
+    public Request request(){
+        return this.request;
+    }
     public FullHttpRequest httpRequest() {
         return httpRequest;
     }

@@ -104,7 +104,7 @@ public class Request {
      * @param match   the route match
      * @param request the servlet request
      */
-    Request(RouteMatch match, FullHttpRequest request) {
+    public Request(RouteMatch match, FullHttpRequest request) {
         this.fullHttpRequest = request;
         this.queryStringDecoder=new QueryStringDecoder(request.uri());
         changeMatch(match);

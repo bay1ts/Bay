@@ -1,5 +1,6 @@
 package com.bay1ts.bay.handler;
 
+import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.route.HttpMethod;
 import com.bay1ts.bay.route.Routes;
@@ -34,7 +35,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         // TODO: 2016/10/12 routecontext package spark.http.matching.MatcherFilter line 112
         RouteContext context = RouteContext.create();
-        Response response=converte(fullHttpResponse);
+        Response response=new Response(fullHttpResponse);
         Body body = Body.create();
         context
                 .withMatcher(routeMatcher)

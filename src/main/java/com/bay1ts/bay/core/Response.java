@@ -51,7 +51,7 @@ public class Response {
         return this.isRedirected;
     }
 
-    Response(FullHttpResponse response) {
+    public Response(FullHttpResponse response) {
         this.response = response;
     }
 

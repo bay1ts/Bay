@@ -16,6 +16,11 @@
  */
 package com.bay1ts.bay.core;
 
+import com.bay1ts.bay.route.match.RouteMatch;
+import com.bay1ts.bay.utils.SparkUtils;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.HttpHeaderNames;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -42,7 +47,7 @@ public class Request {
     private List<String> splat;
     private QueryParamsMap queryMap;
 
-    private HttpServletRequest servletRequest;
+    private FullHttpRequest fullHttpRequest;
 
     private Session session = null;
     private boolean validSession = false;
@@ -87,8 +92,8 @@ public class Request {
      * @param match   the route match
      * @param request the servlet request
      */
-    Request(RouteMatch match, HttpServletRequest request) {
-        this.servletRequest = request;
+    Request(RouteMatch match, FullHttpRequest request) {
+        this.fullHttpRequest = request;
         changeMatch(match);
     }
 
@@ -139,35 +144,40 @@ public class Request {
      * @return request method e.g. GET, POST, PUT, ...
      */
     public String requestMethod() {
-        return servletRequest.getMethod();
+//        return fullHttpRequest.getMethod();
+        return fullHttpRequest.method().name();
     }
 
     /**
      * @return the scheme
      */
     public String scheme() {
-        return servletRequest.getScheme();
+//        return fullHttpRequest.getScheme();
+        return fullHttpRequest.
     }
 
     /**
      * @return the host
      */
     public String host() {
-        return servletRequest.getHeader("host");
+//        return fullHttpRequest.getHeader("host");
+        return fullHttpRequest.headers().get(HttpHeaderNames.HOST);
     }
 
     /**
      * @return the user-agent
      */
     public String userAgent() {
-        return servletRequest.getHeader(USER_AGENT);
+        return fullHttpRequest.headers().get(HttpHeaderNames.USER_AGENT);
+//        return fullHttpRequest.getHeader(USER_AGENT);
     }
 
     /**
      * @return the server port
      */
     public int port() {
-        return servletRequest.getServerPort();
+        return fullHttpRequest
+        return fullHttpRequest.getServerPort();
     }
 
 
@@ -176,42 +186,42 @@ public class Request {
      * Example return: "/example/foo"
      */
     public String pathInfo() {
-        return servletRequest.getPathInfo();
+        return fullHttpRequest.getPathInfo();
     }
 
     /**
      * @return the servlet path
      */
     public String servletPath() {
-        return servletRequest.getServletPath();
+        return fullHttpRequest.getServletPath();
     }
 
     /**
      * @return the context path
      */
     public String contextPath() {
-        return servletRequest.getContextPath();
+        return fullHttpRequest.getContextPath();
     }
 
     /**
      * @return the URL string
      */
     public String url() {
-        return servletRequest.getRequestURL().toString();
+        return fullHttpRequest.getRequestURL().toString();
     }
 
     /**
      * @return the content type of the body
      */
     public String contentType() {
-        return servletRequest.getContentType();
+        return fullHttpRequest.getContentType();
     }
 
     /**
      * @return the client's IP address
      */
     public String ip() {
-        return servletRequest.getRemoteAddr();
+        return fullHttpRequest.getRemoteAddr();
     }
 
     /**
@@ -220,7 +230,7 @@ public class Request {
     public String body() {
 
         if (body == null) {
-            body = StringUtils.toString(bodyAsBytes(), servletRequest.getCharacterEncoding());
+            body = StringUtils.toString(bodyAsBytes(), fullHttpRequest.getCharacterEncoding());
         }
 
         return body;
@@ -235,7 +245,7 @@ public class Request {
 
     private void readBodyAsBytes() {
         try {
-            bodyAsBytes = IOUtils.toByteArray(servletRequest.getInputStream());
+            bodyAsBytes = IOUtils.toByteArray(fullHttpRequest.getInputStream());
         } catch (Exception e) {
             LOG.warn("Exception when reading body", e);
         }
@@ -245,7 +255,7 @@ public class Request {
      * @return the length of request.body
      */
     public int contentLength() {
-        return servletRequest.getContentLength();
+        return fullHttpRequest.getContentLength();
     }
 
     /**
@@ -256,7 +266,7 @@ public class Request {
      * Example: query parameter 'id' from the following request URI: /hello?id=foo
      */
     public String queryParams(String queryParam) {
-        return servletRequest.getParameter(queryParam);
+        return fullHttpRequest.getParameter(queryParam);
     }
 
     /**
@@ -267,7 +277,7 @@ public class Request {
      * @return the values of the provided queryParam, null if it doesn't exists
      */
     public String[] queryParamsValues(String queryParam) {
-        return servletRequest.getParameterValues(queryParam);
+        return fullHttpRequest.getParameterValues(queryParam);
     }
 
     /**
@@ -277,14 +287,14 @@ public class Request {
      * @return the value of the provided header
      */
     public String headers(String header) {
-        return servletRequest.getHeader(header);
+        return fullHttpRequest.getHeader(header);
     }
 
     /**
      * @return all query parameters
      */
     public Set<String> queryParams() {
-        return servletRequest.getParameterMap().keySet();
+        return fullHttpRequest.getParameterMap().keySet();
     }
 
     /**
@@ -293,7 +303,7 @@ public class Request {
     public Set<String> headers() {
         if (headers == null) {
             headers = new TreeSet<>();
-            Enumeration<String> enumeration = servletRequest.getHeaderNames();
+            Enumeration<String> enumeration = fullHttpRequest.getHeaderNames();
             while (enumeration.hasMoreElements()) {
                 headers.add(enumeration.nextElement());
             }
@@ -305,7 +315,7 @@ public class Request {
      * @return the query string
      */
     public String queryString() {
-        return servletRequest.getQueryString();
+        return fullHttpRequest.getQueryString();
     }
 
     /**
@@ -315,7 +325,7 @@ public class Request {
      * @param value     The attribute value
      */
     public void attribute(String attribute, Object value) {
-        servletRequest.setAttribute(attribute, value);
+        fullHttpRequest.setAttribute(attribute, value);
     }
 
     /**
@@ -326,7 +336,7 @@ public class Request {
      * @return the value for the provided attribute
      */
     public <T> T attribute(String attribute) {
-        return (T) servletRequest.getAttribute(attribute);
+        return (T) fullHttpRequest.getAttribute(attribute);
     }
 
 
@@ -335,7 +345,7 @@ public class Request {
      */
     public Set<String> attributes() {
         Set<String> attrList = new HashSet<>();
-        Enumeration<String> attributes = (Enumeration<String>) servletRequest.getAttributeNames();
+        Enumeration<String> attributes = (Enumeration<String>) fullHttpRequest.getAttributeNames();
         while (attributes.hasMoreElements()) {
             attrList.add(attributes.nextElement());
         }
@@ -345,8 +355,8 @@ public class Request {
     /**
      * @return the raw HttpServletRequest object handed in by Jetty
      */
-    public HttpServletRequest raw() {
-        return servletRequest;
+    public FullHttpRequest raw() {
+        return fullHttpRequest;
     }
 
     /**
@@ -381,7 +391,7 @@ public class Request {
     public Session session() {
         if (session == null || !validSession) {
             validSession(true);
-            session = new Session(servletRequest.getSession(), this);
+            session = new Session(fullHttpRequest.getSession(), this);
         }
         return session;
     }
@@ -397,7 +407,7 @@ public class Request {
      */
     public Session session(boolean create) {
         if (session == null || !validSession) {
-            HttpSession httpSession = servletRequest.getSession(create);
+            HttpSession httpSession = fullHttpRequest.getSession(create);
             if (httpSession != null) {
                 validSession(true);
                 session = new Session(httpSession, this);
@@ -413,7 +423,7 @@ public class Request {
      */
     public Map<String, String> cookies() {
         Map<String, String> result = new HashMap<>();
-        Cookie[] cookies = servletRequest.getCookies();
+        Cookie[] cookies = fullHttpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 result.put(cookie.getName(), cookie.getValue());
@@ -429,7 +439,7 @@ public class Request {
      * @return cookie value or null if the cookie was not found
      */
     public String cookie(String name) {
-        Cookie[] cookies = servletRequest.getCookies();
+        Cookie[] cookies = fullHttpRequest.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals(name)) {
@@ -444,28 +454,28 @@ public class Request {
      * @return the part of this request's URL from the protocol name up to the query string in the first line of the HTTP request.
      */
     public String uri() {
-        return servletRequest.getRequestURI();
+        return fullHttpRequest.getRequestURI();
     }
 
     /**
      * @return Returns the name and version of the protocol the request uses
      */
     public String protocol() {
-        return servletRequest.getProtocol();
+        return fullHttpRequest.getProtocol();
     }
 
     private static Map<String, String> getParams(List<String> request, List<String> matched) {
-        LOG.debug("get params");
+//        LOG.debug("get params");
 
         Map<String, String> params = new HashMap<>();
 
         for (int i = 0; (i < request.size()) && (i < matched.size()); i++) {
             String matchedPart = matched.get(i);
             if (SparkUtils.isParam(matchedPart)) {
-                LOG.debug("matchedPart: "
-                                  + matchedPart
-                                  + " = "
-                                  + request.get(i));
+//                LOG.debug("matchedPart: "
+//                                  + matchedPart
+//                                  + " = "
+//                                  + request.get(i));
                 params.put(matchedPart.toLowerCase(), request.get(i));
             }
         }
@@ -473,7 +483,7 @@ public class Request {
     }
 
     private static List<String> getSplat(List<String> request, List<String> matched) {
-        LOG.debug("get splat");
+//        LOG.debug("get splat");
 
         int nbrOfRequestParts = request.size();
         int nbrOfMatchedParts = matched.size();

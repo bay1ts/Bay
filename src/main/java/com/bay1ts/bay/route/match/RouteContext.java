@@ -8,14 +8,12 @@ import io.netty.handler.codec.http.FullHttpRequest;
 /**
  * Created by chenu on 2016/10/12.
  */
-final class RouteContext {
+public final class RouteContext {
 
     /**
      * Creates a RouteContext
      */
-    static RouteContext create() {
-        return new RouteContext();
-    }
+
 
     private Routes routeMatcher;
     private FullHttpRequest httpRequest;
@@ -24,6 +22,10 @@ final class RouteContext {
     private Body body;
     private Response response;
     private HttpMethod httpMethod;
+
+    public static RouteContext create() {
+        return new RouteContext();
+    }
 
     private RouteContext() {
         // hidden

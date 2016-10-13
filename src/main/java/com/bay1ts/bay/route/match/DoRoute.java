@@ -2,11 +2,10 @@ package com.bay1ts.bay.route.match;
 
 import com.bay1ts.bay.Action;
 import com.bay1ts.bay.route.HttpMethod;
-import com.bay1ts.bay.route.RouteImpl;
 
-final class Routes {
+public final class DoRoute {
 
-    static void execute(RouteContext context) throws Exception {
+    public static void execute(RouteContext context) throws Exception {
 
         Object content = context.body().get();
 
@@ -28,7 +27,7 @@ final class Routes {
             //哎是我大意了.从此多事了
             //哎是我大意了.从此多事了
             //哎是我大意了.从此多事了
-            action.handle(context.)
+//            action.handle(context.)
         }
 
         context.body().set(content);

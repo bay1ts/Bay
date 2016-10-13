@@ -2,7 +2,7 @@ package com.bay1ts.bay.route.match;
 
 import java.io.IOException;
 
-final class Body {
+public final class Body {
 
     private Object content;
 

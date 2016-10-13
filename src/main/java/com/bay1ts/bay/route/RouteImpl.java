@@ -1,8 +1,6 @@
 package com.bay1ts.bay.route;
 
-import com.bay1ts.bay.Action;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
+import com.bay1ts.bay.core.Action;
 
 /**
  * Created by chenu on 2016/10/12.

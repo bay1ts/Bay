@@ -1,4 +1,4 @@
-package com.bay1ts.bay;
+package com.bay1ts.bay.core;
 
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;

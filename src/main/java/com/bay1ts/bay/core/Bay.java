@@ -1,6 +1,5 @@
 package com.bay1ts.bay.core;
 
-import com.bay1ts.bay.Action;
 import com.bay1ts.bay.route.Router;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;

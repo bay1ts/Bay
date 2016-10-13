@@ -1,9 +1,6 @@
-import com.bay1ts.bay.Action;
+import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.*;
-import io.netty.util.CharsetUtil;
 
 import static com.bay1ts.bay.core.Bay.*;
 
@@ -19,6 +16,20 @@ public class Main {
             public Object handle(Request request, Response response) throws Exception {
                 return "hehe";
             }
+        });
+        post("/hehe",(req,res)->{
+            return "nihao";
+        });
+        get("/test2/:name",(req,resp)->{
+            String a= req.session().attribute("test");
+            //支持session啊
+            System.out.println(a+"---");
+            return "Hello "+req.params(":name");
+        });
+
+        get("/from/*/to/*",(req,resp)->{
+            req.session().attribute("test","test");
+            return "number of splat param "+req.splat().length+"  "+req.splat()[1];
         });
 
 //        Router.addRouter("/shit", new Action() {

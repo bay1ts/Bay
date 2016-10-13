@@ -18,7 +18,7 @@ package com.bay1ts.bay.route.match;
  */
 
 
-import com.bay1ts.bay.Action;
+import com.bay1ts.bay.core.Action;
 
 /**
  * @author Per Wendel

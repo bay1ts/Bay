@@ -1,6 +1,5 @@
 package com.bay1ts.bay.core.session;
 
-import com.bay1ts.bay.core.ServletContextImpl;
 import com.bay1ts.bay.utils.Utils;
 
 import javax.servlet.ServletContext;

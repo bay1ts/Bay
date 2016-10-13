@@ -3,6 +3,7 @@ package com.bay1ts.bay.route.match;
 import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.route.HttpMethod;
 import com.bay1ts.bay.route.Routes;
+import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
  * Created by chenu on 2016/10/12.
@@ -17,12 +18,10 @@ final class RouteContext {
     }
 
     private Routes routeMatcher;
-    private HttpServletRequest httpRequest;
+    private FullHttpRequest httpRequest;
     private String uri;
     private String acceptType;
     private Body body;
-    private RequestWrapper requestWrapper;
-    private ResponseWrapper responseWrapper;
     private Response response;
     private HttpMethod httpMethod;
 
@@ -39,7 +38,7 @@ final class RouteContext {
         return this;
     }
 
-    public RouteContext withHttpRequest(HttpServletRequest httpRequest) {
+    public RouteContext withHttpRequest(FullHttpRequest httpRequest) {
         this.httpRequest = httpRequest;
         return this;
     }
@@ -54,20 +53,12 @@ final class RouteContext {
         return this;
     }
 
-    public RouteContext withRequestWrapper(RequestWrapper requestWrapper) {
-        this.requestWrapper = requestWrapper;
-        return this;
-    }
 
     public RouteContext withUri(String uri) {
         this.uri = uri;
         return this;
     }
 
-    public RouteContext withResponseWrapper(ResponseWrapper responseWrapper) {
-        this.responseWrapper = responseWrapper;
-        return this;
-    }
 
     public RouteContext withResponse(Response response) {
         this.response = response;
@@ -79,7 +70,7 @@ final class RouteContext {
         return this;
     }
 
-    public HttpServletRequest httpRequest() {
+    public FullHttpRequest httpRequest() {
         return httpRequest;
     }
 
@@ -95,13 +86,6 @@ final class RouteContext {
         return body;
     }
 
-    public RequestWrapper requestWrapper() {
-        return requestWrapper;
-    }
-
-    public ResponseWrapper responseWrapper() {
-        return responseWrapper;
-    }
 
     public Response response() {
         return response;

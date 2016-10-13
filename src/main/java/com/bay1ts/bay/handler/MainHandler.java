@@ -25,7 +25,6 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         String acceptType=fullHttpRequest.headers().get(HttpHeaderNames.ACCEPT);
 
         // TODO: 2016/10/12 routecontext package spark.http.matching.MatcherFilter line 112
-//        Routecontext context=
         try {
 //            BeforeFilters.execute(context);
             Routes.execute(context);

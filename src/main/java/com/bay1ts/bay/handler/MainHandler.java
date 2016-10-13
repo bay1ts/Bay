@@ -1,5 +1,6 @@
 package com.bay1ts.bay.handler;
 
+import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.route.HttpMethod;
 import com.bay1ts.bay.route.Routes;
 import com.bay1ts.bay.route.match.*;
@@ -33,6 +34,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         // TODO: 2016/10/12 routecontext package spark.http.matching.MatcherFilter line 112
         RouteContext context = RouteContext.create();
+        Response response=converte(fullHttpResponse);
         Body body = Body.create();
         context
                 .withMatcher(routeMatcher)
@@ -40,7 +42,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 .withUri(uri)
                 .withAcceptType(acceptType)
                 .withBody(body)
-                .withResponse(fullHttpResponse)
+                .withResponse(response)
                 .withHttpMethod(httpMethod);
         try {
             BeforeFilters.execute(context);
@@ -68,8 +70,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         /**
          * 这里按下不表 先搞上面的exec
          */
-        // TODO: 2016/10/13 目测response里要加上一个isredirected属性了
-        if (body.notSet() && responseWrapper.isRedirected()) {
+        if (body.notSet() && context.response().isRedirected()) {
             body.set("");
         }
         //不至于不至于

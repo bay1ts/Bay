@@ -41,9 +41,14 @@ public class Response {
     private FullHttpResponse response;
 //    private HttpServletResponse response;
     private String body;
+    private boolean isRedirected=false;
 
     protected Response() {
         // Used by wrapper
+    }
+
+    public boolean isRedirected(){
+        return this.isRedirected;
     }
 
     Response(FullHttpResponse response) {
@@ -118,6 +123,7 @@ public class Response {
      * @param location Where to redirect
      */
     public void redirect(String location) {
+        this.isRedirected=true;
 //        if (LOG.isDebugEnabled()) {
 //            LOG.debug("Redirecting ({} {} to {}", "Found", HttpServletResponse.SC_FOUND, location);
 //        }
@@ -136,6 +142,7 @@ public class Response {
      * @param httpStatusCode the http status code
      */
     public void redirect(String location, int httpStatusCode) {
+        this.isRedirected=true;
 //        if (LOG.isDebugEnabled()) {
 //            LOG.debug("Redirecting ({} to {}", httpStatusCode, location);
 //        }

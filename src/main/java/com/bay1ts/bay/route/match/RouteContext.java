@@ -41,6 +41,10 @@ public final class RouteContext {
         this.routeMatcher = routeMatcher;
         return this;
     }
+    public RouteContext withRequest(Request request){
+        this.request=request;
+        return this;
+    }
 
     public RouteContext withHttpRequest(FullHttpRequest httpRequest) {
         this.httpRequest = httpRequest;

@@ -14,9 +14,17 @@ import io.netty.util.CharsetUtil;
  *
  */
 public class Router {
-    protected Routes routes;
+    //这个实例要 传给 handler 这特么怎么弄,只能单例了吗
+    private static  Routes routes=Routes.create();
 
-
+//    public void init(){
+//        //initroutematcher
+//        routes=
+//
+//    }
+    public static Routes getRouterMatcher(){
+        return routes;
+    }
 
     public void addRoute(String httpMethod,RouteImpl route){
         routes.add(httpMethod,route);
@@ -24,20 +32,6 @@ public class Router {
 
     }
 
-    public static  Action getAction(String path){
-        System.out.println("正在请求 路径 "+path +"的action");
-        Action action=actionMap.get(path);
-        if (null==action){
-            System.out.println("log: 404 not found for "+path);
-            action=new Action() {
-                public FullHttpResponse handle(FullHttpRequest request, FullHttpResponse response) {
-                    response.setStatus(HttpResponseStatus.NOT_FOUND);
-                    return response.replace(Unpooled.copiedBuffer("404 not found",CharsetUtil.UTF_8));
-                }
-            };
-        }
-        return action;
-    }
 
     public  void get(final String path, final Action action){
         addRoute(HttpMethod.get.name(),RouteImpl.create(path,action));

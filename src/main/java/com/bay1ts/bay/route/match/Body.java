@@ -1,5 +1,6 @@
 package com.bay1ts.bay.route.match;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -51,9 +52,11 @@ public final class Body {
 //        OutputStream responseStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, true);
 
         // serialize the body to output stream
-        byte[] bytes=(byte[])content;
+
+//        byte[] bytes=(byte[])content;
         // TODO: 2016/10/13 need help need test
-        httpResponse.replace(Unpooled.copiedBuffer(bytes));
+        httpResponse=httpResponse.replace(Unpooled.copiedBuffer(((String)content).getBytes()));
+
 //        serializerChain.process(responseStream, content);
 
 //        responseStream.flush(); // needed for GZIP stream. NOt sure where the HTTP response actually gets cleaned up

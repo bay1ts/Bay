@@ -3,6 +3,7 @@ package com.bay1ts.bay.handler;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.route.HttpMethod;
+import com.bay1ts.bay.route.Router;
 import com.bay1ts.bay.route.Routes;
 import com.bay1ts.bay.route.match.*;
 import io.netty.buffer.Unpooled;
@@ -19,17 +20,18 @@ import java.io.IOException;
  * Created by chenu on 2016/8/15.
  */
 public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-    private Routes routeMatcher;
+    private Routes routeMatcher= Router.getRouterMatcher();
 
 
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
-        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, Unpooled.copiedBuffer("wow welcome to Bay1ts' web framework based on netty", CharsetUtil.UTF_8));
+        FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
         this.onCall(ctx, request, response);
     }
 
     private void onCall(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest, FullHttpResponse fullHttpResponse) {
         // TODO: 2016/10/12 静态资源的处理 参看 spark.http.matching.MatcherFilter 100行左右
-        HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name());
+//        System.out.println("-------------"+fullHttpRequest.method().name());
+        HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name().toLowerCase());
         String uri = fullHttpRequest.uri();
         String acceptType = fullHttpRequest.headers().get(HttpHeaderNames.ACCEPT);
 
@@ -37,6 +39,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         RouteContext context = RouteContext.create();
         Response response=new Response(fullHttpResponse);
         Body body = Body.create();
+//        routeMatcher=new Routes();
         context
                 .withMatcher(routeMatcher)
                 .withHttpRequest(fullHttpRequest)

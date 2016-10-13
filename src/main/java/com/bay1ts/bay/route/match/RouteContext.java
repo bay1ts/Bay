@@ -1,5 +1,6 @@
 package com.bay1ts.bay.route.match;
 
+import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.route.HttpMethod;
 import com.bay1ts.bay.route.Routes;
@@ -20,6 +21,7 @@ public final class RouteContext {
     private String uri;
     private String acceptType;
     private Body body;
+    private Request request;
     private Response response;
     private HttpMethod httpMethod;
 

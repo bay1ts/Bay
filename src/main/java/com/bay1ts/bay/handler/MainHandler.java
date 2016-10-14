@@ -4,6 +4,7 @@ import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.route.HttpMethod;
 import com.bay1ts.bay.core.Service;
 import com.bay1ts.bay.route.Routes;
+import com.bay1ts.bay.route.StaticMatcher;
 import com.bay1ts.bay.route.match.*;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -19,7 +20,7 @@ import static com.bay1ts.bay.core.Bay.*;
 public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 //    private Routes routeMatcher=getInstance().getRouterMatcher()
     private Routes routeMatcher= Service.getRouterMatcher();
-    private String staticResources=Service.StaticResourcesLocation();
+    private StaticMatcher staticMatcher=Service.staticMatcher();
 
 
     protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest request) throws Exception {
@@ -31,7 +32,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         // TODO: 2016/10/12 静态资源的处理 参看 spark.http.matching.MatcherFilter 100行左右
 //        System.out.println("-------------"+fullHttpRequest.method().name());
 
-        if (staticFiles.consume(fullHttpRequest,fullHttpResponse)){
+        if (staticMatcher.consume(fullHttpRequest,fullHttpResponse)){
             return;
         }
         HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name().toLowerCase());

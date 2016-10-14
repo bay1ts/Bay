@@ -4,6 +4,7 @@ import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.route.HttpMethod;
 import com.bay1ts.bay.route.RouteImpl;
 import com.bay1ts.bay.route.Routes;
+import com.bay1ts.bay.route.StaticMatcher;
 
 
 /**
@@ -13,19 +14,20 @@ import com.bay1ts.bay.route.Routes;
  */
 public class Service {
     private static Routes routes;
-    private static String resLocation;
+    private static StaticMatcher staticMatcher;
     public static Routes getRouterMatcher(){
         return routes;
     }
-    public static String StaticResourcesLocation(){
-        return resLocation;
+    public static StaticMatcher staticMatcher(){
+        return staticMatcher;
     }
     protected Service(){
         routes=Routes.create();
+        staticMatcher=new StaticMatcher();
     }
     public void staticResources(String res){
         // TODO: 2016/10/13 处理静态资源啊
-        resLocation=res;
+        staticMatcher.path(res);
     }
 
     public void addRoute(String httpMethod,RouteImpl route){

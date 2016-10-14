@@ -107,7 +107,11 @@ public class Request {
     public Request(RouteMatch match, FullHttpRequest request) {
         this.fullHttpRequest = request;
         this.queryStringDecoder=new QueryStringDecoder(request.uri());
-        changeMatch(match);
+        if (match!=null){
+            //说明是routematch
+            changeMatch(match);
+        }
+
     }
 
     protected void changeMatch(RouteMatch match) {

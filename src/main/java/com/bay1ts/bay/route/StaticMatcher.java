@@ -5,11 +5,14 @@ import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.utils.Assert;
 import com.bay1ts.bay.utils.IOUtils;
 import com.sun.xml.internal.bind.v2.TODO;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -20,9 +23,9 @@ import java.util.List;
  */
 public class  StaticMatcher {
     private List<StaticRouteImpl> staticRoutes;
-    public boolean consume(FullHttpRequest httpRequest, FullHttpResponse httpResponse) {
+    public boolean consume(ChannelHandlerContext ctx, FullHttpRequest httpRequest, FullHttpResponse httpResponse) {
         try {
-            if (consumeWithFileResourceHandlers(httpRequest, httpResponse)) {
+            if (consumeWithFileResourceHandlers(ctx,httpRequest, httpResponse)) {
                 return true;
             }
         } catch (IOException e) {
@@ -42,7 +45,7 @@ public class  StaticMatcher {
     }
 
 
-    private boolean consumeWithFileResourceHandlers(FullHttpRequest httpRequest,
+    private boolean consumeWithFileResourceHandlers(ChannelHandlerContext ctx, FullHttpRequest httpRequest,
                                                     FullHttpResponse httpResponse) throws IOException {
         if (!staticRoutes.isEmpty()) {
             Request request=new Request(null,httpRequest);
@@ -56,7 +59,11 @@ public class  StaticMatcher {
 //                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
 //                    wrappedOutputStream.flush();
 //                    wrappedOutputStream.close();
-                    // TODO: 2016/10/14 将resource放到response里面去.顺便把response的header处理干净
+                    BufferedInputStream bufferedInputStream=new BufferedInputStream(resource.getInputStream());
+                    byte[] buf=new byte[bufferedInputStream.available()];
+                    bufferedInputStream.read(buf);
+                    httpResponse=httpResponse.replace(Unpooled.copiedBuffer(buf));
+                    ctx.writeAndFlush(httpResponse);
                     return true;
                 }
             }

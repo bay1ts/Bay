@@ -32,7 +32,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         // TODO: 2016/10/12 静态资源的处理 参看 spark.http.matching.MatcherFilter 100行左右
 //        System.out.println("-------------"+fullHttpRequest.method().name());
 
-        if (staticMatcher.consume(fullHttpRequest,fullHttpResponse)){
+        if (staticMatcher.consume(ctx,fullHttpRequest,fullHttpResponse)){
             return;
         }
         HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name().toLowerCase());

@@ -20,6 +20,7 @@ import java.util.List;
 /**
  * Created by chenu on 2016/10/14.
  */
+// TODO: 2016/10/14 记着spring mvc吹过,好像请求结尾的 扩展名是啥,就按哪种方式解析..不知道怎么个意思
 public class  StaticMatcher {
     private List<StaticRouteImpl> staticRoutes=new ArrayList<>();
     public boolean consume(ChannelHandlerContext ctx, FullHttpRequest httpRequest, FullHttpResponse httpResponse) {
@@ -49,7 +50,8 @@ public class  StaticMatcher {
         if (!staticRoutes.isEmpty()) {
             Request request=new Request(null,httpRequest);
             for (StaticRouteImpl staticRoute : staticRoutes) {
-// TODO: 2016/10/14 这里应该有bug 只能存储一条 静态文件 目测 不然这里我感觉可能会返回两个resource啊..即  响应两次.
+// TOD 2016/10/14 这里应该有bug 只能存储一条 静态文件 目测 不然这里我感觉可能会返回两个resource啊..即  响应两次.
+                //当然不会了下面的方法返回的resource是null,所以会空转一圈
                 ClassPathResource resource = staticRoute.getResource(request);
 
                 if (resource != null && resource.isReadable()) {

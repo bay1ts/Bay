@@ -15,24 +15,14 @@ public class ClassPathResource {
 
     private final String path;
 
+    private ClassLoader classLoader;
+
+    private Class<?> clazz;
+
 
 
     public ClassPathResource(String path) {
         this(path, null);
-    }
-
-    public boolean isReadable() {
-        try {
-            URL url = getURL();
-
-                File file = getFile();
-                return (file.canRead() && !file.isDirectory());
-            } else {
-                return true;
-            }
-        } catch (IOException ex) {
-            return false;
-        }
     }
 
     /**
@@ -65,8 +55,29 @@ public class ClassPathResource {
      */
     protected ClassPathResource(String path, ClassLoader classLoader, Class<?> clazz) {
         this.path = StringUtils.cleanPath(path);
+        this.classLoader = classLoader;
+        this.clazz = clazz;
     }
 
+    public File getFile() throws IOException {
+        URL url = getURL();
+        return ResourceUtils.getFile(url, getDescription());
+    }
+
+    public boolean isReadable() {
+        try {
+            URL url = getURL();
+            if (ResourceUtils.isFileURL(url)) {
+                // Proceed with file system resolution...
+                File file = getFile();
+                return (file.canRead() && !file.isDirectory());
+            } else {
+                return true;
+            }
+        } catch (IOException ex) {
+            return false;
+        }
+    }
     /**
      * Return the path for this resource (as resource path within the class path).
      *
@@ -109,8 +120,10 @@ public class ClassPathResource {
         InputStream is;
         if (this.clazz != null) {
             is = this.clazz.getResourceAsStream(this.path);
-        } else {
+        } else if (this.classLoader!=null){
             is = this.classLoader.getResourceAsStream(this.path);
+        }else {
+            is=ClassLoader.getSystemResourceAsStream(this.path);
         }
         if (is == null) {
             throw new FileNotFoundException(getDescription() + " cannot be opened because it does not exist");
@@ -146,10 +159,7 @@ public class ClassPathResource {
     }
 
 
-    public File getFile() throws IOException {
-        URL url = getURL();
-        return ResourceUtils.getFile(url, getDescription());
-    }
+
     public String getFilename() {
         return StringUtils.getFilename(this.path);
     }
@@ -159,7 +169,6 @@ public class ClassPathResource {
      *
      * @return the description.
      */
-
     public String getDescription() {
         StringBuilder builder = new StringBuilder("class path resource [");
         String pathToUse = path;

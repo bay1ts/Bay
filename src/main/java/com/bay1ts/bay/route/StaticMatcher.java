@@ -57,11 +57,9 @@ public class  StaticMatcher {
 //                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
 //                    wrappedOutputStream.flush();
 //                    wrappedOutputStream.close();
-                    BufferedInputStream bufferedInputStream=new BufferedInputStream(resource.getInputStream());
-                    File file=resource.getFile();
-                    System.out.println(resource.getPath());
-                    InputStream inputStream=new FileInputStream(file);
-                    byte[] buf=IOUtils.toByteArray(inputStream);
+                    System.out.println(resource.getInputStream().available()+"---------------------");
+
+                    byte[] buf=IOUtils.toByteArray(resource.getInputStream());
                     System.out.println(buf.length+"--------------------");
 
                     System.out.println("staticMatcher line 64----------");

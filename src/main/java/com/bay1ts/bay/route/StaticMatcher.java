@@ -12,9 +12,7 @@ import io.netty.handler.codec.http.FullHttpResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +58,13 @@ public class  StaticMatcher {
 //                    wrappedOutputStream.flush();
 //                    wrappedOutputStream.close();
                     BufferedInputStream bufferedInputStream=new BufferedInputStream(resource.getInputStream());
-                    byte[] buf=new byte[bufferedInputStream.available()];
+                    File file=resource.getFile();
+                    System.out.println(resource.getPath());
+                    InputStream inputStream=new FileInputStream(file);
+                    byte[] buf=IOUtils.toByteArray(inputStream);
+                    System.out.println(buf.length+"--------------------");
 
                     System.out.println("staticMatcher line 64----------");
-                    System.out.println(resource.getInputStream().available());
-                    bufferedInputStream.read(buf);
                     httpResponse=httpResponse.replace(Unpooled.copiedBuffer(buf));
                     ctx.writeAndFlush(httpResponse);
                     return true;

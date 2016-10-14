@@ -15,10 +15,6 @@ public class ClassPathResource {
 
     private final String path;
 
-    private ClassLoader classLoader;
-
-    private Class<?> clazz;
-
 
 
     public ClassPathResource(String path) {
@@ -28,8 +24,7 @@ public class ClassPathResource {
     public boolean isReadable() {
         try {
             URL url = getURL();
-            if (ResourceUtils.isFileURL(url)) {
-                // Proceed with file system resolution...
+
                 File file = getFile();
                 return (file.canRead() && !file.isDirectory());
             } else {
@@ -70,8 +65,6 @@ public class ClassPathResource {
      */
     protected ClassPathResource(String path, ClassLoader classLoader, Class<?> clazz) {
         this.path = StringUtils.cleanPath(path);
-        this.classLoader = classLoader;
-        this.clazz = clazz;
     }
 
     /**

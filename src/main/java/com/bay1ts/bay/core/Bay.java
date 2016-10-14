@@ -12,6 +12,8 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
 import com.bay1ts.bay.handler.MainHandler;
+import io.netty.handler.stream.ChunkedWriteHandler;
+
 /**
  * Created by chenu on 2016/10/12.
  * 这个类主要被 静态引入.作为此框架的入口
@@ -30,6 +32,8 @@ public class Bay {
                             ch.pipeline().
                                     addLast(new HttpServerCodec()).
                                     addLast("aggregator",new HttpObjectAggregator(65536)).
+                                    //大文件支持
+                                    addLast("streamer",new ChunkedWriteHandler()).
                                     addLast("mainHandler",new MainHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG,1024).childOption(ChannelOption.SO_KEEPALIVE,true);

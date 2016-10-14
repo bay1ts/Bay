@@ -48,14 +48,15 @@ public class  StaticMatcher {
             Request request=new Request(null,httpRequest);
             for (StaticRouteImpl staticRoute : staticRoutes) {
 
-                AbstractFileResolvingResource resource = staticRoute.getResource(request);
+                ClassPathResource resource = staticRoute.getResource(request);
 
                 if (resource != null && resource.isReadable()) {
-                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
-                    customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
-                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
-                    wrappedOutputStream.flush();
-                    wrappedOutputStream.close();
+//                    OutputStream wrappedOutputStream = GzipUtils.checkAndWrap(httpRequest, httpResponse, false);
+//                    customHeaders.forEach(httpResponse::setHeader); //add all user-defined headers to response
+//                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
+//                    wrappedOutputStream.flush();
+//                    wrappedOutputStream.close();
+                    // TODO: 2016/10/14 将resource放到response里面去.顺便把response的header处理干净
                     return true;
                 }
             }

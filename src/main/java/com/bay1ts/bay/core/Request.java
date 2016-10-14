@@ -219,10 +219,6 @@ public class Request {
     public String servletPath() {
         // TODO: 2016/10/13 测试
         //// TODO: 2016/10/14 bug found
-        System.out.println(this.pathInfo());
-        System.out.println(this.url());
-        System.out.println(this.uri());
-        System.out.println(this.userAgent());
         return this.pathInfo();
 //        return fullHttpRequest.getServletPath();
     }

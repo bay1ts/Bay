@@ -30,7 +30,6 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private void onCall(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest, FullHttpResponse fullHttpResponse) {
         // TODO: 2016/10/12 静态资源的处理 参看 spark.http.matching.MatcherFilter 100行左右
-//        System.out.println("-------------"+fullHttpRequest.method().name());
 
         if (staticMatcher.consume(ctx,fullHttpRequest,fullHttpResponse)){
             return;
@@ -111,7 +110,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             }
 
             finalResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, finalResponse.content().readableBytes());
-
+            finalResponse.headers().set(HttpHeaderNames.SERVER,"Bay1ts'Server YEE!!!");
             ChannelFuture future = ctx.channel().writeAndFlush(finalResponse);
             if (!keepAlive) {
                 future.addListener(ChannelFutureListener.CLOSE);

@@ -6,9 +6,10 @@ import com.bay1ts.bay.utils.Assert;
 import com.bay1ts.bay.utils.IOUtils;
 import com.sun.xml.internal.bind.v2.TODO;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.http.FullHttpRequest;
-import io.netty.handler.codec.http.FullHttpResponse;
+import io.netty.handler.codec.http.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,14 +58,24 @@ public class  StaticMatcher {
 //                    IOUtils.copy(resource.getInputStream(), wrappedOutputStream);
 //                    wrappedOutputStream.flush();
 //                    wrappedOutputStream.close();
-                    System.out.println(resource.getInputStream().available()+"---------------------");
+//                    System.out.println(resource.getInputStream().available()+"---------------------");
 
                     byte[] buf=IOUtils.toByteArray(resource.getInputStream());
-                    System.out.println(buf.length+"--------------------");
+                    // TODO: 2016/10/14 给response设置头
 
-                    System.out.println("staticMatcher line 64----------");
+                    boolean keepAlive = HttpUtil.isKeepAlive(httpRequest);
+                    if (keepAlive) {
+                        httpResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
+//                        httpResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
+                    }
                     httpResponse=httpResponse.replace(Unpooled.copiedBuffer(buf));
-                    ctx.writeAndFlush(httpResponse);
+                    httpResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, httpResponse.content().readableBytes())
+                            .set(HttpHeaderNames.SERVER,"Bay1ts'Server YEE!");
+                    ChannelFuture future = ctx.channel().writeAndFlush(httpResponse);
+                    if (!keepAlive) {
+                        future.addListener(ChannelFutureListener.CLOSE);
+                    }
+
                     return true;
                 }
             }

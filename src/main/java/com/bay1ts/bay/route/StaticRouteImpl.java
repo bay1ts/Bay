@@ -38,7 +38,7 @@ public class StaticRouteImpl {
             }
         } else {
             // TODO: 2016/10/14 方法需要测试
-            servletPath = request.servletPath();
+            servletPath = "";
             pathInfo = request.pathInfo();//文件名
         }
 

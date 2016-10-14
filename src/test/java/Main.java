@@ -15,10 +15,10 @@ public class Main {
         get("/hello2", new Action() {
             @Override
             public Object handle(Request request, Response response) throws Exception {
-                return "hehe";
+                return "css";
             }
         });
-        post("/hehe",(req,res)->{
+        post("/css",(req,res)->{
             return "nihao";
         });
         get("/test2/:name",(req,resp)->{

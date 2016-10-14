@@ -22,7 +22,7 @@ import java.util.List;
  * Created by chenu on 2016/10/14.
  */
 public class  StaticMatcher {
-    private List<StaticRouteImpl> staticRoutes;
+    private List<StaticRouteImpl> staticRoutes=new ArrayList<>();
     public boolean consume(ChannelHandlerContext ctx, FullHttpRequest httpRequest, FullHttpResponse httpResponse) {
         try {
             if (consumeWithFileResourceHandlers(ctx,httpRequest, httpResponse)) {
@@ -50,7 +50,7 @@ public class  StaticMatcher {
         if (!staticRoutes.isEmpty()) {
             Request request=new Request(null,httpRequest);
             for (StaticRouteImpl staticRoute : staticRoutes) {
-
+// TODO: 2016/10/14 这里应该有bug 只能存储一条 静态文件 目测 不然这里我感觉可能会返回两个resource啊..即  响应两次.
                 ClassPathResource resource = staticRoute.getResource(request);
 
                 if (resource != null && resource.isReadable()) {
@@ -61,6 +61,9 @@ public class  StaticMatcher {
 //                    wrappedOutputStream.close();
                     BufferedInputStream bufferedInputStream=new BufferedInputStream(resource.getInputStream());
                     byte[] buf=new byte[bufferedInputStream.available()];
+
+                    System.out.println("staticMatcher line 64----------");
+                    System.out.println(resource.getInputStream().available());
                     bufferedInputStream.read(buf);
                     httpResponse=httpResponse.replace(Unpooled.copiedBuffer(buf));
                     ctx.writeAndFlush(httpResponse);

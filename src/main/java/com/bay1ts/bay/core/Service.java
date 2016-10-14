@@ -1,6 +1,9 @@
-package com.bay1ts.bay.route;
+package com.bay1ts.bay.core;
 
 import com.bay1ts.bay.core.Action;
+import com.bay1ts.bay.route.HttpMethod;
+import com.bay1ts.bay.route.RouteImpl;
+import com.bay1ts.bay.route.Routes;
 
 
 /**
@@ -8,17 +11,21 @@ import com.bay1ts.bay.core.Action;
  * 一个优化方案.当 注册 method 为get的路由时,不放到list里.因为在遍历list耗时较多.可以讲几种分别放到几个 map中.按path来找对应的 action
  *
  */
-public class Router {
-    //这个实例要 传给 handler 这特么怎么弄,只能单例了吗
-    private static  Routes routes=Routes.create();
-
-//    public void init(){
-//        //initroutematcher
-//        routes=
-//
-//    }
+public class Service {
+    private static Routes routes;
+    private static String resLocation;
     public static Routes getRouterMatcher(){
         return routes;
+    }
+    public static String StaticResourcesLocation(){
+        return resLocation;
+    }
+    protected Service(){
+        routes=Routes.create();
+    }
+    public void staticResources(String res){
+        // TODO: 2016/10/13 处理静态资源啊
+        resLocation=res;
     }
 
     public void addRoute(String httpMethod,RouteImpl route){
@@ -63,4 +70,11 @@ public class Router {
         addRoute(HttpMethod.options.name(),RouteImpl.create(path,action));
     }
     // TODO: 2016/10/12 像beego学习,加上any
+
+
+//    public final class StaticResources{
+//        public void location(String folder){
+//            //// TODO: 2016/10/13 参看原  service文件451行
+//        }
+//    }
 }

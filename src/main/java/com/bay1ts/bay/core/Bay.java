@@ -1,6 +1,5 @@
 package com.bay1ts.bay.core;
 
-import com.bay1ts.bay.route.Router;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -15,6 +14,7 @@ import io.netty.handler.codec.http.HttpServerCodec;
 import com.bay1ts.bay.handler.MainHandler;
 /**
  * Created by chenu on 2016/10/12.
+ * 这个类主要被 静态引入.作为此框架的入口
  */
 public class Bay {
     public static void listenAndStart(int port) throws Exception {
@@ -45,12 +45,18 @@ public class Bay {
             workerGroup.shutdownGracefully();
         }
     }
-    private static Router getInstance(){
+    private static Service getInstance(){
         return SingletonRouter.INSTANCE;
     }
     private static class SingletonRouter{
-        private static final Router INSTANCE=new Router();
+        private static final Service INSTANCE=new Service();
     }
+
+    public static void staticResources(String floder){
+        getInstance().staticResources(floder);
+    }
+
+
 //暴露给外面的接口.最基本的  restful 接口
     public static void get(final String path, final Action action){
         getInstance().get(path,action);
@@ -79,6 +85,5 @@ public class Bay {
     public static void options(final String path, final Action action){
         getInstance().options(path,action);
     }
-
 
 }

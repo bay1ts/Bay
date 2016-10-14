@@ -11,6 +11,7 @@ import static com.bay1ts.bay.core.Bay.*;
 public class Main {
 
     public static void main(String[] args) throws Exception {
+        staticResources("/static");
         get("/hello2", new Action() {
             @Override
             public Object handle(Request request, Response response) throws Exception {
@@ -32,7 +33,7 @@ public class Main {
             return "number of splat param "+req.splat().length+"  "+req.splat()[1];
         });
 
-//        Router.addRouter("/shit", new Action() {
+//        Service.addRouter("/shit", new Action() {
 //            public FullHttpResponse doAction(FullHttpRequest request, FullHttpResponse response) {
 //                return response.replace(Unpooled.copiedBuffer("this is a shit",CharsetUtil.UTF_8));
 //            }

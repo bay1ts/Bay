@@ -102,7 +102,8 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 e.printStackTrace();
                 // TODO: 2016/10/13 log spark写的是向上级抛出了
             }
-            // TODO: 2016/10/15 http1.1 默认是keep-alive的  所以下面五行可以不写  目测是
+            // TOD: 2016/10/15 http1.1 默认是keep-alive的  所以下面五行可以不写  目测是
+            //为了兼容http1.0 .所以还是写上吧
             boolean keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
             if (keepAlive) {
                 finalResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);

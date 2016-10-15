@@ -1,22 +1,49 @@
 package com.bay1ts.bay;
 
-/**
- * Created by chenu on 2016/10/14.
- */
 public class Config {
-    // TODO: 2016/10/15 处理 访问静态 目录中的目录,指定的welcome文件不存在的问题
-    public static String welcomeFile="index.html";
-    public static int port=5678;
-    public static int sessionExpireSecond=3600;
-    public static boolean enableSessionStore=false;//redis store
-    public static String redisLocate="127.0.0.1";
-    public static int redisPort=2333;
-    public static String redisUsername="";
-    public static String redisPassword="";
+    private static String welcomeFile = "index.html";
+    private static int port = 5677;
+    private static int sessionExpireSecond = 3600;
+    private static boolean enableSessionStore = false;//redis store
+    private static String redisLocate = "127.0.0.1";
+    private static int redisPort = 2333;
+    private static String redisUsername = "root";
+    private static String redisPassword = "toor";
 
-    public int port(){
+    //// TODO: 2016/10/15 在每一项调用配置之前都需要更新配置.  每一次获取数据都要调用update.
+    private void updateConfig(){
+
+    }
+
+    public static String getWelcomeFile() {
+        return welcomeFile;
+    }
+
+    public static int getPort() {
         return port;
     }
 
+    public static int getSessionExpireSecond() {
+        return sessionExpireSecond;
+    }
 
+    public static boolean isEnableSessionStore() {
+        return enableSessionStore;
+    }
+
+    public static String getRedisLocate() {
+        return redisLocate;
+    }
+
+    public static int getRedisPort() {
+        return redisPort;
+    }
+
+    public static String getRedisUsername() {
+        return redisUsername;
+    }
+
+    public static String getRedisPassword() {
+        return redisPassword;
+    }
 }

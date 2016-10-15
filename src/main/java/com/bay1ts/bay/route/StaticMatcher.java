@@ -1,7 +1,7 @@
 package com.bay1ts.bay.route;
 
-import com.bay1ts.bay.Config;
 import com.bay1ts.bay.core.Request;
+import com.bay1ts.bay.*;
 import com.bay1ts.bay.utils.Assert;
 import com.bay1ts.bay.utils.IOUtils;
 import io.netty.buffer.Unpooled;
@@ -12,6 +12,7 @@ import io.netty.handler.codec.http.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+
 
 /**
  * Created by chenu on 2016/10/14.
@@ -36,7 +37,7 @@ public class  StaticMatcher {
         List<String> list=new ArrayList<>();
         // TODO: 2016/10/14 不完善 应该支持列表的 应该支持以逗号隔开
         //现在支持多个  静态目录了
-        list.add(Config.welcomeFile);
+        list.add(Config.getWelcomeFile());
         this.staticRoutes.add(new StaticRouteImpl(path,list));
     }
 

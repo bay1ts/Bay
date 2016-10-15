@@ -38,7 +38,7 @@ public class HttpSessionThreadLocal {
             }
 
             ServletSessionImpl newSession = sessionStore.createSession();
-            newSession.setMaxInactiveInterval(Config.sessionExpireSecond);
+            newSession.setMaxInactiveInterval(Config.getSessionExpireSecond());
             //已解决的bug 刚开始又 sessionStore.createSession了.
             sessionThreadLocal.set(newSession);
         }

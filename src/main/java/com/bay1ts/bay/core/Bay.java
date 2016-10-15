@@ -21,10 +21,12 @@ import io.netty.handler.stream.ChunkedWriteHandler;
  * 这个类主要被 静态引入.作为此框架的入口
  */
 public class Bay {
-    public static void listenAndStart() throws Exception {
-        listenAndStart(Config.port);
+    private static void initConfig(){
+
+
     }
-    public static void listenAndStart(int port) throws Exception {
+    public static void listenAndStart() throws Exception {
+        initConfig();
         // 配置服务端的NIO线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -48,9 +50,9 @@ public class Bay {
                         }
                     }).option(ChannelOption.SO_BACKLOG,1024).childOption(ChannelOption.SO_KEEPALIVE,true);
 //                    .childHandler(new ChildChannelHandler());
-            System.out.println("Server started and listening on port "+port);
+            System.out.println("Server started and listening on port "+Config.getPort());
             // 绑定端口，同步等待成功
-            ChannelFuture f = b.bind(port).sync();
+            ChannelFuture f = b.bind(Config.getPort()).sync();
 
             // 等待服务端监听端口关闭
             f.channel().closeFuture().sync();

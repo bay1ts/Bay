@@ -48,6 +48,9 @@ public final class DoRoute {
                         context.response().body(contentStr);
                     }
                 }else if (content instanceof Object){
+                    //bug
+//                    context.response().body(gson.toJson(content));
+                    content=gson.toJson(content);
                     context.response().body(gson.toJson(content));
                 }
 

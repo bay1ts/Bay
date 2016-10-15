@@ -300,7 +300,6 @@ public class Request {
      * @return the length of request.body
      */
     public int contentLength() {
-        //// TODO: 2016/10/13 测试一下这个API吧.又不自信了
         return Integer.valueOf(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH));
     }
 

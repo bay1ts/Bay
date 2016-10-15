@@ -57,21 +57,6 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         } catch (Exception e) {
             // TODO: 2016/10/12 log and do something
         }
-//        FullHttpResponse finalResponse = Service.getAction(request.uri()).handle(request,response);
-//        boolean keepAlive= HttpUtil.isKeepAlive(request);
-//        if (keepAlive){
-//            finalResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-//            finalResponse.headers().set(HttpHeaderNames.CONTENT_TYPE,HttpHeaderValues.TEXT_PLAIN);
-//        }
-//
-//        finalResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH,finalResponse.content().readableBytes());
-//
-//        ChannelFuture future=ctx.channel().writeAndFlush(finalResponse);
-//        if(!keepAlive){
-//            future.addListener(ChannelFutureListener.CLOSE);
-//        }
-        // If redirected and content is null set to empty string to not throw NotConsumedException
-
 
         /**
          * 这里按下不表 先搞上面的exec

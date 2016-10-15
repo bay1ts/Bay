@@ -3,11 +3,11 @@ package com.bay1ts.bay.route.match;
 import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.route.HttpMethod;
+import com.google.gson.Gson;
 
 public final class DoRoute {
-
+    private static Gson gson=new Gson();
     public static void execute(RouteContext context) throws Exception {
-
         Object content = context.body().get();
 
         RouteMatch match = context.routeMatcher().find(context.httpMethod(), context.uri(), context.acceptType());
@@ -47,8 +47,10 @@ public final class DoRoute {
                     if (!contentStr.equals("")) {
                         context.response().body(contentStr);
                     }
+                }else if (content instanceof Object){
+                    context.response().body(gson.toJson(content));
                 }
-                //// TODO: 2016/10/13 目测上面 只支持string啊,并不能像springmvc那样能返回个object啊.
+
                 //要是洋气点.就价格判断 ,如果是...(草,没法判断是哪个类.这块是个坑)  就在这里json一下成字符串
             }
         }

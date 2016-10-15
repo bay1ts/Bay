@@ -3,6 +3,8 @@ import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
 
+import java.util.function.BiConsumer;
+
 import static com.bay1ts.bay.core.Bay.*;
 
 
@@ -35,6 +37,16 @@ public class Main {
 
         get("/test1",(req,resp)->{
             return req.session().id();
+        });
+        get("test2",(req,resp)->{
+            StringBuilder sb=new StringBuilder();
+           req.cookies().forEach(new BiConsumer<String, String>() {
+               @Override
+               public void accept(String s, String s2) {
+                   sb.append("key "+s+" value "+s2+"  \r\n");
+               }
+           });
+            return sb.toString();
         });
 
         listenAndStart(Config.port);

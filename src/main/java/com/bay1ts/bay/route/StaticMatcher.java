@@ -4,15 +4,11 @@ import com.bay1ts.bay.Config;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.utils.Assert;
 import com.bay1ts.bay.utils.IOUtils;
-import com.sun.xml.internal.bind.v2.TODO;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

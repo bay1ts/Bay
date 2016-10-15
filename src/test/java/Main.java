@@ -33,6 +33,10 @@ public class Main {
             return "number of splat param "+req.splat().length+"  "+req.splat()[1];
         });
 
+        get("/test1",(req,resp)->{
+            return req.session().id();
+        });
+
         listenAndStart(Config.port);
     }
 

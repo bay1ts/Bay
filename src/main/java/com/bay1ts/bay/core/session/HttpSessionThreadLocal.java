@@ -1,5 +1,7 @@
 package com.bay1ts.bay.core.session;
 
+import com.bay1ts.bay.Config;
+
 public class HttpSessionThreadLocal {
 
     public static final ThreadLocal<ServletSessionImpl> sessionThreadLocal = new ThreadLocal<ServletSessionImpl>();
@@ -36,9 +38,9 @@ public class HttpSessionThreadLocal {
             }
 
             ServletSessionImpl newSession = sessionStore.createSession();
-            // TODO: 2016/10/13 这里是写死的.应该是可以配置的
-            newSession.setMaxInactiveInterval(3600);
-            sessionThreadLocal.set(sessionStore.createSession());
+            newSession.setMaxInactiveInterval(Config.sessionExpireSecond);
+            //已解决的bug 刚开始又 sessionStore.createSession了.
+            sessionThreadLocal.set(newSession);
         }
         return get();
     }

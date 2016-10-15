@@ -1,5 +1,6 @@
 package com.bay1ts.bay.core;
 
+import com.bay1ts.bay.Config;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -8,6 +9,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 
@@ -29,15 +31,20 @@ public class Bay {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            //使用了 streamer就不在需要 content-length了,也不需要计算是否要keep-alive了
+                            //要 先Transfer-Encoding,在Content-Encoding
                             ch.pipeline().
                                     addLast(new HttpServerCodec()).
                                     addLast("aggregator",new HttpObjectAggregator(65536)).
-                                    //大文件支持
+                                    //大文件支持 这个东西的存在使得不使用content-length,就能确定 长连接(http1.1默认) 到哪里结束,而不至于浏览器继续等待(因为连接没有结束)
+                                    //参看https://imququ.com/post/transfer-encoding-header-in-http.html
+                                    addLast("deflater",new HttpContentCompressor(1)).
                                     addLast("streamer",new ChunkedWriteHandler()).
                                     addLast("mainHandler",new MainHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG,1024).childOption(ChannelOption.SO_KEEPALIVE,true);
 //                    .childHandler(new ChildChannelHandler());
+            System.out.println("Server started and listening on port "+ Config.port);
             // 绑定端口，同步等待成功
             ChannelFuture f = b.bind(port).sync();
 

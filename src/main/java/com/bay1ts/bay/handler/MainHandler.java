@@ -37,10 +37,9 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name().toLowerCase());
         String uri = fullHttpRequest.uri();
         String acceptType = fullHttpRequest.headers().get(HttpHeaderNames.ACCEPT);
-
+        Response response=new Response(fullHttpResponse);
         // TODO: 2016/10/12 routecontext package spark.http.matching.MatcherFilter line 112
         RouteContext context = RouteContext.create();
-        Response response=new Response(fullHttpResponse);
         Body body = Body.create();
 //        routeMatcher=new Routes();
         context
@@ -88,11 +87,12 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 //            }
 //        }
 
-//        if (body.notSet() && !externalContainer) {
+        if (body.notSet() ) {
 //            LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
-//            httpResponse.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//            body.set(String.format(NOT_FOUND));
-//        }
+            // TODO: 2016/10/15 log 404
+            fullHttpResponse.setStatus(HttpResponseStatus.NOT_FOUND);
+            body.set(String.format("<html><body><h2>404 Not found</h2></body></html>"));
+        }
 
         if (body.isSet()) {
             FullHttpResponse finalResponse = null;
@@ -102,11 +102,11 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 e.printStackTrace();
                 // TODO: 2016/10/13 log spark写的是向上级抛出了
             }
-
+            // TODO: 2016/10/15 http1.1 默认是keep-alive的  所以下面五行可以不写  目测是
             boolean keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
             if (keepAlive) {
                 finalResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-                finalResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
+//                finalResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
             }
 
             finalResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, finalResponse.content().readableBytes());

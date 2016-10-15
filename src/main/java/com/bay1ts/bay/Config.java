@@ -5,4 +5,6 @@ package com.bay1ts.bay;
  */
 public class Config {
     public static String welcomeFile="index.html";
+    public static final int port=8081;
+
 }

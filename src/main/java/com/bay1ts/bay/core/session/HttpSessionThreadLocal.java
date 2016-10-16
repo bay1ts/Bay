@@ -34,7 +34,8 @@ public class HttpSessionThreadLocal {
     public static ServletSessionImpl getOrCreate() {
         if (HttpSessionThreadLocal.get() == null) {
             if (sessionStore == null) {
-                sessionStore = new DefaultServletBridgeHttpSessionStore();
+                // TODO: 2016/10/16 可配置的sessionstore
+                sessionStore = new MemoryBasedSessionStore();
             }
 
             ServletSessionImpl newSession = sessionStore.createSession();

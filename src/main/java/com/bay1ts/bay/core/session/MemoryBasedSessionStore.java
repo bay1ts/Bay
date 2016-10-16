@@ -4,11 +4,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultServletBridgeHttpSessionStore implements
+public class MemoryBasedSessionStore implements
         BaseSessionStore {
 
 //    private static final Logger log = LoggerFactory
-//            .getLogger(DefaultServletBridgeHttpSessionStore.class);
+//            .getLogger(MemoryBasedSessionStore.class);
 
     public static ConcurrentHashMap<String, ServletSessionImpl> sessions = new ConcurrentHashMap<String, ServletSessionImpl>();
 

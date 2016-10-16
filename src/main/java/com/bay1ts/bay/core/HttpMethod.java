@@ -1,4 +1,4 @@
-package com.bay1ts.bay.route;
+package com.bay1ts.bay.core;
 
 /**
  * Created by chenu on 2016/10/12.

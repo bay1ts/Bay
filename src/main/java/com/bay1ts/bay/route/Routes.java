@@ -1,6 +1,7 @@
 package com.bay1ts.bay.route;
 
 import com.bay1ts.bay.core.Action;
+import com.bay1ts.bay.core.HttpMethod;
 import com.bay1ts.bay.route.match.RouteMatch;
 import com.bay1ts.bay.utils.MimeParse;
 

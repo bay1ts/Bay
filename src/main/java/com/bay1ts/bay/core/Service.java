@@ -1,7 +1,5 @@
 package com.bay1ts.bay.core;
 
-import com.bay1ts.bay.core.Action;
-import com.bay1ts.bay.route.HttpMethod;
 import com.bay1ts.bay.route.RouteImpl;
 import com.bay1ts.bay.route.Routes;
 import com.bay1ts.bay.route.StaticMatcher;

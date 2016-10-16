@@ -2,7 +2,7 @@ package com.bay1ts.bay.route.match;
 
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
-import com.bay1ts.bay.route.HttpMethod;
+import com.bay1ts.bay.core.HttpMethod;
 import com.bay1ts.bay.route.Routes;
 import io.netty.handler.codec.http.FullHttpRequest;
 

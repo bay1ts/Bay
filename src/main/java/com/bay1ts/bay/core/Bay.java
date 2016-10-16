@@ -38,7 +38,32 @@ public class Bay {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             //使用了 streamer就不在需要 content-length了,也不需要计算是否要keep-alive了
                             //要 先Transfer-Encoding,在Content-Encoding
+//                            if (null != sslContext)
+//                            {
+//                                SSLEngine sslEngine = sslContext.createSSLEngine();
+//                                sslEngine.setUseClientMode(false);
+//                                SslHandler sslHandler = new SslHandler(sslEngine);
+//                                pipeline.addLast("ssl", sslHandler);
+//                            }
+//
+//                            // Inbound handlers
+//                            pipeline.addLast("decoder", new HttpRequestDecoder());
+//                            pipeline.addLast("inflater", new HttpContentDecompressor());
+//
+//                            // Outbound handlers
+//                            pipeline.addLast("encoder", new HttpResponseEncoder());
+//                            pipeline.addLast("chunkWriter", new ChunkedWriteHandler());
+//
+//                            if (useCompression)
+//                            {
+//                                pipeline.addLast("deflater", new HttpContentCompressor());
+//                            }
+//
+//                            // Aggregator MUST be added last, otherwise results are not correct
+//                            pipeline.addLast("aggregator", new HttpObjectAggregator(maxContentLength));
+
                             ch.pipeline().
+
                                     addLast(new HttpServerCodec()).
                                     addLast("aggregator",new HttpObjectAggregator(65536)).
                                     //大文件支持 这个东西的存在使得不使用content-length,就能确定 长连接(http1.1默认) 到哪里结束,而不至于浏览器继续等待(因为连接没有结束)

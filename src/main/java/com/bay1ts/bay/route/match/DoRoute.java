@@ -2,7 +2,7 @@ package com.bay1ts.bay.route.match;
 
 import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
-import com.bay1ts.bay.route.HttpMethod;
+import com.bay1ts.bay.core.HttpMethod;
 import com.google.gson.Gson;
 
 public final class DoRoute {

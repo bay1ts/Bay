@@ -1,7 +1,6 @@
 package com.bay1ts.bay.handler;
-import com.bay1ts.bay.core.Bay;
 import com.bay1ts.bay.core.Response;
-import com.bay1ts.bay.route.HttpMethod;
+import com.bay1ts.bay.core.HttpMethod;
 import com.bay1ts.bay.core.Service;
 import com.bay1ts.bay.route.Routes;
 import com.bay1ts.bay.route.StaticMatcher;
@@ -12,7 +11,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import java.io.IOException;
-import static com.bay1ts.bay.core.Bay.*;
 
 /**
  * Created by chenu on 2016/8/15.

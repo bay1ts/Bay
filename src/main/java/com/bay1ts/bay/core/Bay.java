@@ -15,18 +15,16 @@ import io.netty.handler.codec.http.HttpServerCodec;
 
 import com.bay1ts.bay.handler.MainHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by chenu on 2016/10/12.
  * 这个类主要被 静态引入.作为此框架的入口
  */
 public class Bay {
-    private static void initConfig(){
-
-
-    }
+    private static Logger logger= LoggerFactory.getLogger(Bay.class);
     public static void listenAndStart() throws Exception {
-        initConfig();
         // 配置服务端的NIO线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -36,37 +34,9 @@ public class Bay {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            //使用了 streamer就不在需要 content-length了,也不需要计算是否要keep-alive了
-                            //要 先Transfer-Encoding,在Content-Encoding
-//                            if (null != sslContext)
-//                            {
-//                                SSLEngine sslEngine = sslContext.createSSLEngine();
-//                                sslEngine.setUseClientMode(false);
-//                                SslHandler sslHandler = new SslHandler(sslEngine);
-//                                pipeline.addLast("ssl", sslHandler);
-//                            }
-//
-//                            // Inbound handlers
-//                            pipeline.addLast("decoder", new HttpRequestDecoder());
-//                            pipeline.addLast("inflater", new HttpContentDecompressor());
-//
-//                            // Outbound handlers
-//                            pipeline.addLast("encoder", new HttpResponseEncoder());
-//                            pipeline.addLast("chunkWriter", new ChunkedWriteHandler());
-//
-//                            if (useCompression)
-//                            {
-//                                pipeline.addLast("deflater", new HttpContentCompressor());
-//                            }
-//
-//                            // Aggregator MUST be added last, otherwise results are not correct
-//                            pipeline.addLast("aggregator", new HttpObjectAggregator(maxContentLength));
-
                             ch.pipeline().
-
                                     addLast(new HttpServerCodec()).
                                     addLast("aggregator",new HttpObjectAggregator(65536)).
-                                    //大文件支持 这个东西的存在使得不使用content-length,就能确定 长连接(http1.1默认) 到哪里结束,而不至于浏览器继续等待(因为连接没有结束)
                                     //参看https://imququ.com/post/transfer-encoding-header-in-http.html
                                     addLast("deflater",new HttpContentCompressor(1)).
                                     addLast("streamer",new ChunkedWriteHandler()).
@@ -74,11 +44,9 @@ public class Bay {
                                     addLast("mainHandler",new MainHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG,1024).childOption(ChannelOption.SO_KEEPALIVE,true);
-//                    .childHandler(new ChildChannelHandler());
-            System.out.println("Server started and listening on port "+Config.getPort());
             // 绑定端口，同步等待成功
             ChannelFuture f = b.bind(Config.getPort()).sync();
-
+            logger.info("Server started and listening on port "+Config.getPort());
             // 等待服务端监听端口关闭
             f.channel().closeFuture().sync();
         } finally {
@@ -127,5 +95,6 @@ public class Bay {
     public static void options(final String path, final Action action){
         getInstance().options(path,action);
     }
+    // TODO: 2016/10/16 any
 
 }

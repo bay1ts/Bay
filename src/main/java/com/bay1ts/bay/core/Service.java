@@ -24,7 +24,6 @@ public class Service {
         staticMatcher=new StaticMatcher();
     }
     public void staticResources(String res){
-        // TODO: 2016/10/13 处理静态资源啊
         staticMatcher.path(res);
     }
 

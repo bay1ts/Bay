@@ -9,6 +9,5 @@ import io.netty.handler.codec.http.FullHttpResponse;
  * Created by chenu on 2016/9/3.
  */
 public interface Action {
-//    public FullHttpResponse handle(FullHttpRequest request, FullHttpResponse response);
-    public Object handle(Request request,Response response) throws Exception;
+    Object handle(Request request,Response response) throws Exception;
 }

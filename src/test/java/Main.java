@@ -1,6 +1,7 @@
 import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
+import com.sun.media.sound.SoftTuning;
 
 import java.util.function.BiConsumer;
 
@@ -55,6 +56,42 @@ public class Main {
             pojoTest.setAge(23);
             pojoTest.setName("bay");
             return pojoTest;
+        });
+        get("/test3",(req,resp)->{
+            req.cookies().forEach(new BiConsumer<String, String>() {
+                @Override
+                public void accept(String s, String s2) {
+                    System.out.println(s+"   "+s2);
+                }
+            });
+            System.out.println("-------------------");
+            resp.cookie("ni","hao",3600);
+            return "cookie test" ;
+        });
+
+        get("/hehe/test4",(req,resp)->{
+            System.out.println("------------------");
+            System.out.println(req.userAgent());
+            System.out.println(req.uri());
+            System.out.println(req.url());
+            System.out.println(req.pathInfo());
+            System.out.println(req.attributes());
+            System.out.println(req.body());
+            System.out.println(req.bodyAsBytes());
+            System.out.println(req.contentLength());
+            System.out.println(req.contextPath());
+            System.out.println(req.session());
+            System.out.println(req.servletPath());
+            System.out.println(req.scheme());
+            System.out.println(req.raw());
+            System.out.println(req.contentType());
+            System.out.println(req.headers());
+            System.out.println(req.host());
+            System.out.println(req.ip());
+            System.out.println(req.protocol());
+            System.out.println(req.isSecure());
+            System.out.println(req.queryString());
+            return "req test";
         });
 
         listenAndStart();

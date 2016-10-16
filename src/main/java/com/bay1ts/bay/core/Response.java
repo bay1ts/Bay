@@ -248,7 +248,7 @@ public class Response {
         cookie.setMaxAge(maxAge);
         cookie.setSecure(secured);
         cookie.setHttpOnly(httpOnly);
-        response.headers().set(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookie));
+        response.headers().set(HttpHeaderNames.COOKIE, ServerCookieEncoder.STRICT.encode(cookie));
     }
 
     /**

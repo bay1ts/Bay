@@ -11,7 +11,6 @@ public class Session {
 
     private final Request request;
     private final HttpSession session;
-    // TODO: 2016/10/13 此todo无关位置  只是一个备忘.注意一下 servletcontext这个类
     /**
      * Creates a session with the <code>HttpSession</code>.
      *

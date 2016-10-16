@@ -57,6 +57,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             AfterFilters.execute(context);
         } catch (Exception e) {
             logger.error("something wrong on beforeFilters/doRoute/afterFilters execute");
+            // TODO: 2016/10/16 500
         }
 
         /**

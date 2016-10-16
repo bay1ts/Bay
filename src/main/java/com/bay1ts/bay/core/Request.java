@@ -22,7 +22,10 @@ import com.bay1ts.bay.utils.IOUtils;
 import com.bay1ts.bay.utils.SparkUtils;
 import com.bay1ts.bay.utils.StringUtils;
 import com.bay1ts.bay.utils.Utils;
+import com.sun.xml.internal.bind.v2.TODO;
 import io.netty.buffer.ByteBuf;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.QueryStringDecoder;
@@ -169,11 +172,17 @@ public class Request {
      * @return the scheme
      */
     public String scheme() {
-//        return fullHttpRequest.getScheme();
+        System.out.println("---------------=========");
+//        fullHttpRequest.headers(HttpHeaderNames.)
         return isSecure()?"https":"http";
     }
 
     public boolean isSecure(){
+        // TODO: 2016/10/16 bug found
+        Channel channel=ChannelThreadLocal.get();
+        //上一行返回的是空..为什么呢
+        ChannelPipeline channelPipeline=channel.pipeline();
+        channelPipeline.get(SslHandler.class);
         return ChannelThreadLocal.get().pipeline().get(SslHandler.class)!=null;
     }
 
@@ -217,8 +226,7 @@ public class Request {
      * line 247
      */
     public String servletPath() {
-        // TODO: 2016/10/13 测试
-        //// TODO: 2016/10/14 bug found
+        // TODO: 2016/10/16 bug found
         return this.pathInfo();
 //        return fullHttpRequest.getServletPath();
     }

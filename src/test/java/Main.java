@@ -48,7 +48,8 @@ public class Main {
             });
             return sb.toString();
         });
-        get("/test3", (req, resp) -> {
+        get("/", (req, resp) -> {
+            System.out.println("-------------------");
             POJOTest pojoTest = new POJOTest();
             pojoTest.setId(3);
             pojoTest.setAge(23);

@@ -10,13 +10,16 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 /**
  * Created by chenu on 2016/8/15.
  */
 public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-//    private Routes routeMatcher=getInstance().getRouterMatcher()
+    private Logger logger= LoggerFactory.getLogger(MainHandler.class);
     private Routes routeMatcher= Service.getRouterMatcher();
     private StaticMatcher staticMatcher=Service.staticMatcher();
 
@@ -53,7 +56,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             DoRoute.execute(context);
             AfterFilters.execute(context);
         } catch (Exception e) {
-            // TODO: 2016/10/12 log and do something
+            logger.error("something wrong on beforeFilters/doRoute/afterFilters execute");
         }
 
         /**
@@ -71,8 +74,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 //        }
 
         if (body.notSet() ) {
-//            LOG.info("The requested route [" + uri + "] has not been mapped in Spark");
-            // TODO: 2016/10/15 log 404
+            logger.info("The requested route [" + uri + "] has not been mapped");
             fullHttpResponse.setStatus(HttpResponseStatus.NOT_FOUND);
             body.set(String.format("<html><body><h2>404 Not found</h2></body></html>"));
         }
@@ -84,14 +86,11 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 finalResponse = body.serializeTo(fullHttpResponse, fullHttpRequest);
             } catch (IOException e) {
                 e.printStackTrace();
-                // TODO: 2016/10/13 log spark写的是向上级抛出了
+                logger.error("can't create response content!!!");
             }
-            // TOD: 2016/10/15 http1.1 默认是keep-alive的  所以下面五行可以不写  目测是
-            //为了兼容http1.0 .所以还是写上吧
             boolean keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
             if (keepAlive) {
                 finalResponse.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
-//                finalResponse.headers().set(HttpHeaderNames.CONTENT_TYPE, HttpHeaderValues.TEXT_PLAIN);
             }
 
             finalResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, finalResponse.content().readableBytes());
@@ -101,7 +100,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 future.addListener(ChannelFutureListener.CLOSE);
             }
         } else {
-            // TODO: 2016/10/13 给response写个error吧
+            logger.error("null response content");
         }
     }
 

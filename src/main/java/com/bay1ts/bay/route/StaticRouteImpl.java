@@ -2,6 +2,8 @@ package com.bay1ts.bay.route;
 
 import com.bay1ts.bay.core.Request;
 import io.netty.handler.codec.http.FullHttpRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import java.util.List;
  * Created by chenu on 2016/10/14.
  */
 public class StaticRouteImpl {
+    private Logger logger= LoggerFactory.getLogger(StaticRouteImpl.class);
     private String path;
     private List<String> welcomeFiles;
     protected static final String SLASH = "/";
@@ -33,11 +36,13 @@ public class StaticRouteImpl {
 
             if (servletPath == null && pathInfo == null) {
                 // TODO: 2016/10/14 下面两个方法的值不确定
+                logger.warn("此方法有不确定行为,未经过测试");
                 servletPath = request.servletPath();
                 pathInfo = request.pathInfo();
             }
         } else {
             // TODO: 2016/10/14 方法需要测试
+            logger.warn("此方法有不确定行为,未经过测试");
             servletPath = "";
             pathInfo = request.pathInfo();//文件名
         }

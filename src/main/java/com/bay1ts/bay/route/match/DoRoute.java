@@ -4,8 +4,11 @@ import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.HttpMethod;
 import com.google.gson.Gson;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class DoRoute {
+    private static Logger logger= LoggerFactory.getLogger(DoRoute.class);
     private static Gson gson=new Gson();
     public static void execute(RouteContext context) throws Exception {
         Object content = context.body().get();
@@ -25,17 +28,6 @@ public final class DoRoute {
         Object result = null;
         if (action != null) {
 
-            //哎是我大意了.从此多事了
-            //哎是我大意了.从此多事了
-            //哎是我大意了.从此多事了
-//            package spark.http.matching.Routes.java line 56
-            //request.changeMatch(match)
-            //按照原来那个是 要写下面这行(context里面现在没有getRequest方法) 虽然说我没看懂
-            //context.getRequest().changeMatch(match)
-
-            //2016年10月13日17:02:53
-            //存疑 package spark.http.matching.Routes.java line 61
-            //context的requestwarpper明明没什么东西啊,response没啥东西很正常.
             context.withRequest(new Request(match,context.httpRequest()));
             result =action.handle(context.request(),context.response());
             if (result != null) {
@@ -48,8 +40,7 @@ public final class DoRoute {
                         context.response().body(contentStr);
                     }
                 }else if (content instanceof Object){
-
-//                    context.response().body(gson.toJson(content));
+                    logger.debug("action returns an object,jsoning");
                     content=gson.toJson(content);
                     context.response().body(gson.toJson(content));
                 }

@@ -4,6 +4,8 @@ import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.HttpMethod;
 import com.bay1ts.bay.route.match.RouteMatch;
 import com.bay1ts.bay.utils.MimeParse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -11,7 +13,7 @@ import java.util.*;
  * Created by chenu on 2016/10/12.
  */
 public class Routes {
-
+    private Logger logger= LoggerFactory.getLogger(Routes.class);
     private List<RouteEntry> routes;
     public static Routes create(){
         return new Routes();
@@ -35,7 +37,7 @@ public class Routes {
         try {
             method=HttpMethod.valueOf(httpMethod);
         }catch (IllegalArgumentException e){
-            // TODO: 2016/10/12 记录日志
+            logger.error("Illegal method");
             return;
         }
         addRoute(method,path,route.getAcceptType(),route.getAction());
@@ -54,11 +56,11 @@ public class Routes {
         entry.path=path;
         entry.acceptedType=acceptType;
         entry.action=action;
-        // TODO: 2016/10/12 记录日志啊,这里是真要加那啥了
+        logger.info("adding route"+method.name()+" "+path+" "+acceptType);
         routes.add(entry);
         //下面这个刚开始没看懂
         //是个 showing all the mapped routes
-        // TODO: 2016/10/12  package spark.route.Routes.java line 190
+        // TODO: 2016/10/12  package spark.route.Routes.java line 190 本程序没有支持 route overview
     }
 
 

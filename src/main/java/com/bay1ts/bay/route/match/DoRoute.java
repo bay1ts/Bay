@@ -48,13 +48,12 @@ public final class DoRoute {
                         context.response().body(contentStr);
                     }
                 }else if (content instanceof Object){
-                    //bug
+
 //                    context.response().body(gson.toJson(content));
                     content=gson.toJson(content);
                     context.response().body(gson.toJson(content));
                 }
 
-                //要是洋气点.就价格判断 ,如果是...(草,没法判断是哪个类.这块是个坑)  就在这里json一下成字符串
             }
         }
         context.body().set(content);

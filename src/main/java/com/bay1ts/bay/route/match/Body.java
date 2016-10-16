@@ -54,7 +54,6 @@ public final class Body {
         // serialize the body to output stream
 
 //        byte[] bytes=(byte[])content;
-        // TODO: 2016/10/13 need help need test
         httpResponse=httpResponse.replace(Unpooled.copiedBuffer(((String)content).getBytes()));
 
 //        serializerChain.process(responseStream, content);

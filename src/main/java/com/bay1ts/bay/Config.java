@@ -72,7 +72,7 @@ public class Config {
 
     }
 
-    public static boolean isEnableSessionStore() {
+    public static boolean isEnableRedisSessionStore() {
         try {
             updateConfig();
         } catch (IOException e) {

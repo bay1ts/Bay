@@ -78,6 +78,7 @@ public class Main {
             System.out.println(req.attributes());
             System.out.println(req.body());
             System.out.println(req.bodyAsBytes());
+            //bug found
             System.out.println(req.contentLength());
             System.out.println(req.contextPath());
             System.out.println(req.session());

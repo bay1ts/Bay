@@ -10,18 +10,26 @@ import com.bay1ts.bay.route.Routes;
 import com.bay1ts.bay.route.StaticMatcher;
 import com.bay1ts.bay.route.match.*;
 import com.bay1ts.bay.utils.Utils;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.*;
+import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import io.netty.handler.codec.http.cookie.Cookie;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static io.netty.handler.codec.http.HttpHeaders.Names.*;
+import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
+import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
  * Created by chenu on 2016/8/15.
@@ -31,6 +39,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private Routes routeMatcher= Service.getRouterMatcher();
     private StaticMatcher staticMatcher=Service.staticMatcher();
     private List<Interceptor> interceptors;
+    private static final String SERVER_NAME="Bay1ts'Server YEE!!!";
 
     public MainHandler addInterceptor(Interceptor interceptor){
         if (interceptors==null){
@@ -60,26 +69,14 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         if (staticMatcher.consume(ctx,fullHttpRequest,fullHttpResponse)){
             return;
         }
-        //handle dynamic request
-        //from here
-        ChannelThreadLocal.set(ctx.channel());
-        HttpSessionThreadLocal.unset();
-        Collection<Cookie> cookies = Utils.getCookies(
-                HttpSessionImpl.SESSION_ID_KEY, fullHttpRequest);
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                String jsessionId = cookie.value();
-                HttpSessionImpl s = HttpSessionThreadLocal.getSessionStore()
-                        .findSession(jsessionId);
-                if (s != null) {
-                    HttpSessionThreadLocal.set(s);
-                    break;
-                }
-            }
+
+        for (Interceptor interceptor:interceptors){
+            interceptor.onRequestReceived(ctx,fullHttpRequest);
         }
 
-        //to here needed to refactor
         //refer to servletbridgehandler.java line283
+
+        //handle dynamic request
         HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name().toLowerCase());
         String uri = fullHttpRequest.uri();
         String acceptType = fullHttpRequest.headers().get(HttpHeaderNames.ACCEPT);
@@ -140,19 +137,56 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             }
 
             finalResponse.headers().set(HttpHeaderNames.CONTENT_LENGTH, finalResponse.content().readableBytes());
-            finalResponse.headers().set(HttpHeaderNames.SERVER,"Bay1ts'Server YEE!!!");
+            finalResponse.headers().set(HttpHeaderNames.SERVER,SERVER_NAME);
             ChannelFuture future = ctx.channel().writeAndFlush(finalResponse);
+            for (Interceptor interceptor:interceptors){
+                interceptor.onRequestSuccessed(ctx,fullHttpRequest,fullHttpResponse);
+            }
             if (!keepAlive) {
                 future.addListener(ChannelFutureListener.CLOSE);
             }
         } else {
             logger.error("null response content");
+            ctx.fireChannelRead(fullHttpRequest);
         }
     }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        ChannelThreadLocal.unset();
-        super.exceptionCaught(ctx, cause);
+
+        Channel ch = ctx.channel();
+        if (cause instanceof IllegalArgumentException) {
+            ch.close();
+        } else {
+            if (cause instanceof TooLongFrameException) {
+                sendError(ctx, BAD_REQUEST);
+                return;
+            }
+
+            if (ch.isActive()) {
+                sendError(ctx, INTERNAL_SERVER_ERROR);
+            }
+
+        }
+    }
+    private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
+        String text = "Failure: " + status.toString() + "\r\n";
+        ByteBuf byteBuf = Unpooled.buffer();
+        byte[] bytes = null;
+        try {
+            bytes = text.getBytes("utf-8");
+            byteBuf.writeBytes(bytes);
+        } catch (UnsupportedEncodingException e) {
+        }
+
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, byteBuf);
+        HttpHeaders headers = response.headers();
+
+        headers.add(CONTENT_TYPE, "text/plain;charset=utf-8");
+        headers.add(CACHE_CONTROL, "no-cache");
+        headers.add(PRAGMA, "No-cache");
+        headers.add(SERVER, SERVER_NAME);
+        headers.add(CONTENT_LENGTH, byteBuf.readableBytes());
+        ctx.writeAndFlush(response).addListener(ChannelFutureListener.CLOSE);
     }
 }

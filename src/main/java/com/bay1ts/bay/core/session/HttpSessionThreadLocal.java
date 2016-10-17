@@ -34,10 +34,10 @@ public class HttpSessionThreadLocal {
 
     public static HttpSessionImpl getOrCreate() {
         if (HttpSessionThreadLocal.get() == null) {
-            if (sessionStore == null) {
-                // TODO: 2016/10/16 可配置的sessionstore
-                sessionStore = new MemoryBasedSessionStore();
-            }
+            //因为在bay文件中 会对sessionthreadlocal初始化,给sessionstore赋值(根据配置),所以下面不需要了
+//            if (sessionStore == null) {
+//                sessionStore = new MemoryBasedSessionStore();
+//            }
 
             HttpSessionImpl newSession = sessionStore.createSession();
             newSession.setMaxInactiveInterval(Config.getSessionExpireSecond());

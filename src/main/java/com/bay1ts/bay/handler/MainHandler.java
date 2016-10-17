@@ -26,9 +26,7 @@ import java.util.List;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
 import static io.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-import static io.netty.handler.codec.http.HttpResponseStatus.BAD_REQUEST;
-import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERROR;
-import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 /**
@@ -147,7 +145,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             }
         } else {
             logger.error("null response content");
-            ctx.fireChannelRead(fullHttpRequest);
+            ctx.writeAndFlush(new DefaultFullHttpResponse(HTTP_1_1,NO_CONTENT));
         }
     }
 

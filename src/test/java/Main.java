@@ -78,6 +78,7 @@ public class Main {
             System.out.println(req.attributes());
             System.out.println(req.body());
             System.out.println(req.bodyAsBytes());
+            System.out.println("=========================");
             //bug found
             System.out.println(req.contentLength());
             System.out.println(req.contextPath());
@@ -85,10 +86,15 @@ public class Main {
             System.out.println(req.servletPath());
             System.out.println(req.scheme());
             System.out.println(req.raw());
+            //maybe bug
             System.out.println(req.contentType());
+            System.out.println("++++++++++++++++++");
             System.out.println(req.headers());
+            System.out.println("++++++++++++++++++");
             System.out.println(req.host());
+            //bug
             System.out.println(req.ip());
+            System.out.println("=-=-=-=-=-=-=-=-=");
             System.out.println(req.protocol());
             System.out.println(req.isSecure());
             System.out.println(req.queryString());

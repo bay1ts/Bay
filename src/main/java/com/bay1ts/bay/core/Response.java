@@ -129,6 +129,7 @@ public class Response {
 //        }
 //        try {
             response.headers().set("LOCATION",location);
+        response.setStatus(HttpResponseStatus.MOVED_PERMANENTLY);
             //// TODO: 2016/10/12 存疑
 //        } catch (IOException ioException) {
 //            LOG.warn("Redirect failure", ioException);

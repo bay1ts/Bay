@@ -172,8 +172,6 @@ public class Request {
      * @return the scheme
      */
     public String scheme() {
-        System.out.println("---------------=========");
-//        fullHttpRequest.headers(HttpHeaderNames.)
         return isSecure()?"https":"http";
     }
 
@@ -257,7 +255,9 @@ public class Request {
     /**
      * @return the content type of the body
      */
+    // TODO: 2016/10/17 http1.1 中 req头标准中没有contenttype
     public String contentType() {
+
         return fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE);
     }
 

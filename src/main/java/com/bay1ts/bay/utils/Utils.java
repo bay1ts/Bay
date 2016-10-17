@@ -1,10 +1,10 @@
 package com.bay1ts.bay.utils;
 
-import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
-
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -90,14 +90,15 @@ public final class Utils {
 
     }
 
-    public static final Collection<Cookie> getCookies(String name,
-                                                      HttpRequest request) {
+    public static final Collection<io.netty.handler.codec.http.cookie.Cookie> getCookies(String name,
+                                                                                         HttpRequest request) {
         String cookieString = request.headers().get(COOKIE);
         if (cookieString != null) {
             List<Cookie> foundCookie = new ArrayList<Cookie>();
-            Set<Cookie> cookies = CookieDecoder.decode(cookieString);
+//            Set<Cookie> cookies = CookieDecoder.decode(cookieString);
+            Set<Cookie> cookies= ServerCookieDecoder.STRICT.decode(cookieString);
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(name))
+                if (cookie.name().equals(name))
                     foundCookie.add(cookie);
             }
 
@@ -111,9 +112,9 @@ public final class Utils {
         String cookieString = response.headers().get(COOKIE);
         if (cookieString != null) {
             List<Cookie> foundCookie = new ArrayList<Cookie>();
-            Set<Cookie> cookies = CookieDecoder.decode(cookieString);
+            Set<Cookie> cookies = ServerCookieDecoder.STRICT.decode(cookieString);
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(name))
+                if (cookie.name().equals(name))
                     foundCookie.add(cookie);
             }
 

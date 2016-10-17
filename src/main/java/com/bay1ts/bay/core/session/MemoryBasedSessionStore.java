@@ -10,14 +10,14 @@ public class MemoryBasedSessionStore implements
 //    private static final Logger log = LoggerFactory
 //            .getLogger(MemoryBasedSessionStore.class);
 
-    public static ConcurrentHashMap<String, ServletSessionImpl> sessions = new ConcurrentHashMap<String, ServletSessionImpl>();
+    public static ConcurrentHashMap<String, HttpSessionImpl> sessions = new ConcurrentHashMap<String, HttpSessionImpl>();
 
     @Override
-    public ServletSessionImpl createSession() {
+    public HttpSessionImpl createSession() {
         String sessionId = this.generateNewSessionId();
 //        log.debug("Creating new session with id {}", sessionId);
 
-        ServletSessionImpl session = new ServletSessionImpl(sessionId);
+        HttpSessionImpl session = new HttpSessionImpl(sessionId);
         sessions.put(sessionId, session);
         return session;
     }
@@ -29,7 +29,7 @@ public class MemoryBasedSessionStore implements
     }
 
     @Override
-    public ServletSessionImpl findSession(String sessionId) {
+    public HttpSessionImpl findSession(String sessionId) {
         if (sessionId == null)
             return null;
 
@@ -42,8 +42,8 @@ public class MemoryBasedSessionStore implements
 
     @Override
     public void destroyInactiveSessions() {
-        for (Map.Entry<String, ServletSessionImpl> entry : sessions.entrySet()) {
-            ServletSessionImpl session = entry.getValue();
+        for (Map.Entry<String, HttpSessionImpl> entry : sessions.entrySet()) {
+            HttpSessionImpl session = entry.getValue();
             if (session.getMaxInactiveInterval() < 0)
                 continue;
 

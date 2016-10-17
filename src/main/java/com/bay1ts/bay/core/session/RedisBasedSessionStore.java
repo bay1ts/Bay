@@ -5,12 +5,12 @@ package com.bay1ts.bay.core.session;
  */
 public class RedisBasedSessionStore implements  BaseSessionStore {
     @Override
-    public ServletSessionImpl findSession(String sessionId) {
+    public HttpSessionImpl findSession(String sessionId) {
         return null;
     }
 
     @Override
-    public ServletSessionImpl createSession() {
+    public HttpSessionImpl createSession() {
         return null;
     }
 

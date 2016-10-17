@@ -41,7 +41,7 @@ public class Bay {
                                     addLast("deflater",new HttpContentCompressor(1)).
                                     addLast("streamer",new ChunkedWriteHandler()).
 
-                                    addLast("mainHandler",new MainHandler());
+                                    addLast("mainHandler",getMainHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG,1024).childOption(ChannelOption.SO_KEEPALIVE,true);
             // 绑定端口，同步等待成功
@@ -54,6 +54,12 @@ public class Bay {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    private static MainHandler getMainHandler(){
+        MainHandler handler=new MainHandler();
+        handler.addInterceptor()
+        return handler;
     }
     private static Service getInstance(){
         return SingletonRouter.INSTANCE;

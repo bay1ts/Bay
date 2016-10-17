@@ -1,12 +1,10 @@
 package com.bay1ts.bay.core.session;
 
-import com.bay1ts.bay.core.session.ServletSessionImpl;
-
 public interface BaseSessionStore {
 
-    ServletSessionImpl findSession(String sessionId);
+    HttpSessionImpl findSession(String sessionId);
 
-    ServletSessionImpl createSession();
+    HttpSessionImpl createSession();
 
     void destroySession(String sessionId);
 

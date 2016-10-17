@@ -11,7 +11,7 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class ServletSessionImpl implements HttpSession {
+public class HttpSessionImpl implements HttpSession {
 
     public static final String SESSION_ID_KEY = "JSESSIONID";
 
@@ -25,7 +25,7 @@ public class ServletSessionImpl implements HttpSession {
 
     private Map<String, Object> attributes;
 
-    public ServletSessionImpl(String id) {
+    public HttpSessionImpl(String id) {
         this.id = id;
         this.creationTime = System.currentTimeMillis();
         this.lastAccessedTime = this.creationTime;

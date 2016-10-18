@@ -1,6 +1,8 @@
 package com.bay1ts.bay.core.session;
 
 import com.bay1ts.bay.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -11,10 +13,12 @@ import java.util.UUID;
  * Created by chenu on 2016/10/15.
  */
 public class RedisBasedSessionStore implements BaseSessionStore {
+    private Logger logger= LoggerFactory.getLogger(RedisBasedSessionStore.class);
     private JedisConnectionFactory factory;
 
     private RedisTemplate<String, HttpSessionImpl> redisTemplate;
-    RedisBasedSessionStore(){
+    public RedisBasedSessionStore(){
+        logger.info("Init Redis based session store");
         this.factory=new JedisConnectionFactory();
         this.redisTemplate=new RedisTemplate<>();
         factory.setDatabase(0);

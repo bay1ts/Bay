@@ -72,11 +72,31 @@ public class Bay {
         handler
                 .addInterceptor(new ChannelInterceptor())
                 .addInterceptor(new SessionInterceptor(getHttpSessionStore()));
+
+
         return handler;
     }
 
     private static BaseSessionStore getHttpSessionStore() {
-        return Config.isEnableRedisSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
+        BaseSessionStore sessionStore=Config.isEnableRedisSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
+        // TODO: session过期处理
+        new Thread(new Runnable() {
+            boolean watchingSession=false;
+            @Override
+            public void run() {
+                while (!watchingSession){
+                    try {
+                        sessionStore.destroyInactiveSessions();
+                        Thread.sleep(5000);
+                    }catch (InterruptedException e) {
+                        e.printStackTrace();
+                        logger.error("something wrong with  destroy inactive session");
+                        continue;
+                    }
+                }
+            }
+        }).start();
+        return sessionStore;
     }
 
     private static Service getInstance() {

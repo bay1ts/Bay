@@ -4,6 +4,7 @@ import com.bay1ts.bay.core.Response;
 import com.sun.media.sound.SoftTuning;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import static com.bay1ts.bay.core.Bay.*;
 
@@ -54,7 +55,6 @@ public class Main {
             POJOTest pojoTest = new POJOTest();
             pojoTest.setId(3);
             pojoTest.setAge(23);
-            pojoTest.setName("bay");
             return pojoTest;
         });
         get("/test3",(req,resp)->{
@@ -76,6 +76,8 @@ public class Main {
             System.out.println(req.url());
             System.out.println(req.pathInfo());
             System.out.println(req.attributes());
+            // TODO: 2016/10/18 bug found
+            System.out.println((String) req.attribute("hehe"));
             System.out.println(req.body());
             System.out.println(req.bodyAsBytes());
             System.out.println("=========================");
@@ -85,11 +87,16 @@ public class Main {
             System.out.println(req.session());
             System.out.println(req.servletPath());
             System.out.println(req.scheme());
+            System.out.println("********************");
             System.out.println(req.raw());
             //maybe bug
-            System.out.println(req.contentType());
             System.out.println("++++++++++++++++++");
-            System.out.println(req.headers());
+            req.headers().forEach(new Consumer<String>() {
+                @Override
+                public void accept(String s) {
+                    System.out.println(s);
+                }
+            });
             System.out.println("++++++++++++++++++");
             System.out.println(req.host());
             //bug
@@ -98,6 +105,8 @@ public class Main {
             System.out.println(req.protocol());
             System.out.println(req.isSecure());
             System.out.println(req.queryString());
+            System.out.println(req.queryParams());
+            System.out.println(req.queryParams("hehe"));
             return "req test";
         });
 

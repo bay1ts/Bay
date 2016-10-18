@@ -39,7 +39,6 @@ public class Response {
      */
 
     private FullHttpResponse response;
-//    private HttpServletResponse response;
     private String body;
     private boolean isRedirected=false;
 

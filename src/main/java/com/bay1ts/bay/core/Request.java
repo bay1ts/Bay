@@ -249,17 +249,10 @@ public class Request {
      * @return the URL string
      */
     public String url() {
+        // TODO: 2016/10/18 same as uri
         return fullHttpRequest.uri();
     }
 
-    /**
-     * @return the content type of the body
-     */
-    // TODO: 2016/10/17 http1.1 中 req头标准中没有contenttype
-    public String contentType() {
-
-        return fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE);
-    }
 
     /**
      * @return the client's IP address
@@ -277,7 +270,6 @@ public class Request {
     public String body() {
 
         if (body == null) {
-
             body = StringUtils.toString(bodyAsBytes(), Utils.getCharsetFromContentType(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_TYPE)));
         }
 
@@ -308,7 +300,11 @@ public class Request {
      * @return the length of request.body
      */
     public int contentLength() {
-        return Integer.valueOf(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH));
+        if (fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH)!=null&&!"".equals(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH))) {
+            return Integer.valueOf(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH));
+        }else{
+            return -1;
+        }
     }
 
     /**
@@ -370,6 +366,7 @@ public class Request {
      * 参考
      * https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
      */
+    // TODO: 2016/10/18  bug found
     public Set<String> headers() {
         if (headers == null) {
             headers=fullHttpRequest.headers().names();

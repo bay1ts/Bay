@@ -19,6 +19,8 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +42,16 @@ public class Bay {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().
-                                    addLast(new HttpServerCodec()).
+//                                    addLast(new ReadTimeoutHandler(5)).
+                                    addLast("req_resp",new HttpServerCodec()).
                                     addLast("aggregator", new HttpObjectAggregator(65536)).
                                     //参看https://imququ.com/post/transfer-encoding-header-in-http.html
-                                            addLast("deflater", new HttpContentCompressor(1)).
+                                    addLast("deflater", new HttpContentCompressor(9)).
+                                    //大文件支持
                                     addLast("streamer", new ChunkedWriteHandler()).
-
+                                    //下面这个可以放到 前面 当 发生idle事件的时候,就会抛出异常,后面要有个 处理这种异常的handler,用来心跳.
+                                            //参看 权威指南 私有协议的实现
+                                    addLast("idlehandler",new IdleStateHandler(10,30,0)).
                                     addLast("mainHandler", getMainHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG, 1024).childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -70,7 +76,7 @@ public class Bay {
     }
 
     private static BaseSessionStore getHttpSessionStore() {
-        return Config.isEnableRedisSessionStore()?new RedisBasedSessionStore():new MemoryBasedSessionStore();
+        return Config.isEnableRedisSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
     }
 
     private static Service getInstance() {

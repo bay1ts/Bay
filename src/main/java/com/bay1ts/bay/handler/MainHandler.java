@@ -1,8 +1,6 @@
 package com.bay1ts.bay.handler;
-import com.bay1ts.bay.core.ChannelThreadLocal;
-import com.bay1ts.bay.core.Response;
+import com.bay1ts.bay.core.*;
 import com.bay1ts.bay.core.HttpMethod;
-import com.bay1ts.bay.core.Service;
 import com.bay1ts.bay.core.session.HttpSessionImpl;
 import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.bay1ts.bay.handler.intercepters.Interceptor;
@@ -76,12 +74,13 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
         //handle dynamic request
         HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name().toLowerCase());
-        String uri = fullHttpRequest.uri();
         String acceptType = fullHttpRequest.headers().get(HttpHeaderNames.ACCEPT);
         Response response=new Response(fullHttpResponse);
         // TODO: 2016/10/12 routecontext package spark.http.matching.MatcherFilter line 112
         RouteContext context = RouteContext.create();
         Body body = Body.create();
+        Request request=new Request(null,fullHttpRequest);
+        String uri =request.pathInfo();
 //        routeMatcher=new Routes();
         context
                 .withMatcher(routeMatcher)
@@ -90,13 +89,15 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
                 .withAcceptType(acceptType)
                 .withBody(body)
                 .withResponse(response)
-                .withHttpMethod(httpMethod);
+                .withHttpMethod(httpMethod)
+                .withRequest(request);
         try {
             BeforeFilters.execute(context);
             DoRoute.execute(context);
             AfterFilters.execute(context);
         } catch (Exception e) {
             logger.error("something wrong on beforeFilters/doRoute/afterFilters execute");
+            sendError(ctx,HttpResponseStatus.INTERNAL_SERVER_ERROR);
             // TODO: 2016/10/16 500
         }
 
@@ -128,6 +129,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             } catch (IOException e) {
                 e.printStackTrace();
                 logger.error("can't create response content!!!");
+                sendError(ctx,INTERNAL_SERVER_ERROR);
             }
             boolean keepAlive = HttpUtil.isKeepAlive(fullHttpRequest);
             if (keepAlive) {
@@ -145,7 +147,8 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             }
         } else {
             logger.error("null response content");
-            ctx.writeAndFlush(new DefaultFullHttpResponse(HTTP_1_1,NO_CONTENT));
+            sendError(ctx,NO_CONTENT);
+//            ctx.writeAndFlush(new DefaultFullHttpResponse(HTTP_1_1,NO_CONTENT));
         }
     }
 
@@ -177,7 +180,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         } catch (UnsupportedEncodingException e) {
         }
 
-        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, OK, byteBuf);
+        FullHttpResponse response = new DefaultFullHttpResponse(HTTP_1_1, status, byteBuf);
         HttpHeaders headers = response.headers();
 
         headers.add(CONTENT_TYPE, "text/plain;charset=utf-8");

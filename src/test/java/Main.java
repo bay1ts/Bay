@@ -126,11 +126,24 @@ public class Main {
             return "req test";
         });
 
+        newNameSpace("/hehe",
+                NSGet("nihao", (req, resp) -> {
+                    return "aa";
+                }),
+                NSPost("haha",(req,resp)->{
+                    return "bb";
+                }),
+                newNameSpace("api",
+                        NSGet("/root",(req,resp)->{
+                            return "haha";
+                        })
+                )
+        );
+
         listenAndStart();
 
 
     }
-
 
 
 }

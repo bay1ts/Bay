@@ -7,6 +7,9 @@ import com.bay1ts.bay.core.session.RedisBasedSessionStore;
 import com.bay1ts.bay.handler.MainHandler;
 import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
 import com.bay1ts.bay.handler.intercepters.SessionInterceptor;
+import com.bay1ts.bay.route.RouteEntry;
+import com.bay1ts.bay.route.TreeNode;
+import com.sun.xml.internal.bind.v2.TODO;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -20,9 +23,10 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 /**
  * Created by chenu on 2016/10/12.
@@ -43,15 +47,15 @@ public class Bay {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().
 //                                    addLast(new ReadTimeoutHandler(5)).
-                                    addLast("req_resp",new HttpServerCodec()).
+        addLast("req_resp", new HttpServerCodec()).
                                     addLast("aggregator", new HttpObjectAggregator(65536)).
                                     //参看https://imququ.com/post/transfer-encoding-header-in-http.html
-                                    addLast("deflater", new HttpContentCompressor(9)).
+                                            addLast("deflater", new HttpContentCompressor(9)).
                                     //大文件支持
-                                    addLast("streamer", new ChunkedWriteHandler()).
+                                            addLast("streamer", new ChunkedWriteHandler()).
                                     //下面这个可以放到 前面 当 发生idle事件的时候,就会抛出异常,后面要有个 处理这种异常的handler,用来心跳.
-                                            //参看 权威指南 私有协议的实现
-                                    addLast("idlehandler",new IdleStateHandler(10,30,0)).
+                                    //参看 权威指南 私有协议的实现
+                                            addLast("idlehandler", new IdleStateHandler(10, 30, 0)).
                                     addLast("mainHandler", getMainHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG, 1024).childOption(ChannelOption.SO_KEEPALIVE, true);
@@ -78,17 +82,18 @@ public class Bay {
     }
 
     private static BaseSessionStore getHttpSessionStore() {
-        BaseSessionStore sessionStore=Config.isEnableRedisSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
+        BaseSessionStore sessionStore = Config.isEnableRedisSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
         // TODO: session过期处理
         new Thread(new Runnable() {
-            boolean watchingSession=false;
+            boolean watchingSession = false;
+
             @Override
             public void run() {
-                while (!watchingSession){
+                while (!watchingSession) {
                     try {
                         sessionStore.destroyInactiveSessions();
                         Thread.sleep(5000);
-                    }catch (InterruptedException e) {
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                         logger.error("something wrong with  destroy inactive session");
                         continue;
@@ -150,28 +155,58 @@ public class Bay {
     }
     // TODO: 2016/10/16 any
 
-    public static void nameSpace(String path,Action ... args){
+    public static RouteEntry NSGet(String path, Action action) {
+        return new RouteEntry(HttpMethod.get, path, null, action);
+    }
 
+    public static RouteEntry NSPost(String path, Action action) {
+        return new RouteEntry(HttpMethod.get, path, null, action);
+    }
+
+    // TODO: 2016/10/19  get post new namespace 返回都是个   node  在 newnamespace 的参数列表中是 要添加的 node 其中内容就是给 tree加node
+    public static NameSpace newNameSpace(String path, Object... routeEntries) {
+        //该在 全局范围内做一个 容器.树形的.来存储
+        for (Object o : routeEntries) {
+            if (o instanceof RouteEntry) {
+                RouteEntry routeEntry=(RouteEntry)o;
+                TreeNode treeNode = new TreeNode();
+                treeNode.setParent(tree);
+                treeNode.setPath(routeEntry.getPath());
+                treeNode.setAction(routeEntry.getAction());
+                treeNode.setChildrens(null);
+            } else if (o instanceof NameSpace) {
+                TreeNode treeNode=new TreeNode();
+                treeNode.setParent(tree);
+                tree.getChindrens().add(treeNode);
+            }
+        }
+        TreeNode tree = new TreeNode();
+        tree.setPath(path);
+        tree.setParent(null);
+        NameSpace nameSpace = new NameSpace();
+        return nameSpace;
     }
 
 
+    public static class LinkNameSpace {
+        public void doSomeThing(NameSpace nameSpace) {
 
+        }
 
+    }
 
+    public static class NameSpace {
+        String prefix;
+        ControllerRegister handlers;
+    }
 
+    public class ControllerRegister {
+        Map<String, TreeNode> routers;
 
+        public void Add(String pattern, Action action, HttpMethod method) {
 
-
-
-
-
-
-
-
-
-
-
-
+        }
+    }
 
 
 }

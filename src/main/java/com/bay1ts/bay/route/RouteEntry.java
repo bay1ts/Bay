@@ -10,14 +10,49 @@ import java.util.List;
 /**
  * Created by chenu on 2016/10/12.
  */
-class RouteEntry {
-
+public class RouteEntry {
     HttpMethod httpMethod;
     String path;
     String acceptedType;
     Action action;
 
-    RouteEntry() {
+    public HttpMethod getHttpMethod() {
+        return httpMethod;
+    }
+
+    public void setHttpMethod(HttpMethod httpMethod) {
+        this.httpMethod = httpMethod;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getAcceptedType() {
+        return acceptedType;
+    }
+
+    public void setAcceptedType(String acceptedType) {
+        this.acceptedType = acceptedType;
+    }
+
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
+
+    public RouteEntry(HttpMethod httpMethod, String path, String acceptedType, Action action) {
+        this.httpMethod = httpMethod;
+        this.path = path;
+        this.acceptedType = acceptedType;
+        this.action = action;
     }
 
     RouteEntry(RouteEntry entry) {

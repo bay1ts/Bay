@@ -1,7 +1,6 @@
 import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
-import com.sun.media.sound.SoftTuning;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -57,61 +56,81 @@ public class Main {
             pojoTest.setAge(23);
             return pojoTest;
         });
-        get("/test3",(req,resp)->{
+        get("/test3", (req, resp) -> {
             req.cookies().forEach(new BiConsumer<String, String>() {
                 @Override
                 public void accept(String s, String s2) {
-                    System.out.println(s+"   "+s2);
+                    System.out.println(s + "   " + s2);
                 }
             });
             System.out.println("-------------------");
-            resp.cookie("ni","hao",3600);
-            return "cookie test" ;
+            resp.cookie("ni", "hao", 3600);
+            return "cookie test";
         });
 
-        get("/hehe/test4",(req,resp)->{
-            System.out.println("------------------");
+        get("/hehe/test4", (req, resp) -> {
+            System.out.println("useragent");
             System.out.println(req.userAgent());
+            System.out.println("uri");
             System.out.println(req.uri());
+            System.out.println("url");
             System.out.println(req.url());
+            System.out.println("pathinfo");
             System.out.println(req.pathInfo());
+            System.out.println("attributes");
             System.out.println(req.attributes());
+            System.out.println("attribute('hehe')");
             // TODO: 2016/10/18 bug found
             System.out.println((String) req.attribute("hehe"));
+            System.out.println("body");
             System.out.println(req.body());
+            System.out.println("bodyas bytes");
             System.out.println(req.bodyAsBytes());
-            System.out.println("=========================");
+            System.out.println("contentlength");
             //bug found
             System.out.println(req.contentLength());
+            System.out.println("contextpath");
             System.out.println(req.contextPath());
+            System.out.println("session");
             System.out.println(req.session());
+            System.out.println("servletpath");
             System.out.println(req.servletPath());
+            System.out.println("scheme");
             System.out.println(req.scheme());
-            System.out.println("********************");
+            System.out.println("raw");
             System.out.println(req.raw());
             //maybe bug
-            System.out.println("++++++++++++++++++");
+            System.out.println("headers");
             req.headers().forEach(new Consumer<String>() {
                 @Override
                 public void accept(String s) {
                     System.out.println(s);
                 }
             });
-            System.out.println("++++++++++++++++++");
+            System.out.println("host");
             System.out.println(req.host());
             //bug
+            System.out.println("ip");
             System.out.println(req.ip());
-            System.out.println("=-=-=-=-=-=-=-=-=");
+            System.out.println("protocol");
             System.out.println(req.protocol());
+            System.out.println("issecure");
             System.out.println(req.isSecure());
+            System.out.println("querystring");
             System.out.println(req.queryString());
+            System.out.println("queryparams");
             System.out.println(req.queryParams());
-            System.out.println(req.queryParams("hehe"));
+            System.out.println("queryparams hehe");
+            // TODO: 2016/10/18 实现复杂路由和数据绑定 首要目标 spring mvc的 自动绑定成对象 感觉够呛..
+            System.out.println(req.queryParams("nihao"));
             return "req test";
         });
 
         listenAndStart();
+
+
     }
+
 
 
 }

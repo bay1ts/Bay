@@ -150,4 +150,28 @@ public class Bay {
     }
     // TODO: 2016/10/16 any
 
+    public static void nameSpace(String path,Action ... args){
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

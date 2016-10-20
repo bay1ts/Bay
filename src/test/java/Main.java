@@ -137,7 +137,11 @@ public class Main {
                         newNameSpace("/api",
                                 NSGet("/root",(req,resp)->{
                                     return "haha";
-                                })
+                                }),
+                                newNameSpace("/v2",
+                                        NSGet("/one",(req,resp)->{
+                                            return "aa";
+                                        }))
                         )
                 )
         );

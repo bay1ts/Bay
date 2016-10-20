@@ -7,6 +7,7 @@ import java.util.List;
 public class TreeNode implements Serializable {
     private int parentId;
     private int selfId;
+    private String passedPath="";
     protected String nodeName;
     protected Object obj;
     protected TreeNode parentNode;
@@ -19,6 +20,15 @@ public class TreeNode implements Serializable {
     public TreeNode(TreeNode parentNode) {
         this.getParentNode();
         initChildList();
+    }
+
+
+    public String getPassedPath() {
+        return passedPath;
+    }
+
+    public void setPassedPath(String passedPath) {
+        this.passedPath = passedPath;
     }
 
     public boolean isLeaf() {

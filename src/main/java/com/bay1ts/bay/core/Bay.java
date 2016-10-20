@@ -25,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by chenu on 2016/10/12.
@@ -169,7 +168,7 @@ public class Bay {
     }
 
     public static TreeNode newNameSpace(String path, TreeNode... routeEntries) {
-        TreeNode treeNode=new TreeNode();
+        TreeNode treeNode = new TreeNode();
         treeNode.setObj(path);
         for (TreeNode chindren : routeEntries) {
             chindren.setParentNode(treeNode);
@@ -181,23 +180,36 @@ public class Bay {
         return treeNode;
     }
 
-    private static void  Iter(TreeNode treeNode){
-        if (treeNode.isLeaf()){
-            System.out.println(treeNode.getObj());
-        }else {
-            List<TreeNode> list=treeNode.getChildList();
-            for (TreeNode node:list){
-                System.out.print(treeNode.getObj());
+    //    private static void  Iter(TreeNode treeNode){
+//        String ifIsNode=null;
+//        if (treeNode.isLeaf()){
+//            System.out.println(treeNode.getObj());
+//        }else {
+//            List<TreeNode> list=treeNode.getChildList();
+//            for (TreeNode node:list){
+//                node.setPassedPath(node.getParentNode().getPassedPath()+node.getParentNode().getObj().toString());
+//                Iter(node);
+//            }
+//        }
+//    }
+    private static void Iter(TreeNode treeNode) {
+        if (treeNode.isLeaf()) {
+            System.out.println(treeNode.getPassedPath() + treeNode.getObj());
+        } else {
+            List<TreeNode> list = treeNode.getChildList();
+            for (TreeNode node : list) {
+                node.setPassedPath(node.getParentNode().getPassedPath() + node.getParentNode().getObj().toString());
                 Iter(node);
             }
         }
     }
-    public static void NSRoute(TreeNode ... treeNodes){
-        if (treeNodes.length>1){
-            for (TreeNode treeNode:treeNodes){
+
+    public static void NSRoute(TreeNode... treeNodes) {
+        if (treeNodes.length > 1) {
+            for (TreeNode treeNode : treeNodes) {
                 Iter(treeNode);
             }
-        }else {
+        } else {
             Iter(treeNodes[0]);
         }
     }

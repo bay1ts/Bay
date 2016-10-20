@@ -168,50 +168,12 @@ public class Bay {
     }
 
     public static TreeNode newNameSpace(String path, TreeNode... routeEntries) {
-        TreeNode treeNode = new TreeNode();
-        treeNode.setObj(path);
-        for (TreeNode chindren : routeEntries) {
-            chindren.setParentNode(treeNode);
-            chindren.setParentId(treeNode.getSelfId());
-            // TODO: 2016/10/20 如果是叶子,就该给叶子的chindren设置null吧 但是如果不是叶子呢
-            treeNode.addChildNode(chindren);
-            treeNode.setNodeName("hehe");
-        }
-        return treeNode;
+        return getInstance().newNameSpace(path,routeEntries);
     }
 
-    //    private static void  Iter(TreeNode treeNode){
-//        String ifIsNode=null;
-//        if (treeNode.isLeaf()){
-//            System.out.println(treeNode.getObj());
-//        }else {
-//            List<TreeNode> list=treeNode.getChildList();
-//            for (TreeNode node:list){
-//                node.setPassedPath(node.getParentNode().getPassedPath()+node.getParentNode().getObj().toString());
-//                Iter(node);
-//            }
-//        }
-//    }
-    private static void Iter(TreeNode treeNode) {
-        if (treeNode.isLeaf()) {
-            System.out.println(treeNode.getPassedPath() + treeNode.getObj());
-        } else {
-            List<TreeNode> list = treeNode.getChildList();
-            for (TreeNode node : list) {
-                node.setPassedPath(node.getParentNode().getPassedPath() + node.getParentNode().getObj().toString());
-                Iter(node);
-            }
-        }
-    }
 
     public static void NSRoute(TreeNode... treeNodes) {
-        if (treeNodes.length > 1) {
-            for (TreeNode treeNode : treeNodes) {
-                Iter(treeNode);
-            }
-        } else {
-            Iter(treeNodes[0]);
-        }
+        getInstance().NSRoute(treeNodes);
     }
 
 }

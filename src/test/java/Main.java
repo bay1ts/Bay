@@ -12,9 +12,10 @@ import static com.bay1ts.bay.core.Bay.*;
  * Created by chenu on 2016/8/15.
  */
 public class Main {
-    // TODO: 2016/10/14 支持复杂路由(beego)和 可配置的session存储方案
+    // TODO: 2016/10/20 复杂路由基本完事了,还差个厉害的数据绑定. 又特么是个大坑.
+    // TODO: 2016/10/20 还差 拦截器(过滤器) 这个应该不算难
+    // TODO: 2016/10/20 还差个 路由中 any的实现
     public static void main(String[] args) throws Exception {
-        // TODO: 2016/10/15 我觉着得引入个配置.在哪开始初始化配置啊.不能再listenandstart中.
         staticResources("/statica");
         //慎用第二个静态资源,里面不能出现重复的文件名
         staticResources("/static");

@@ -3,6 +3,9 @@ package com.bay1ts.bay.core;
 import com.bay1ts.bay.route.RouteImpl;
 import com.bay1ts.bay.route.Routes;
 import com.bay1ts.bay.route.StaticMatcher;
+import com.bay1ts.bay.route.TreeNode;
+
+import java.util.List;
 
 
 /**
@@ -69,6 +72,38 @@ public class Service {
         addRoute(HttpMethod.options.name(),RouteImpl.create(path,action));
     }
     // TODO: 2016/10/12 像beego学习,加上any
+    public void NSRoute(TreeNode ... treeNodes){
+        if (treeNodes.length > 1) {
+            for (TreeNode treeNode : treeNodes) {
+                Iter(treeNode);
+            }
+        } else {
+            Iter(treeNodes[0]);
+        }
+    }
+
+    public void Iter(TreeNode treeNode) {
+        if (treeNode.isLeaf()) {
+            System.out.println(treeNode.getPassedPath() + treeNode.getObj());
+        } else {
+            List<TreeNode> list = treeNode.getChildList();
+            for (TreeNode node : list) {
+                node.setPassedPath(node.getParentNode().getPassedPath() + node.getParentNode().getObj().toString());
+                Iter(node);
+            }
+        }
+    }
+    public  TreeNode newNameSpace(String path, TreeNode... routeEntries) {
+        TreeNode treeNode = new TreeNode();
+        treeNode.setObj(path);
+        for (TreeNode chindren : routeEntries) {
+            chindren.setParentNode(treeNode);
+            chindren.setParentId(treeNode.getSelfId());
+            treeNode.addChildNode(chindren);
+            treeNode.setNodeName("hehe");
+        }
+        return treeNode;
+    }
 
 
 //    public final class StaticResources{

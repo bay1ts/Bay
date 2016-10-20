@@ -7,9 +7,7 @@ import com.bay1ts.bay.core.session.RedisBasedSessionStore;
 import com.bay1ts.bay.handler.MainHandler;
 import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
 import com.bay1ts.bay.handler.intercepters.SessionInterceptor;
-import com.bay1ts.bay.route.RouteEntry;
 import com.bay1ts.bay.route.TreeNode;
-import com.sun.xml.internal.bind.v2.TODO;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -26,6 +24,7 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -155,58 +154,52 @@ public class Bay {
     }
     // TODO: 2016/10/16 any
 
-    public static RouteEntry NSGet(String path, Action action) {
-        return new RouteEntry(HttpMethod.get, path, null, action);
+    public static TreeNode NSGet(String path, Action action) {
+        TreeNode treeNode = new TreeNode();
+        treeNode.setObj(path);
+        treeNode.setChildList(null);
+        return treeNode;
     }
 
-    public static RouteEntry NSPost(String path, Action action) {
-        return new RouteEntry(HttpMethod.get, path, null, action);
+    public static TreeNode NSPost(String path, Action action) {
+        TreeNode treeNode = new TreeNode();
+        treeNode.setObj(path);
+        treeNode.setChildList(null);
+        return treeNode;
     }
 
-    // TODO: 2016/10/19  get post new namespace 返回都是个   node  在 newnamespace 的参数列表中是 要添加的 node 其中内容就是给 tree加node
-    public static NameSpace newNameSpace(String path, Object... routeEntries) {
-        //该在 全局范围内做一个 容器.树形的.来存储
-        for (Object o : routeEntries) {
-            if (o instanceof RouteEntry) {
-                RouteEntry routeEntry=(RouteEntry)o;
-                TreeNode treeNode = new TreeNode();
-                treeNode.setParent(tree);
-                treeNode.setPath(routeEntry.getPath());
-                treeNode.setAction(routeEntry.getAction());
-                treeNode.setChildrens(null);
-            } else if (o instanceof NameSpace) {
-                TreeNode treeNode=new TreeNode();
-                treeNode.setParent(tree);
-                tree.getChindrens().add(treeNode);
+    public static TreeNode newNameSpace(String path, TreeNode... routeEntries) {
+        TreeNode treeNode=new TreeNode();
+        treeNode.setObj(path);
+        for (TreeNode chindren : routeEntries) {
+            chindren.setParentNode(treeNode);
+            chindren.setParentId(treeNode.getSelfId());
+            // TODO: 2016/10/20 如果是叶子,就该给叶子的chindren设置null吧 但是如果不是叶子呢
+            treeNode.addChildNode(chindren);
+            treeNode.setNodeName("hehe");
+        }
+        return treeNode;
+    }
+
+    private static void  Iter(TreeNode treeNode){
+        if (treeNode.isLeaf()){
+            System.out.println(treeNode.getObj());
+        }else {
+            List<TreeNode> list=treeNode.getChildList();
+            for (TreeNode node:list){
+                System.out.print(treeNode.getObj());
+                Iter(node);
             }
         }
-        TreeNode tree = new TreeNode();
-        tree.setPath(path);
-        tree.setParent(null);
-        NameSpace nameSpace = new NameSpace();
-        return nameSpace;
     }
-
-
-    public static class LinkNameSpace {
-        public void doSomeThing(NameSpace nameSpace) {
-
-        }
-
-    }
-
-    public static class NameSpace {
-        String prefix;
-        ControllerRegister handlers;
-    }
-
-    public class ControllerRegister {
-        Map<String, TreeNode> routers;
-
-        public void Add(String pattern, Action action, HttpMethod method) {
-
+    public static void NSRoute(TreeNode ... treeNodes){
+        if (treeNodes.length>1){
+            for (TreeNode treeNode:treeNodes){
+                Iter(treeNode);
+            }
+        }else {
+            Iter(treeNodes[0]);
         }
     }
-
 
 }

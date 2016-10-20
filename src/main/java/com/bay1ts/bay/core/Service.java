@@ -84,6 +84,8 @@ public class Service {
 
     public void Iter(TreeNode treeNode) {
         if (treeNode.isLeaf()) {
+            // TODO: 2016/10/20 此处注册路由.单丝我发现这么一弄吧,把httpmethod信息弄没了
+
             System.out.println(treeNode.getPassedPath() + treeNode.getObj());
         } else {
             List<TreeNode> list = treeNode.getChildList();

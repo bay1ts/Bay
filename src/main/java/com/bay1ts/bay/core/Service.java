@@ -1,9 +1,6 @@
 package com.bay1ts.bay.core;
 
-import com.bay1ts.bay.route.RouteImpl;
-import com.bay1ts.bay.route.Routes;
-import com.bay1ts.bay.route.StaticMatcher;
-import com.bay1ts.bay.route.TreeNode;
+import com.bay1ts.bay.route.*;
 
 import java.util.List;
 
@@ -85,8 +82,10 @@ public class Service {
     public void Iter(TreeNode treeNode) {
         if (treeNode.isLeaf()) {
             // TODO: 2016/10/20 此处注册路由.单丝我发现这么一弄吧,把httpmethod信息弄没了
-
-            System.out.println(treeNode.getPassedPath() + treeNode.getObj());
+            treeNode.getRouteEntry().setPath(treeNode.getPassedPath() + treeNode.getObj());
+            RouteEntry routeEntry=treeNode.getRouteEntry();
+            addRoute(routeEntry.getHttpMethod().name(),RouteImpl.create(routeEntry.getPath(),routeEntry.getAction()));
+//            System.out.println(treeNode.getPassedPath() + treeNode.getObj());
         } else {
             List<TreeNode> list = treeNode.getChildList();
             for (TreeNode node : list) {
@@ -100,9 +99,7 @@ public class Service {
         treeNode.setObj(path);
         for (TreeNode chindren : routeEntries) {
             chindren.setParentNode(treeNode);
-            chindren.setParentId(treeNode.getSelfId());
             treeNode.addChildNode(chindren);
-            treeNode.setNodeName("hehe");
         }
         return treeNode;
     }

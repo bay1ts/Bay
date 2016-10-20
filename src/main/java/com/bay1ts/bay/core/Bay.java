@@ -7,6 +7,7 @@ import com.bay1ts.bay.core.session.RedisBasedSessionStore;
 import com.bay1ts.bay.handler.MainHandler;
 import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
 import com.bay1ts.bay.handler.intercepters.SessionInterceptor;
+import com.bay1ts.bay.route.RouteEntry;
 import com.bay1ts.bay.route.TreeNode;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -154,15 +155,19 @@ public class Bay {
     // TODO: 2016/10/16 any
 
     public static TreeNode NSGet(String path, Action action) {
+        RouteEntry routeEntry=new RouteEntry(HttpMethod.get,path,null,action);
         TreeNode treeNode = new TreeNode();
+        treeNode.setRouteEntry(routeEntry);
         treeNode.setObj(path);
         treeNode.setChildList(null);
         return treeNode;
     }
 
     public static TreeNode NSPost(String path, Action action) {
+        RouteEntry routeEntry=new RouteEntry(HttpMethod.post,path,null,action);
         TreeNode treeNode = new TreeNode();
         treeNode.setObj(path);
+        treeNode.setRouteEntry(routeEntry);
         treeNode.setChildList(null);
         return treeNode;
     }

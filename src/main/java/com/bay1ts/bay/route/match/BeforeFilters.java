@@ -12,20 +12,18 @@ import java.util.List;
 public class BeforeFilters {
     public static void execute(RouteContext context) throws Exception {
         Object content = context.body().get();
-
         List<RouteMatch> matchSet = context.routeMatcher().findMultiple(HttpMethod.before, context.uri(), context.acceptType());
 
         for (RouteMatch filterMatch : matchSet) {
             Action filterTarget = filterMatch.getAction();
             Request request = new Request(filterMatch, context.httpRequest());
             context.withRequest(request);
-            Object o=filterTarget.handle(context.request(), context.response());
-
+            filterTarget.handle(context.request(), context.response());
             String bodyAfterFilter = context.response().body();
-
             if (bodyAfterFilter != null) {
                 content = bodyAfterFilter;
             }
+
 
         }
 

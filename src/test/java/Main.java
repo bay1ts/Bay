@@ -106,12 +106,7 @@ public class Main {
             System.out.println(req.raw());
             //maybe bug
             System.out.println("headers");
-//            req.headers().forEach(new Consumer<String>() {
-//                @Override
-//                public void accept(String s) {
-//                    System.out.println(s);
-//                }
-//            });
+
             req.headers().forEach(System.out::println);
             System.out.println("host");
             System.out.println(req.host());
@@ -143,7 +138,11 @@ public class Main {
                         }),
                         newNameSpace("/api",
                                 NSBefore("/*",(req,resp)->{
-                                    System.out.println("adding filter..........");
+                                    if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){
+                                        resp.body("hehe");
+                                    }else {
+                                        halt(403,"no auth,用户名或密码错误");
+                                    }
                                     return "cc";
                                 }),
                                 NSGet("/root",(req,resp)->{
@@ -156,12 +155,6 @@ public class Main {
                         )
                 )
         );
-
-
         listenAndStart();
-
-
     }
-
-
 }

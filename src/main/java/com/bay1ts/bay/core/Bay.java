@@ -102,7 +102,18 @@ public class Bay {
         }).start();
         return sessionStore;
     }
-
+    public static void  halt(int status){
+        getInstance().halt(status);
+    }
+    public static void halt() {
+        getInstance().halt();
+    }
+    public static void halt(String body) {
+        getInstance().halt(body);
+    }
+    public static void halt(int status, String body) {
+        getInstance().halt(status, body);
+    }
     private static Service getInstance() {
         return SingletonRouter.INSTANCE;
     }

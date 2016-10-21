@@ -119,6 +119,18 @@ public class Service {
         }
         return treeNode;
     }
+    public void halt() {
+        throw new HaltException();
+    }
+    public void halt(int status) {
+        throw new HaltException(status);
+    }
+    public void halt(String body) {
+        throw new HaltException(body);
+    }
+    public void halt(int status, String body) {
+        throw new HaltException(status, body);
+    }
 
 
 //    public final class StaticResources{

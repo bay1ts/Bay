@@ -95,26 +95,21 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             BeforeFilters.execute(context);
             DoRoute.execute(context);
             AfterFilters.execute(context);
+        } catch (HaltException halt){
+            context.response().status(halt.statusCode());
+            if (halt.body() != null) {
+                body.set(halt.body());
+            } else {
+                body.set("");
+            }
         } catch (Exception e) {
             logger.error("something wrong on beforeFilters/doRoute/afterFilters execute");
             sendError(ctx,HttpResponseStatus.INTERNAL_SERVER_ERROR);
             // TODO: 2016/10/16 500
         }
-
-        /**
-         * 这里按下不表 先搞上面的exec
-         */
         if (body.notSet() && context.response().isRedirected()) {
             body.set("");
         }
-        //不至于不至于
-//        if (body.notSet() && hasOtherHandlers) {
-//            if (servletRequest instanceof HttpRequestWrapper) {
-//                ((HttpRequestWrapper) servletRequest).notConsumed(true);
-//                return;
-//            }
-//        }
-
         if (body.notSet() ) {
             logger.info("The requested route [" + uri + "] has not been mapped");
             fullHttpResponse.setStatus(HttpResponseStatus.NOT_FOUND);

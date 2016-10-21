@@ -134,6 +134,18 @@ public class Main {
                         ),
                         NSGet("/gaga",UserController.serveLoginPage),
                         NSPost("/haha",(req,resp)->{
+                            System.out.println("queryParams ke "+req.queryParams("k2"));
+                            System.out.println("queryParams k1 "+req.queryParams("k1"));
+//                            System.out.println("queryString "+req.queryString());
+//                            System.out.println("params h1 "+req.params("h1"));
+                            System.out.println("params k2 "+req.params("k2"));
+                            System.out.println("params k1 "+req.params("k1"));
+//                            System.out.println("querymap k1 "+req.queryMap("k1"));
+//                            System.out.println("queryMap h1 "+req.queryMap().);
+//                            System.out.println("----------------");
+////                            System.out.println(req.body());
+//                            System.out.println(req.queryParamsValues("k1"));
+
                             return "bb";
                         }),
                         newNameSpace("/api",

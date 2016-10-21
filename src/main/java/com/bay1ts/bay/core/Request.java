@@ -311,7 +311,8 @@ public class Request {
      * Gets the query param
      *
      * @param queryParam the query parameter
-     * @return the value of the provided queryParam
+     * @return the value of the provided queryParam\
+     * 查询字符串的值,不是post的那种
      * Example: query parameter 'id' from the following request URI: /hello?id=foo
      */
     //// TODO: 2016/10/13 要是有俩怎么办.求测试
@@ -375,9 +376,10 @@ public class Request {
     }
 
     /**
-     * @return the query string
+     * @return the query string 查询字符串 比如?后面部分  k1=v1&k2=v2
      * 参考 https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
      * line 204的实现方式
+     *
      */
     public String queryString() {
         if (queryString == null) {

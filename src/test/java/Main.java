@@ -144,7 +144,7 @@ public class Main {
                             System.out.println(req.queryParams("aa"));
                             return "aa";
                         }),
-                        newNameSpace("/api",
+                        newNameSpace("/apa",
                                 NSBefore("/*",(req,resp)->{
                                     if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){
                                         resp.body("hehe");

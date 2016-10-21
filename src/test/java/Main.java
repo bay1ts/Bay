@@ -132,13 +132,17 @@ public class Main {
 
         NSRoute(
                 newNameSpace("/hehe",
-                        NSGet("/nihao", (req, resp) -> {
-                            return "aa";
-                        }),
+                        NSGet("/nihao", (req, resp) ->
+                                "aa"
+                        ),
                         NSPost("/haha",(req,resp)->{
                             return "bb";
                         }),
                         newNameSpace("/api",
+                                NSBefore("/*",(req,resp)->{
+                                    System.out.println("adding filter..........");
+                                    return null;
+                                }),
                                 NSGet("/root",(req,resp)->{
                                     return "haha";
                                 }),

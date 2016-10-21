@@ -1,7 +1,6 @@
 package com.bay1ts.bay.core;
 
 import com.bay1ts.bay.route.*;
-import com.bay1ts.bay.route.filter.FilterImpl;
 
 import java.util.List;
 
@@ -86,6 +85,14 @@ public class Service {
         } else {
             Iter(treeNodes[0]);
         }
+    }
+    public TreeNode NSAdd(HttpMethod httpMethod, String path, Action action){
+        RouteEntry routeEntry=new RouteEntry(httpMethod,path,null,action);
+        TreeNode treeNode = new TreeNode();
+        treeNode.setObj(path);
+        treeNode.setRouteEntry(routeEntry);
+        treeNode.setChildList(null);
+        return treeNode;
     }
 
     public void Iter(TreeNode treeNode) {

@@ -158,22 +158,37 @@ public class Bay {
     // TODO: 2016/10/16 any
 
     public static TreeNode NSGet(String path, Action action) {
-        RouteEntry routeEntry=new RouteEntry(HttpMethod.get,path,null,action);
-        TreeNode treeNode = new TreeNode();
-        treeNode.setRouteEntry(routeEntry);
-        treeNode.setObj(path);
-        treeNode.setChildList(null);
-        return treeNode;
+        return getInstance().NSAdd(HttpMethod.get,path,action);
+    }
+    public static TreeNode NSPost(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.post,path,action);
+    }
+    public static TreeNode NSPut(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.put,path,action);
+    }
+    public static TreeNode NSPatch(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.patch,path,action);
+    }
+    public static TreeNode NSDelete(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.delete,path,action);
+    }
+    public static TreeNode NSHead(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.head,path,action);
+    }
+    public static TreeNode NSTrace(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.trace,path,action);
+    }
+    public static TreeNode NSConnect(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.connect,path,action);
+    }
+    public static TreeNode NSOptions(String path, Action action) {
+        return getInstance().NSAdd(HttpMethod.options,path,action);
+    }
+    public static TreeNode NSBefore(String path,Action action){
+        //not sure
+        return getInstance().NSAdd(HttpMethod.before,path,action);
     }
 
-    public static TreeNode NSPost(String path, Action action) {
-        RouteEntry routeEntry=new RouteEntry(HttpMethod.post,path,null,action);
-        TreeNode treeNode = new TreeNode();
-        treeNode.setObj(path);
-        treeNode.setRouteEntry(routeEntry);
-        treeNode.setChildList(null);
-        return treeNode;
-    }
 
     public static TreeNode newNameSpace(String path, TreeNode... routeEntries) {
         return getInstance().newNameSpace(path,routeEntries);

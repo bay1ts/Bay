@@ -135,6 +135,7 @@ public class Main {
                         NSGet("/nihao", (req, resp) ->
                                 "aa"
                         ),
+                        NSGet("/gaga",UserController.serveLoginPage),
                         NSPost("/haha",(req,resp)->{
                             return "bb";
                         }),

@@ -18,11 +18,9 @@ package com.bay1ts.bay.core;
 
 import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.bay1ts.bay.route.match.RouteMatch;
-import com.bay1ts.bay.utils.IOUtils;
 import com.bay1ts.bay.utils.SparkUtils;
 import com.bay1ts.bay.utils.StringUtils;
 import com.bay1ts.bay.utils.Utils;
-import com.sun.xml.internal.bind.v2.TODO;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
@@ -30,40 +28,32 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
-import io.netty.handler.codec.http.cookie.CookieDecoder;
-import io.netty.handler.codec.http.cookie.CookieEncoder;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
+import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
+import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.ssl.SslHandler;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 
 /**
  * Provides information about the HTTP request
  *
  * @author Per Wendel
- * bay1ts 修改
+ *         bay1ts 修改
  */
 public class Request {
-
-
-
     private static final String USER_AGENT = "user-agent";
     private Map<String, String> params;
     private List<String> splat;
     private QueryParamsMap queryMap;
     private FullHttpRequest fullHttpRequest;
     private QueryStringDecoder queryStringDecoder;
+    private HttpPostRequestDecoder httpPostRequestDecoder;
     private String queryString;
     private Session session = null;
     private boolean validSession = false;
@@ -108,9 +98,10 @@ public class Request {
      * @param request the servlet request
      */
     public Request(RouteMatch match, FullHttpRequest request) {
+        this.httpPostRequestDecoder = new HttpPostRequestDecoder(request);
         this.fullHttpRequest = request;
-        this.queryStringDecoder=new QueryStringDecoder(request.uri());
-        if (match!=null){
+        this.queryStringDecoder = new QueryStringDecoder(request.uri());
+        if (match != null) {
             //说明是routematch
             changeMatch(match);
         }
@@ -123,6 +114,24 @@ public class Request {
 
         params = getParams(requestList, matchedList);
         splat = getSplat(requestList, matchedList);
+    }
+
+
+    public String postBody(String name) {
+        InterfaceHttpData data = httpPostRequestDecoder.getBodyHttpData(name);
+        if (data != null && data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
+            Attribute attribute = (Attribute) data;
+            String value = null;
+            try {
+                value = ((Attribute) data).getValue();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                data.release();
+            }
+            return value;
+        }
+        return null;
     }
 
     /**
@@ -172,16 +181,16 @@ public class Request {
      * @return the scheme
      */
     public String scheme() {
-        return isSecure()?"https":"http";
+        return isSecure() ? "https" : "http";
     }
 
-    public boolean isSecure(){
+    public boolean isSecure() {
         // TODO: 2016/10/16 bug found
-        Channel channel=ChannelThreadLocal.get();
+        Channel channel = ChannelThreadLocal.get();
         //上一行返回的是空..为什么呢
-        ChannelPipeline channelPipeline=channel.pipeline();
+        ChannelPipeline channelPipeline = channel.pipeline();
         channelPipeline.get(SslHandler.class);
-        return ChannelThreadLocal.get().pipeline().get(SslHandler.class)!=null;
+        return ChannelThreadLocal.get().pipeline().get(SslHandler.class) != null;
     }
 
     /**
@@ -204,7 +213,7 @@ public class Request {
      * @return the server port
      */
     public int port() {
-        InetSocketAddress address=(InetSocketAddress) ChannelThreadLocal.get().localAddress();
+        InetSocketAddress address = (InetSocketAddress) ChannelThreadLocal.get().localAddress();
         return address.getPort();
     }
 
@@ -235,7 +244,7 @@ public class Request {
      * line 201
      */
     public String contextPath() {
-        String uri=fullHttpRequest.uri();
+        String uri = fullHttpRequest.uri();
         int slashIndex = uri.indexOf("/", 1);
         int queIndex = uri.indexOf("?", 0);
         if (slashIndex > queIndex && queIndex != -1) {
@@ -286,9 +295,9 @@ public class Request {
     private void readBodyAsBytes() {
         try {
 //            bodyAsBytes = IOUtils.toByteArray(fullHttpRequest.getInputStream());
-            ByteBuf buf=fullHttpRequest.content();
+            ByteBuf buf = fullHttpRequest.content();
             //麻蛋不自信是正确的.这里没有初始化.会溢出的.
-            bodyAsBytes=new byte[buf.readableBytes()];
+            bodyAsBytes = new byte[buf.readableBytes()];
             buf.readBytes(bodyAsBytes);
 //            bodyAsBytes=IOUtils.toByteArray()
         } catch (Exception e) {
@@ -300,9 +309,9 @@ public class Request {
      * @return the length of request.body
      */
     public int contentLength() {
-        if (fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH)!=null&&!"".equals(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH))) {
+        if (fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH) != null && !"".equals(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH))) {
             return Integer.valueOf(fullHttpRequest.headers().get(HttpHeaderNames.CONTENT_LENGTH));
-        }else{
+        } else {
             return -1;
         }
     }
@@ -362,7 +371,6 @@ public class Request {
     }
 
     /**
-     *
      * @return all headers
      * 参考
      * https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
@@ -370,7 +378,7 @@ public class Request {
     // TODO: 2016/10/18  bug found
     public Set<String> headers() {
         if (headers == null) {
-            headers=fullHttpRequest.headers().names();
+            headers = fullHttpRequest.headers().names();
         }
         return headers;
     }
@@ -379,7 +387,6 @@ public class Request {
      * @return the query string 查询字符串 比如?后面部分  k1=v1&k2=v2
      * 参考 https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
      * line 204的实现方式
-     *
      */
     public String queryString() {
         if (queryString == null) {
@@ -414,7 +421,7 @@ public class Request {
      */
     public <T> T attribute(String attribute) {
         if (attributes != null)
-            return (T)this.attributes.get(attribute);
+            return (T) this.attributes.get(attribute);
 
         return null;
     }
@@ -510,12 +517,12 @@ public class Request {
      */
     public Map<String, String> cookies() {
         Map<String, String> result = new HashMap<>();
-        String cookieString=fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
-        Set<Cookie> cookieSet=null;
-        if (cookieString!=null){
-            cookieSet=ServerCookieDecoder.STRICT.decode(cookieString);
+        String cookieString = fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
+        Set<Cookie> cookieSet = null;
+        if (cookieString != null) {
+            cookieSet = ServerCookieDecoder.STRICT.decode(cookieString);
         }
-        if (cookieSet!=null&&!cookieSet.isEmpty()){
+        if (cookieSet != null && !cookieSet.isEmpty()) {
             for (Cookie cookie : cookieSet) {
                 result.put(cookie.name(), cookie.value());
             }
@@ -536,13 +543,13 @@ public class Request {
      * @return cookie value or null if the cookie was not found
      */
     public String cookie(String name) {
-        String cookieString=fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
-        Set<Cookie> cookieSet=null;
-        if (cookieString!=null){
-            cookieSet=ServerCookieDecoder.STRICT.decode(cookieString);
+        String cookieString = fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
+        Set<Cookie> cookieSet = null;
+        if (cookieString != null) {
+            cookieSet = ServerCookieDecoder.STRICT.decode(cookieString);
         }
-        if (cookieSet!=null&&!cookieSet.isEmpty()){
-            for (Cookie cookie:cookieSet){
+        if (cookieSet != null && !cookieSet.isEmpty()) {
+            for (Cookie cookie : cookieSet) {
                 if (cookie.name().equals(name)) {
                     return cookie.value();
                 }

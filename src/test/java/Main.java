@@ -61,12 +61,13 @@ public class Main {
             return pojoTest;
         });
         get("/test3", (req, resp) -> {
-            req.cookies().forEach(new BiConsumer<String, String>() {
-                @Override
-                public void accept(String s, String s2) {
-                    System.out.println(s + "   " + s2);
-                }
-            });
+//            req.cookies().forEach(new BiConsumer<String, String>() {
+//                @Override
+//                public void accept(String s, String s2) {
+//                    System.out.println(s + "   " + s2);
+//                }
+//            });
+            req.cookies().forEach((a,b)-> System.out.println(a+"   "+b));
             System.out.println("-------------------");
             resp.cookie("ni", "hao", 3600);
             return "cookie test";
@@ -105,12 +106,13 @@ public class Main {
             System.out.println(req.raw());
             //maybe bug
             System.out.println("headers");
-            req.headers().forEach(new Consumer<String>() {
-                @Override
-                public void accept(String s) {
-                    System.out.println(s);
-                }
-            });
+//            req.headers().forEach(new Consumer<String>() {
+//                @Override
+//                public void accept(String s) {
+//                    System.out.println(s);
+//                }
+//            });
+            req.headers().forEach(System.out::println);
             System.out.println("host");
             System.out.println(req.host());
             //bug
@@ -142,7 +144,7 @@ public class Main {
                         newNameSpace("/api",
                                 NSBefore("/*",(req,resp)->{
                                     System.out.println("adding filter..........");
-                                    return null;
+                                    return "cc";
                                 }),
                                 NSGet("/root",(req,resp)->{
                                     return "haha";

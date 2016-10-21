@@ -30,6 +30,7 @@ import io.netty.handler.codec.http.QueryStringDecoder;
 import io.netty.handler.codec.http.cookie.Cookie;
 import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
 import io.netty.handler.codec.http.multipart.Attribute;
+import io.netty.handler.codec.http.multipart.DefaultHttpDataFactory;
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder;
 import io.netty.handler.codec.http.multipart.InterfaceHttpData;
 import io.netty.handler.ssl.SslHandler;
@@ -53,7 +54,6 @@ public class Request {
     private QueryParamsMap queryMap;
     private FullHttpRequest fullHttpRequest;
     private QueryStringDecoder queryStringDecoder;
-    private HttpPostRequestDecoder httpPostRequestDecoder;
     private String queryString;
     private Session session = null;
     private boolean validSession = false;
@@ -98,7 +98,7 @@ public class Request {
      * @param request the servlet request
      */
     public Request(RouteMatch match, FullHttpRequest request) {
-        this.httpPostRequestDecoder = new HttpPostRequestDecoder(request);
+
         this.fullHttpRequest = request;
         this.queryStringDecoder = new QueryStringDecoder(request.uri());
         if (match != null) {
@@ -117,13 +117,20 @@ public class Request {
     }
 
 
+    /**
+     * 支持Content-Type:application/x-www-form-urlencoded 的post body 解码(html的form没问题)
+     *
+     * @param name 可以理解为form的 post input的name
+     * @return value
+     */
     public String postBody(String name) {
+        HttpPostRequestDecoder httpPostRequestDecoder = new HttpPostRequestDecoder(new DefaultHttpDataFactory(false),this.fullHttpRequest);
         InterfaceHttpData data = httpPostRequestDecoder.getBodyHttpData(name);
         if (data != null && data.getHttpDataType() == InterfaceHttpData.HttpDataType.Attribute) {
             Attribute attribute = (Attribute) data;
             String value = null;
             try {
-                value = ((Attribute) data).getValue();
+                value = attribute.getValue();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -132,6 +139,44 @@ public class Request {
             return value;
         }
         return null;
+    }
+
+    // TODO: 2016/10/21 测试一下 用了这个方法,后面调用postBody方法还能不能取到值
+    public Set<String> postBodyNames(){
+        Set<String> set=new HashSet<>();
+        HttpPostRequestDecoder httpPostRequestDecoder = new HttpPostRequestDecoder(new DefaultHttpDataFactory(false),this.fullHttpRequest);
+        for (InterfaceHttpData data:httpPostRequestDecoder.getBodyHttpDatas()){
+            data=httpPostRequestDecoder.next();
+            set.add(data.getName());
+            data.release();
+//            if (data!=null){
+//                try {
+//                    Attribute attribute=(Attribute) data;
+//                    set.add(attribute.getName());
+//                }finally {
+//                    data.release();
+//                }
+//            }
+        }
+        return  set;
+    }
+    public Set<String> postBodyValues(){
+        HttpPostRequestDecoder httpPostRequestDecoder = new HttpPostRequestDecoder(new DefaultHttpDataFactory(false),this.fullHttpRequest);
+        Set<String> set=new HashSet<>();
+        for (;httpPostRequestDecoder.hasNext();){
+            InterfaceHttpData data=httpPostRequestDecoder.next();
+            if (data!=null){
+                try {
+                    Attribute attribute=(Attribute) data;
+                    set.add(attribute.getValue());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    data.release();
+                }
+            }
+        }
+        return  set;
     }
 
     /**

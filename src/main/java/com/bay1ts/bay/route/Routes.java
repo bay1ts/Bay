@@ -52,7 +52,7 @@ public class Routes {
      */
     private void addRoute(HttpMethod method, String path, String acceptType, Action action) {
         RouteEntry entry=new RouteEntry(method,path,acceptType,action);
-        logger.info("adding route"+method.name()+" "+path+" "+acceptType);
+        logger.info("adding route "+method.name()+" "+path+" "+acceptType);
         routes.add(entry);
         //下面这个刚开始没看懂
         //是个 showing all the mapped routes

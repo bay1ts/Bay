@@ -1,6 +1,7 @@
 package com.bay1ts.bay.core;
 
 import com.bay1ts.bay.route.*;
+import com.bay1ts.bay.route.filter.FilterImpl;
 
 import java.util.List;
 
@@ -26,13 +27,6 @@ public class Service {
     public void staticResources(String res){
         staticMatcher.path(res);
     }
-
-    public void addRoute(String httpMethod,RouteImpl route){
-        routes.add(httpMethod,route);
-        //此处有优化可能. 参看 文档注释
-
-    }
-
 
     public  void get(final String path, final Action action){
         addRoute(HttpMethod.get.name(),RouteImpl.create(path,action));
@@ -69,6 +63,21 @@ public class Service {
         addRoute(HttpMethod.options.name(),RouteImpl.create(path,action));
     }
     // TODO: 2016/10/12 像beego学习,加上any
+    
+    
+    
+    public void before(String path,Action action){
+        addFilter(HttpMethod.before.name(), RouteImpl.create(path,action));
+    }
+
+    private void addFilter(String httpMethod, RouteImpl filter) {
+        addRoute(httpMethod,filter);
+    }
+    public void addRoute(String httpMethod,RouteImpl route){
+        routes.add(httpMethod,route);
+        //此处有优化可能. 参看 文档注释
+    }
+
     public void NSRoute(TreeNode ... treeNodes){
         if (treeNodes.length > 1) {
             for (TreeNode treeNode : treeNodes) {

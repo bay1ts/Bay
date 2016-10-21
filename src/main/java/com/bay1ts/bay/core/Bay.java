@@ -115,6 +115,9 @@ public class Bay {
         getInstance().staticResources(floder);
     }
 
+    public static void before(final String path,final Action action){
+        getInstance().before(path,action);
+    }
 
     //暴露给外面的接口.最基本的  restful 接口
     public static void get(final String path, final Action action) {

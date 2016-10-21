@@ -19,7 +19,10 @@ public class Main {
         staticResources("/statica");
         //慎用第二个静态资源,里面不能出现重复的文件名
         staticResources("/static");
-
+        before("/*",(req,resp)->{
+            System.out.println("===============呵呵哒");
+            return null;
+        });
         get("/hello2", new Action() {
             @Override
             public Object handle(Request request, Response response) throws Exception {

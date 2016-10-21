@@ -138,6 +138,12 @@ public class Main {
                             System.out.println("params k1 "+req.postBody("k1"));
                             return "bb";
                         }),
+                        NSGet("/xixi",(req,resp)->{
+                            System.out.println(req.queryParams("aa"));
+                            System.out.println("---=====================");
+                            System.out.println(req.queryParams("aa"));
+                            return "aa";
+                        }),
                         newNameSpace("/api",
                                 NSBefore("/*",(req,resp)->{
                                     if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){

@@ -2,11 +2,9 @@ import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import org.junit.Test;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 import static com.bay1ts.bay.core.Bay.*;
 
@@ -20,10 +18,6 @@ public class Main {
         staticResources("/statica");
         //慎用第二个静态资源,里面不能出现重复的文件名
         staticResources("/static");
-        before("/*",(req,resp)->{
-            System.out.println("===============呵呵哒");
-            return null;
-        });
         get("/hello2", new Action() {
             @Override
             public Object handle(Request request, Response response) throws Exception {
@@ -69,7 +63,7 @@ public class Main {
 //                    System.out.println(s + "   " + s2);
 //                }
 //            });
-            req.cookies().forEach((a,b)-> System.out.println(a+"   "+b));
+            req.cookies().forEach((a, b) -> System.out.println(a + "   " + b));
             System.out.println("-------------------");
             resp.cookie("ni", "hao", 3600);
             return "cookie test";
@@ -133,39 +127,29 @@ public class Main {
                         NSGet("/nihao", (req, resp) ->
                                 "aa"
                         ),
-                        NSGet("/gaga",UserController.serveLoginPage),
-                        NSPost("/haha",(req,resp)->{
+                        NSGet("/gaga", UserController.serveLoginPage),
+                        NSPost("/haha", (req, resp) -> {
                             req.postBodyNames().forEach(System.out::println);
                             System.out.println(req.body());
-                            System.out.println("params k1 "+req.postBody("k1"));
+                            System.out.println("params k1 " + req.postBody("k1"));
                             return "bb";
                         }),
-                        NSGet("/xixi",(req,resp)->{
-                            System.out.println("params k1 "+req.postBody("k1"));
+                        NSGet("/xixi", (req, resp) -> {
+                            System.out.println("params k1 " + req.postBody("k1"));
                             System.out.println(req.queryParams("aa"));
                             return "aa";
                         }),
                         newNameSpace("/apa",
-                                NSBefore("/*",(req,resp)->{
-                                    if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){
-                                        System.out.println(req.session().id());
-                                        System.out.println(req.session().);
-                                    }else {
-                                        halt(403,"no auth,用户名或密码错误");
-                                    }
-                                    return "cc";
+                                NSPost("/gaga", (req, resp) -> {
+                                    return req.requestBody(req.body(), POJOTest.class).toString();
                                 }),
-                                NSPost("/gaga",(req,resp)->{
-                                    return req.requestBody(req.body(),POJOTest.class).toString();
+                                NSPost("/gaga2", (req, resp) -> {
+                                    return req.requestBody(POJOTest.class).getName() + "--呵呵";
                                 }),
-                                NSPost("/gaga2",(req,resp)->{
-                                    return req.requestBody(POJOTest.class).getName()+"--呵呵";
-                                }),
-                                NSGet("/root",(req,resp)->{
-                                    return "haha";
-                                }),
+                                NSGet("/root", (req, resp) -> req.session().id()
+                                ),
                                 newNameSpace("/v2",
-                                        NSGet("/one",(req,resp)->{
+                                        NSGet("/one", (req, resp) -> {
                                             return "aa";
                                         }))
                         )
@@ -173,14 +157,16 @@ public class Main {
         );
         listenAndStart();
     }
-    public static <T> T requestBody(String json,Class<T> clazz){
-        Gson gson= new Gson();
-        T t=gson.fromJson(json,clazz);
+
+    public static <T> T requestBody(String json, Class<T> clazz) {
+        Gson gson = new Gson();
+        T t = gson.fromJson(json, clazz);
         return t;
     }
+
     @Test
-    public void hehe(){
-        POJOTest pojoTest=requestBody("{\"id\":3,\"name\":\"xixi\",\"age\":23}",POJOTest.class);
+    public void hehe() {
+        POJOTest pojoTest = requestBody("{\"id\":3,\"name\":\"xixi\",\"age\":23}", POJOTest.class);
         System.out.println(pojoTest.getName());
     }
 }

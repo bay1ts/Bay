@@ -32,14 +32,19 @@ public class HttpSessionThreadLocal {
         return session;
     }
 
-    public static HttpSessionImpl getOrCreate() {
+    public static HttpSessionImpl getOrCreate(String id) {
         if (HttpSessionThreadLocal.get() == null) {
             //因为在bay文件中 会对sessionthreadlocal初始化,给sessionstore赋值(根据配置),所以下面不需要了
 //            if (sessionStore == null) {
 //                sessionStore = new MemoryBasedSessionStore();
 //            }
-
-            HttpSessionImpl newSession = sessionStore.createSession();
+            HttpSessionImpl newSession=null;
+            if (id!=null){
+                newSession=sessionStore.findSession(id);
+            }
+            if (newSession==null){
+                newSession= sessionStore.createSession();
+            }
             newSession.setMaxInactiveInterval(Config.getSessionExpireSecond());
             //已解决的bug 刚开始又 sessionStore.createSession了.
             sessionThreadLocal.set(newSession);

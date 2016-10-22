@@ -3,7 +3,9 @@ package com.bay1ts.bay.route.match;
 import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.HttpMethod;
+import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.google.gson.Gson;
+import io.netty.handler.codec.http.HttpHeaderNames;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +28,9 @@ public final class DoRoute {
         }
         Object result = null;
         if (action != null) {
+            //maybe bug
             context.withRequest(new Request(match,context.httpRequest()));
+            context.response().header(HttpHeaderNames.SET_COOKIE.toString(),"JSESSIONID="+context.request().session().id());
             result =action.handle(context.request(),context.response());
             if (result != null) {
                 content = result;

@@ -81,7 +81,6 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         Body body = Body.create();
         Request request=new Request(null,fullHttpRequest);
         String uri =request.pathInfo();
-//        routeMatcher=new Routes();
         context
                 .withMatcher(routeMatcher)
                 .withHttpRequest(fullHttpRequest)

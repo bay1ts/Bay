@@ -16,6 +16,7 @@
  */
 package com.bay1ts.bay.core;
 
+import com.bay1ts.bay.core.session.HttpSessionImpl;
 import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.bay1ts.bay.route.match.RouteMatch;
 import com.bay1ts.bay.utils.SparkUtils;
@@ -535,7 +536,8 @@ public class Request {
         if (session == null || !validSession) {
             validSession(true);
 //            session = new Session(fullHttpRequest.getSession(), this);
-            session = new Session(HttpSessionThreadLocal.getOrCreate(), this);
+            HttpSession sess=HttpSessionThreadLocal.getOrCreate(this.cookie(HttpSessionImpl.SESSION_ID_KEY));
+            session = new Session(sess, this);
         }
         return session;
     }
@@ -554,7 +556,7 @@ public class Request {
             //
             HttpSession sessionTemp = HttpSessionThreadLocal.get();
             if (sessionTemp == null && create) {
-                sessionTemp = HttpSessionThreadLocal.getOrCreate();
+                sessionTemp = HttpSessionThreadLocal.getOrCreate(this.cookie(HttpSessionImpl.SESSION_ID_KEY));
             }
             //
             HttpSession httpSession = sessionTemp;

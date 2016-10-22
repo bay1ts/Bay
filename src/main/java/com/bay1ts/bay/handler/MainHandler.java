@@ -119,7 +119,6 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         if (body.isSet()) {
             FullHttpResponse finalResponse = null;
             try {
-                // TODO: 2016/10/15 存疑 serializeTo 第一个参数应该是哪个responsese的问题
                 finalResponse = body.serializeTo(fullHttpResponse, fullHttpRequest);
             } catch (IOException e) {
                 e.printStackTrace();

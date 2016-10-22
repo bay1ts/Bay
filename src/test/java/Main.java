@@ -15,9 +15,7 @@ import static com.bay1ts.bay.core.Bay.*;
  * Created by chenu on 2016/8/15.
  */
 public class Main {
-    // TODO: 2016/10/20 复杂路由基本完事了,还差个厉害的数据绑定. 又特么是个大坑.
     // TODO: 2016/10/20 还差 拦截器(过滤器) 这个应该不算难
-    // TODO: 2016/10/20 还差个 路由中 any的实现
     public static void main(String[] args) throws Exception {
         staticResources("/statica");
         //慎用第二个静态资源,里面不能出现重复的文件名
@@ -126,7 +124,6 @@ public class Main {
             System.out.println("queryparams");
             System.out.println(req.queryParams());
             System.out.println("queryparams hehe");
-            // TODO: 2016/10/18 实现复杂路由和数据绑定 首要目标 spring mvc的 自动绑定成对象 感觉够呛..
             System.out.println(req.queryParams("nihao"));
             return "req test";
         });
@@ -149,14 +146,15 @@ public class Main {
                             return "aa";
                         }),
                         newNameSpace("/apa",
-//                                NSBefore("/*",(req,resp)->{
-//                                    if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){
-//
-//                                    }else {
-//                                        halt(403,"no auth,用户名或密码错误");
-//                                    }
-//                                    return "cc";
-//                                }),
+                                NSBefore("/*",(req,resp)->{
+                                    if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){
+                                        System.out.println(req.session().id());
+                                        System.out.println(req.session().);
+                                    }else {
+                                        halt(403,"no auth,用户名或密码错误");
+                                    }
+                                    return "cc";
+                                }),
                                 NSPost("/gaga",(req,resp)->{
                                     return req.requestBody(req.body(),POJOTest.class).toString();
                                 }),

@@ -21,6 +21,7 @@ import com.bay1ts.bay.route.match.RouteMatch;
 import com.bay1ts.bay.utils.SparkUtils;
 import com.bay1ts.bay.utils.StringUtils;
 import com.bay1ts.bay.utils.Utils;
+import com.google.gson.Gson;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelPipeline;
@@ -58,6 +59,7 @@ public class Request {
     private Session session = null;
     private boolean validSession = false;
     private Map<String, Object> attributes;
+    private Gson gson;
     /* Lazy loaded stuff */
     private String body = null;
     private byte[] bodyAsBytes = null;
@@ -98,7 +100,7 @@ public class Request {
      * @param request the servlet request
      */
     public Request(RouteMatch match, FullHttpRequest request) {
-
+        this.gson=new Gson();
         this.fullHttpRequest = request;
         this.queryStringDecoder = new QueryStringDecoder(request.uri());
         if (match != null) {
@@ -116,6 +118,15 @@ public class Request {
         splat = getSplat(requestList, matchedList);
     }
 
+
+    public <T> T requestBody(String json,Class<T> clazz){
+        T t=gson.fromJson(json,clazz);
+        return t;
+    }
+    public <T> T requestBody(Class<T> clazz){
+        T t=gson.fromJson(this.body(),clazz);
+        return t;
+    }
 
     /**
      * 支持Content-Type:application/x-www-form-urlencoded 的post body 解码(html的form没问题)

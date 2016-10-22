@@ -1,6 +1,9 @@
 import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.junit.Test;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -58,6 +61,7 @@ public class Main {
             POJOTest pojoTest = new POJOTest();
             pojoTest.setId(3);
             pojoTest.setAge(23);
+            pojoTest.setName("xixi");
             return pojoTest;
         });
         get("/test3", (req, resp) -> {
@@ -135,23 +139,29 @@ public class Main {
                         NSGet("/gaga",UserController.serveLoginPage),
                         NSPost("/haha",(req,resp)->{
                             req.postBodyNames().forEach(System.out::println);
+                            System.out.println(req.body());
                             System.out.println("params k1 "+req.postBody("k1"));
                             return "bb";
                         }),
                         NSGet("/xixi",(req,resp)->{
-                            System.out.println(req.queryParams("aa"));
-                            System.out.println("---=====================");
+                            System.out.println("params k1 "+req.postBody("k1"));
                             System.out.println(req.queryParams("aa"));
                             return "aa";
                         }),
                         newNameSpace("/apa",
-                                NSBefore("/*",(req,resp)->{
-                                    if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){
-                                        resp.body("hehe");
-                                    }else {
-                                        halt(403,"no auth,用户名或密码错误");
-                                    }
-                                    return "cc";
+//                                NSBefore("/*",(req,resp)->{
+//                                    if ("admin".equals(req.queryParams("username"))&&"pwd".equals(req.queryParams("password"))){
+//
+//                                    }else {
+//                                        halt(403,"no auth,用户名或密码错误");
+//                                    }
+//                                    return "cc";
+//                                }),
+                                NSPost("/gaga",(req,resp)->{
+                                    return req.requestBody(req.body(),POJOTest.class).toString();
+                                }),
+                                NSPost("/gaga2",(req,resp)->{
+                                    return req.requestBody(POJOTest.class).getName()+"--呵呵";
                                 }),
                                 NSGet("/root",(req,resp)->{
                                     return "haha";
@@ -164,5 +174,15 @@ public class Main {
                 )
         );
         listenAndStart();
+    }
+    public static <T> T requestBody(String json,Class<T> clazz){
+        Gson gson= new Gson();
+        T t=gson.fromJson(json,clazz);
+        return t;
+    }
+    @Test
+    public void hehe(){
+        POJOTest pojoTest=requestBody("{\"id\":3,\"name\":\"xixi\",\"age\":23}",POJOTest.class);
+        System.out.println(pojoTest.getName());
     }
 }

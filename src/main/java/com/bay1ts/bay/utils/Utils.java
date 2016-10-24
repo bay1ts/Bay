@@ -95,8 +95,7 @@ public final class Utils {
         String cookieString = request.headers().get(COOKIE);
         if (cookieString != null) {
             List<Cookie> foundCookie = new ArrayList<Cookie>();
-//            Set<Cookie> cookies = CookieDecoder.decode(cookieString);
-            Set<Cookie> cookies= ServerCookieDecoder.STRICT.decode(cookieString);
+            Set<Cookie> cookies= ServerCookieDecoder.LAX.decode(cookieString);
             for (Cookie cookie : cookies) {
                 if (cookie.name().equals(name))
                     foundCookie.add(cookie);
@@ -112,7 +111,7 @@ public final class Utils {
         String cookieString = response.headers().get(COOKIE);
         if (cookieString != null) {
             List<Cookie> foundCookie = new ArrayList<Cookie>();
-            Set<Cookie> cookies = ServerCookieDecoder.STRICT.decode(cookieString);
+            Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
             for (Cookie cookie : cookies) {
                 if (cookie.name().equals(name))
                     foundCookie.add(cookie);

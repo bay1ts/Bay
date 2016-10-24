@@ -81,6 +81,8 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         Body body = Body.create();
         Request request=new Request(null,fullHttpRequest);
         String uri =request.pathInfo();
+        System.out.println(request.session().id()+"-=-=-=-=-=-=");
+        System.out.println(HttpSessionThreadLocal.get().getId());
 //        routeMatcher=new Routes();
         context
                 .withMatcher(routeMatcher)
@@ -119,7 +121,6 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         if (body.isSet()) {
             FullHttpResponse finalResponse = null;
             try {
-                // TODO: 2016/10/15 存疑 serializeTo 第一个参数应该是哪个responsese的问题
                 finalResponse = body.serializeTo(fullHttpResponse, fullHttpRequest);
             } catch (IOException e) {
                 e.printStackTrace();

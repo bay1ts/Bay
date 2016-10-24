@@ -88,6 +88,8 @@ public class HttpSessionImpl implements HttpSession {
         if (attributes != null) {
             attributes.clear();
         }
+        HttpSessionThreadLocal.unset();
+        HttpSessionThreadLocal.getSessionStore().destroySession(id);
     }
 
     @Override

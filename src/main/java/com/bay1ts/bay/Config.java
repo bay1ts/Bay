@@ -20,7 +20,6 @@ public class Config {
     private static String redisUsername = "root";
     private static String redisPassword = "toor";
 
-    //// TODO: 2016/10/15 在每一项调用配置之前都需要更新配置.  每一次获取数据都要调用update.
     private static void updateConfig() throws IOException {
         logger.debug("updating config from conf.properties");
         Properties properties=new Properties();

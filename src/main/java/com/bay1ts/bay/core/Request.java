@@ -16,6 +16,7 @@
  */
 package com.bay1ts.bay.core;
 
+import com.bay1ts.bay.core.session.HttpSessionImpl;
 import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.bay1ts.bay.route.match.RouteMatch;
 import com.bay1ts.bay.utils.SparkUtils;
@@ -535,7 +536,10 @@ public class Request {
         if (session == null || !validSession) {
             validSession(true);
 //            session = new Session(fullHttpRequest.getSession(), this);
-            session = new Session(HttpSessionThreadLocal.getOrCreate(), this);
+            System.out.println("请注意看");
+            this.cookies().forEach((k,v)-> System.out.println(k+"------======"+v));
+            HttpSession sess=HttpSessionThreadLocal.getOrCreate(this.cookie(HttpSessionImpl.SESSION_ID_KEY));
+            session = new Session(sess, this);
         }
         return session;
     }
@@ -554,7 +558,7 @@ public class Request {
             //
             HttpSession sessionTemp = HttpSessionThreadLocal.get();
             if (sessionTemp == null && create) {
-                sessionTemp = HttpSessionThreadLocal.getOrCreate();
+                sessionTemp = HttpSessionThreadLocal.getOrCreate(this.cookie(HttpSessionImpl.SESSION_ID_KEY));
             }
             //
             HttpSession httpSession = sessionTemp;
@@ -576,7 +580,7 @@ public class Request {
         String cookieString = fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
         Set<Cookie> cookieSet = null;
         if (cookieString != null) {
-            cookieSet = ServerCookieDecoder.STRICT.decode(cookieString);
+            cookieSet = ServerCookieDecoder.LAX.decode(cookieString);
         }
         if (cookieSet != null && !cookieSet.isEmpty()) {
             for (Cookie cookie : cookieSet) {
@@ -602,7 +606,7 @@ public class Request {
         String cookieString = fullHttpRequest.headers().get(HttpHeaderNames.COOKIE);
         Set<Cookie> cookieSet = null;
         if (cookieString != null) {
-            cookieSet = ServerCookieDecoder.STRICT.decode(cookieString);
+            cookieSet = ServerCookieDecoder.LAX.decode(cookieString);
         }
         if (cookieSet != null && !cookieSet.isEmpty()) {
             for (Cookie cookie : cookieSet) {

@@ -65,7 +65,6 @@ public class Main {
 //            });
             req.cookies().forEach((a, b) -> System.out.println(a + "   " + b));
             System.out.println("-------------------");
-            resp.cookie("ni", "hao", 3600);
             return "cookie test";
         });
 

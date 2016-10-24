@@ -30,6 +30,7 @@ public final class DoRoute {
         if (action != null) {
             //maybe bug
             context.withRequest(new Request(match,context.httpRequest()));
+            //session部分请注意下面这行.调用了session方法 第二次 换了一个url请求的时候.没有从 cookie里获得 上次传给client的id,这里会重建
             context.response().header(HttpHeaderNames.SET_COOKIE.toString(),"JSESSIONID="+context.request().session().id());
             result =action.handle(context.request(),context.response());
             if (result != null) {

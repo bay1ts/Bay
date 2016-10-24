@@ -535,9 +535,6 @@ public class Request {
     public Session session() {
         if (session == null || !validSession) {
             validSession(true);
-//            session = new Session(fullHttpRequest.getSession(), this);
-            System.out.println("请注意看");
-            this.cookies().forEach((k,v)-> System.out.println(k+"------======"+v));
             HttpSession sess=HttpSessionThreadLocal.getOrCreate(this.cookie(HttpSessionImpl.SESSION_ID_KEY));
             session = new Session(sess, this);
         }

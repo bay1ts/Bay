@@ -17,10 +17,9 @@ public class SessionTest {
                                 })
                         ),
                         NSGet("/hehe", (req, resp) -> {
-                            req.cookies().forEach((k, v) -> {
-                                System.out.println(k + "--" + v);
-                            });
-                            System.out.println("----");
+
+                            System.out.println(req.session().id());
+                            req.session().invalidate();
                             System.out.println(req.session().id());
                             return "hehe";
                         }),

@@ -3,6 +3,7 @@ package com.bay1ts.bay.route.match;
 import com.bay1ts.bay.core.Action;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.HttpMethod;
+import com.bay1ts.bay.core.Session;
 import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.google.gson.Gson;
 import io.netty.handler.codec.http.HttpHeaderNames;
@@ -30,8 +31,13 @@ public final class DoRoute {
         if (action != null) {
             //maybe bug
             context.withRequest(new Request(match,context.httpRequest()));
+//            Request request=context.request();
+//            // TODO: 2016/10/24 请注意下面.set_cookie并不是每次都调用的 只是在 本地找不到 id的时候执行
+//            if (request.cookie("JSESSIONID")==null||!(HttpSessionThreadLocal.get()!=null&&request.cookie("JSESSIONID").equals(HttpSessionThreadLocal.get().getId()))){
+//                System.out.println("这里是空 你可以把下一行粘贴到这里");
+//            }
             //session部分请注意下面这行.调用了session方法 第二次 换了一个url请求的时候.没有从 cookie里获得 上次传给client的id,这里会重建
-            context.response().header(HttpHeaderNames.SET_COOKIE.toString(),"JSESSIONID="+context.request().session().id()+";Path=/");
+
             result =action.handle(context.request(),context.response());
             if (result != null) {
                 content = result;

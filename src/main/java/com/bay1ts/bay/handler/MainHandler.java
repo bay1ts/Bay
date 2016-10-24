@@ -81,9 +81,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         Body body = Body.create();
         Request request=new Request(null,fullHttpRequest);
         String uri =request.pathInfo();
-        System.out.println(request.session().id()+"-=-=-=-=-=-=");
-        System.out.println(HttpSessionThreadLocal.get().getId());
-//        routeMatcher=new Routes();
+
         context
                 .withMatcher(routeMatcher)
                 .withHttpRequest(fullHttpRequest)
@@ -144,7 +142,6 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         } else {
             logger.error("null response content");
             sendError(ctx,NO_CONTENT);
-//            ctx.writeAndFlush(new DefaultFullHttpResponse(HTTP_1_1,NO_CONTENT));
         }
     }
 

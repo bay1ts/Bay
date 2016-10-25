@@ -56,11 +56,12 @@ public class HelloWorld{
           //简单数据绑定
           NSGet("/d/:name",(req,resp)->{
               return req.params(":name");
-            }
-          )
+          }
+         )
         )
+       )
       )
-    );
+     );
   }
 }
 ```

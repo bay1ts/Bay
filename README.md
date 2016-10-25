@@ -7,6 +7,7 @@
 
 ##用法
 ###1.Start
+```
 import static com.bay1ts.bay.core.Bay.*;
 public class HelloWorld{
   public static void main(String[] args){
@@ -49,3 +50,4 @@ public class HelloWorld{
     );
   }
 }
+```

@@ -34,7 +34,7 @@ public class HelloWorld {
 
                                     //支持 类似SpringMVC的 @requestbody 方式
                                     Pojo pojo = req.requestBody(Pojo.class);
-                                    if (pojo != null) {
+                                    if (pojo == null) {
 
                                         //停止处理,自定义response
                                         halt(500, "something wrong");

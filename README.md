@@ -63,6 +63,8 @@ public class HelloWorld {
                         )
                 )
         );
+        //启动服务器.需要写在最后 默认端口5677
+        listenAndStart();
     }
 }
 ```

@@ -5,6 +5,7 @@ import com.bay1ts.bay.core.session.BaseSessionStore;
 import com.bay1ts.bay.core.session.MemoryBasedSessionStore;
 import com.bay1ts.bay.core.session.RedisBasedSessionStore;
 import com.bay1ts.bay.handler.MainHandler;
+import com.bay1ts.bay.handler.WebSocketServerHandler;
 import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
 import com.bay1ts.bay.handler.intercepters.SessionInterceptor;
 import com.bay1ts.bay.route.*;
@@ -19,6 +20,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
+import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.slf4j.Logger;
@@ -60,7 +62,7 @@ public class Service {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.pipeline().
-                                    addLast("readTimeOut", new ReadTimeoutHandler(30)).
+//                                    addLast("readTimeOut", new ReadTimeoutHandler(30)).
                                     addLast("req_resp", new HttpServerCodec()).
                                     addLast("aggregator", new HttpObjectAggregator(65536)).
                                     //参看https://imququ.com/post/transfer-encoding-header-in-http.html
@@ -69,6 +71,8 @@ public class Service {
                                             addLast("streamer", new ChunkedWriteHandler()).
                                     //下面这个可以放到 前面 当 发生idle事件的时候,就会抛出异常,后面要有个 处理这种异常的handler,用来心跳.
                                     //参看 权威指南 私有协议的实现
+                                            addLast("something",new WebSocketServerProtocolHandler("/ws/**")).
+                                            addLast("websocket",new WebSocketServerHandler()).
                                             addLast("mainHandler", getMainHandler());
                         }
                     }).option(ChannelOption.SO_BACKLOG, 1024).childOption(ChannelOption.SO_KEEPALIVE, true);

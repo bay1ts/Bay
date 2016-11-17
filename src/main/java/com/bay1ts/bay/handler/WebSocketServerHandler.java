@@ -18,6 +18,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
+        onCall(ctx,msg);
+
+    }
+
+    private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
         System.out.println("收到websocket消息");
         TextWebSocketFrame msg2=msg.copy();
         ctx.writeAndFlush(msg.retain());

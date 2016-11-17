@@ -71,7 +71,7 @@ public class Service {
                                             addLast("streamer", new ChunkedWriteHandler()).
                                     //下面这个可以放到 前面 当 发生idle事件的时候,就会抛出异常,后面要有个 处理这种异常的handler,用来心跳.
                                     //参看 权威指南 私有协议的实现
-                                            addLast("something",new WebSocketServerProtocolHandler("/ws/**")).
+                                            addLast("something",new WebSocketServerProtocolHandler("/ws")).
                                             addLast("websocket",new WebSocketServerHandler()).
                                             addLast("mainHandler", getMainHandler());
                         }

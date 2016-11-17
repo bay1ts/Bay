@@ -6,7 +6,6 @@ public class HelloWorld {
         //支持静态文件
         staticResources("/static");
 
-
         //支持RESTful路由,可使用java8 lambda表达式简化编码
         get("/hello", (req, resp) -> {
                     return "World";

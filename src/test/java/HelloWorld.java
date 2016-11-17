@@ -1,11 +1,22 @@
 
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+
 import static com.bay1ts.bay.core.Bay.*;
 
 public class HelloWorld {
     public static void main(String[] args) {
         //支持静态文件
         staticResources("/static");
-
+        webSocket("/path", (context -> {
+            System.out.println("收到websocket消息");
+            context.getChannelHandlerContext().writeAndFlush(context.getTextWebSocketFrame().retain());
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            context.getChannelHandlerContext().writeAndFlush(new TextWebSocketFrame("不知道该做成什么样子,,,,"));
+        }));
         //支持RESTful路由,可使用java8 lambda表达式简化编码
         get("/hello", (req, resp) -> {
                     return "World";

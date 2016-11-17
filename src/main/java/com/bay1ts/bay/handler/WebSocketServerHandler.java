@@ -1,5 +1,7 @@
 package com.bay1ts.bay.handler;
 
+import com.bay1ts.bay.core.WebSocketAction;
+import com.bay1ts.bay.core.WebSocketContext;
 import com.bay1ts.bay.route.match.DoRoute;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,17 +18,21 @@ import org.slf4j.LoggerFactory;
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
+    private final WebSocketAction webSocketAction;
+
+    public WebSocketServerHandler(WebSocketAction webSocketAction) {
+        this.webSocketAction=webSocketAction;
+    }
+
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
         onCall(ctx,msg);
-
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
-        System.out.println("收到websocket消息");
-        TextWebSocketFrame msg2=msg.copy();
-        ctx.writeAndFlush(msg.retain());
-        Thread.sleep(3000);
-        ctx.writeAndFlush(new TextWebSocketFrame("不知道该做成什么样子,,,,"));
+        WebSocketContext webSocketContext=new WebSocketContext();
+        webSocketContext.setChannelHandlerContext(ctx);
+        webSocketContext.setTextWebSocketFrame(msg);
+        this.webSocketAction.handle(webSocketContext);
     }
 }

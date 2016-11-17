@@ -67,29 +67,6 @@ public class Request {
 
     private Set<String> headers = null;
 
-    //    request.body              # request body sent by the client (see below), DONE
-    //    request.scheme            # "http"                                DONE
-    //    request.path_info         # "/foo",                               DONE
-    //    request.port              # 80                                    DONE
-    //    request.request_method    # "GET",                                DONE
-    //    request.query_string      # "",                                   DONE
-    //    request.content_length    # length of request.body,               DONE
-    //    request.media_type        # media type of request.body            DONE, content type?
-    //    request.host              # "example.com"                         DONE
-    //    request["SOME_HEADER"]    # value of SOME_HEADER header,          DONE
-    //    request.user_agent        # user agent (used by :agent condition) DONE
-    //    request.url               # "http://example.com/example/foo"      DONE
-    //    request.ip                # client IP address                     DONE
-    //    request.env               # raw env hash handed in by Rack,       DONE
-    //    request.get?              # true (similar methods for other verbs)
-    //    request.secure?           # false (would be true over ssl)
-    //    request.forwarded?        # true (if running behind a reverse proxy)
-    //    request.cookies           # hash of browser cookies,              DONE
-    //    request.xhr?              # is this an ajax request?
-    //    request.script_name       # "/example"
-    //    request.form_data?        # false
-    //    request.referrer          # the referrer of the client or '/'
-
     protected Request() {
         // Used by wrapper
     }
@@ -284,16 +261,6 @@ public class Request {
 //        return fullHttpRequest.getPathInfo();
     }
 
-    /**
-     * @return the servlet path
-     * https://github.com/why2012/jNetty/blob/1.1.x/src/main/java/com/jnetty/core/request/HttpRequestFacade.java
-     * line 247
-     */
-    public String servletPath() {
-        // TODO: 2016/10/16 bug found
-        return this.pathInfo();
-//        return fullHttpRequest.getServletPath();
-    }
 
     /**
      * @return the context path

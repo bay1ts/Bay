@@ -59,7 +59,7 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 
     private void onCall(ChannelHandlerContext ctx, FullHttpRequest fullHttpRequest, FullHttpResponse fullHttpResponse) {
         if (HttpUtil.is100ContinueExpected(fullHttpRequest)){
-            ctx.channel().write(new DefaultHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.CONTINUE));
+            ctx.channel().writeAndFlush(new DefaultHttpResponse(HttpVersion.HTTP_1_1,HttpResponseStatus.CONTINUE));
         }
         //handle static resource request
         if (staticMatcher.consume(ctx,fullHttpRequest,fullHttpResponse)){

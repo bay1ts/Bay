@@ -37,7 +37,6 @@ public class StaticRouteImpl {
             if (servletPath == null && pathInfo == null) {
                 // TODO: 2016/10/14 下面两个方法的值不确定
                 logger.warn("此方法有不确定行为,未经过测试");
-                servletPath = request.servletPath();
                 pathInfo = request.pathInfo();
             }
         } else {

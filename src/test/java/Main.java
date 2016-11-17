@@ -94,7 +94,6 @@ public class Main {
             System.out.println("session");
             System.out.println(req.session());
             System.out.println("servletpath");
-            System.out.println(req.servletPath());
             System.out.println("scheme");
             System.out.println(req.scheme());
             System.out.println("raw");
@@ -123,10 +122,11 @@ public class Main {
 
         NSRoute(
                 newNameSpace("/hehe",
-                        NSGet("/nihao", (req, resp) ->
-                                "aa"
+                        NSGet("/nihao", (req, resp) -> {
+                                    return "aa";
+                                }
                         ),
-                        NSGet("/gaga", UserController.serveLoginPage),
+                        NSGet("/gaga", UserController.serveA),
                         NSPost("/haha", (req, resp) -> {
                             req.postBodyNames().forEach(System.out::println);
                             System.out.println(req.body());
@@ -139,6 +139,9 @@ public class Main {
                             return "aa";
                         }),
                         newNameSpace("/apa",
+                                NSBefore("/*", (req, resp) -> {
+                                    return null;
+                                }),
                                 NSPost("/gaga", (req, resp) -> {
                                     return req.requestBody(req.body(), POJOTest.class).toString();
                                 }),

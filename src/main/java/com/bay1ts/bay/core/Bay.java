@@ -45,6 +45,9 @@ public class Bay {
             logger.error("listen and start error: "+e.getMessage());
         }
     }
+    public static void webSocket(String path,WebSocketAction action){
+        getInstance().webSocket(path,action);
+    }
 
     public static void halt(int status) {
         getInstance().halt(status);

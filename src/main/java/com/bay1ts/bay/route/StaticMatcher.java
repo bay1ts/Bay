@@ -41,7 +41,7 @@ public class  StaticMatcher {
         List<String> list=new ArrayList<>();
         // TODO: 2016/10/14 不完善 应该支持列表的 应该支持以逗号隔开
         //现在支持多个  静态目录了
-        list.add(Config.getWelcomeFile());
+        list.add(Config.instance().getWelcomeFile());
         this.staticRoutes.add(new StaticRouteImpl(path,list));
     }
 

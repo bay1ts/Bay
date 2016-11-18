@@ -22,9 +22,9 @@ public class RedisBasedSessionStore implements BaseSessionStore {
         this.factory=new JedisConnectionFactory();
         this.redisTemplate=new RedisTemplate<>();
         factory.setDatabase(0);
-        factory.setHostName(Config.getRedisLocate());
-        factory.setPort(Config.getPort());
-        factory.setPassword(Config.getRedisPassword());
+        factory.setHostName(Config.instance().getRedisLocate());
+        factory.setPort(Config.instance().getPort());
+        factory.setPassword(Config.instance().getRedisPassword());
         redisTemplate.setConnectionFactory(factory);
     }
 

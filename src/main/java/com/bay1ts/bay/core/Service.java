@@ -245,10 +245,4 @@ public class Service {
         throw new HaltException(status, body);
     }
 
-
-//    public final class StaticResources{
-//        public void location(String folder){
-//            //// TODO: 2016/10/13 参看原  service文件451行
-//        }
-//    }
 }

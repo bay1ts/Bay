@@ -21,10 +21,17 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLEngine;
+import java.io.FileInputStream;
+import java.security.KeyStore;
 import java.util.List;
 
 
@@ -62,6 +69,19 @@ public class Service {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            if (Config.instance().isEnableHttps()){
+                                KeyManagerFactory keyManagerFactory-null;
+                                if (pkPath!=null){
+                                    KeyStore keyStore=KeyStore.getInstance("JKS");
+                                    in=new FileInputStream(pkPath);
+                                    keyStore.load(in,"password".toCharArray());
+                                    keyManagerFactory=KeyManagerFactory.getInstance("SunX509");
+                                    keyManagerFactory.init(keyStore,"password".toCharArray());
+                                }
+                                SslContext sslContext=SslContextBuilder.forServer().build();
+                                SSLEngine engine=sslContext.newEngine(ch.alloc());
+                                ch.pipeline().addFirst("ssl",new SslHandler(engine));
+                            }
                             ch.pipeline().
                                     addLast("req_resp", new HttpServerCodec()).
                                     addLast("aggregator", new HttpObjectAggregator(65536)).

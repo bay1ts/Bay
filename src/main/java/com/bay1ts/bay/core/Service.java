@@ -77,8 +77,8 @@ public class Service {
                         }
                     }).option(ChannelOption.SO_BACKLOG, 1024).childOption(ChannelOption.SO_KEEPALIVE, true);
             // 绑定端口，同步等待成功
-            ChannelFuture f = b.bind(Config.getPort()).sync();
-            logger.info("Server started and listening on port " + Config.getPort());
+            ChannelFuture f = b.bind(Config.instance().getPort()).sync();
+            logger.info("Server started and listening on port " + Config.instance().getPort());
             // 等待服务端监听端口关闭
             f.channel().closeFuture().sync();
         } finally {
@@ -108,7 +108,7 @@ public class Service {
     }
 
     private BaseSessionStore getHttpSessionStore() {
-        BaseSessionStore sessionStore = Config.isEnableRedisSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
+        BaseSessionStore sessionStore = Config.instance().isEnableSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
         new Thread(new Runnable() {
             boolean watchingSession = false;
 

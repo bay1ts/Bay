@@ -10,127 +10,101 @@ import java.util.Properties;
 
 public class Config {
     private static Logger logger= LoggerFactory.getLogger(Config.class);
+    private final static Config INSTANCE=new Config();
+    private Config(){
+
+    }
     //属性值为默认值
-    private static String welcomeFile = "index.html";
-    private static int port = 5677;
-    private static int sessionExpireSecond = 3600;
-    private static boolean enableSessionStore = false;//redis store
-    private static String redisLocate = "127.0.0.1";
-    private static int redisPort = 2333;
-    private static String redisUsername = "root";
-    private static String redisPassword = "toor";
+    private  String welcomeFile = "index.html";
+    private  int port = 5677;
+    private  int sessionExpireSecond = 3600;
+    private  boolean enableSessionStore = false;//redis store
+    private  String redisLocate = "127.0.0.1";
+    private  int redisPort = 2333;
+    private  String redisPassword = "toor";
 
-    private static void updateConfig() throws IOException {
-        logger.debug("updating config from conf.properties");
-        Properties properties=new Properties();
-        properties.load(DoRoute.class.getClass().getClassLoader().getResourceAsStream("conf.properties"));
-        welcomeFile=properties.getProperty("welcomeFile");
-        port=Integer.valueOf(properties.getProperty("port"));
-        sessionExpireSecond=Integer.valueOf(properties.getProperty("sessionExpireSecond"));
-        enableSessionStore=Boolean.valueOf(properties.getProperty("enableSessionStore"));
-        redisLocate=properties.getProperty("redisLocate");
-        redisUsername=properties.getProperty("redisUsername");
-        redisPassword=properties.getProperty("redisPassword");
+    public static Config builder(){
+        return INSTANCE;
     }
-
-    public static String getWelcomeFile() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-        }finally {
-
-            return welcomeFile;
+    public static Config instance(){
+        return INSTANCE;
+    }
+    public Config port(int port){
+        this.port=port;
+        return INSTANCE;
+    }
+    public Config enableRedisSession(boolean enable){
+        this.enableSessionStore=enable;
+        return INSTANCE;
+    }
+    public Config redisIP(String ip) {
+        if (this.enableSessionStore){
+            this.redisLocate=ip;
+            return INSTANCE;
+        }else {
+            throw new RuntimeException("please enable redis session store!");
         }
     }
-
-    public static int getPort() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-        }finally {
-
-            return port;
+    public Config redisPort(int port){
+        if (this.enableSessionStore){
+            this.redisPort=port;
+            return INSTANCE;
+        }else {
+            throw new RuntimeException("please enable redis session store!");
         }
-
+    }
+    public Config redisPassword(String  password){
+        if (this.enableSessionStore){
+            this.redisPassword=password;
+            return INSTANCE;
+        }else {
+            throw new RuntimeException("please enable redis session store!");
+        }
+    }
+    public Config sessionExpireSecond(int time){
+        this.sessionExpireSecond=time;
+        return INSTANCE;
     }
 
-    public static int getSessionExpireSecond() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-        }finally {
+    //放弃了 配置文件的方式
+//    private static void updateConfig() throws IOException {
+//        logger.debug("updating config from conf.properties");
+//        Properties properties=new Properties();
+//        properties.load(DoRoute.class.getClass().getClassLoader().getResourceAsStream("conf.properties"));
+//        welcomeFile=properties.getProperty("welcomeFile");
+//        port=Integer.valueOf(properties.getProperty("port"));
+//        sessionExpireSecond=Integer.valueOf(properties.getProperty("sessionExpireSecond"));
+//        enableSessionStore=Boolean.valueOf(properties.getProperty("enableSessionStore"));
+//        redisLocate=properties.getProperty("redisLocate");
+//        redisUsername=properties.getProperty("redisUsername");
+//        redisPassword=properties.getProperty("redisPassword");
+//    }
 
-            return sessionExpireSecond;
-        }
-
+    public String getWelcomeFile() {
+        return welcomeFile;
     }
 
-    public static boolean isEnableRedisSessionStore() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-
-        }finally {
-
-            return enableSessionStore;
-        }
-
+    public  int getPort() {
+        return port;
     }
 
-    public static String getRedisLocate() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-        }finally {
-
-            return redisLocate;
-        }
-
+    public int getSessionExpireSecond() {
+        return sessionExpireSecond;
     }
 
-    public static int getRedisPort() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-        }finally {
-            return redisPort;
-        }
-
+    public boolean isEnableSessionStore() {
+        return enableSessionStore;
     }
 
-    public static String getRedisUsername() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-        }finally {
-            return redisUsername;
-        }
-
+    public String getRedisLocate() {
+        return redisLocate;
     }
 
-    public static String getRedisPassword() {
-        try {
-            updateConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-            logger.warn("update conf.prop failed,using default conf");
-        }finally {
-            return redisPassword;
-        }
+    public int getRedisPort() {
+        return redisPort;
+    }
 
+    public String getRedisPassword() {
+        return redisPassword;
     }
 }

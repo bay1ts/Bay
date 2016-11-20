@@ -21,7 +21,10 @@ import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManagerFactory;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
@@ -71,26 +74,13 @@ public class Service {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             if (Config.instance().isEnableHttps()) {
-                                /* 这段代码有问题,虽然网上都是这么写的,但是浏览器死活不承认.打算自己生成一个 cer然后倒入
-                                SelfSignedCertificate selfSignedCertificate=new SelfSignedCertificate("localhost");
-                                SslContext sslContext= SslContextBuilder.forServer(selfSignedCertificate.certificate(),selfSignedCertificate.privateKey()).build();
-                                SSLEngine sslEngine=sslContext.newEngine(ch.alloc(),"localhost",Config.instance().getPort());
+                                File keyFile=new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.key");
+                                File cerFile=new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.crt");
+                                SslContext sslContext= SslContextBuilder.forServer(cerFile,keyFile).build();
+//                                SslContext sslContext= SslContextBuilder.forServer(new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\self.crt"),new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\self.key")).build();
+                                SSLEngine sslEngine=sslContext.newEngine(ch.alloc());
                                 sslEngine.setUseClientMode(false);
                                 ch.pipeline().addFirst("ssl",new SslHandler(sslEngine));
-                                 */
-                                SSLEngine engine = null;
-                                KeyManagerFactory keyManagerFactory = null;
-                                KeyStore keyStore = KeyStore.getInstance("JKS");
-                                InputStream in = new FileInputStream("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\ks.jks");
-                                keyStore.load(in, "bay1ts".toCharArray());
-                                keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-                                keyManagerFactory.init(keyStore,"bay1ts".toCharArray());
-                                SSLContext sslContext = SSLContext.getInstance("TLS");
-                                sslContext.init(keyManagerFactory.getKeyManagers(),null, null);
-                                engine=sslContext.createSSLEngine();
-                                engine.setUseClientMode(false);
-                                ch.pipeline().addFirst("ssl",new SslHandler(engine));
-
                             }
                             ch.pipeline().
                                     addLast("req_resp", new HttpServerCodec()).
@@ -132,9 +122,25 @@ public class Service {
         handler
                 .addInterceptor(new ChannelInterceptor())
                 .addInterceptor(new SessionInterceptor(getHttpSessionStore()));
-
-
         return handler;
+    }
+
+    private void getSSLHandler() throws Exception {
+        String keyStorePath = "F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\ks.jks";
+        String password1 = "bay1ts";
+        String password2 = "bay1ts";
+        KeyStore keyStore = KeyStore.getInstance("JKS");
+        InputStream in = new FileInputStream(keyStorePath);
+        keyStore.load(in, password1.toCharArray());
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, password2.toCharArray());
+
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+
+        SSLEngine engine = sslContext.createSSLEngine();
+        engine.setUseClientMode(false);
+//        ch.pipeline().addFirst("ssl", new SslHandler(engine));
     }
 
     private BaseSessionStore getHttpSessionStore() {

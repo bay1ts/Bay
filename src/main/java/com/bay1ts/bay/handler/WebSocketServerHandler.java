@@ -33,6 +33,22 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         WebSocketContext webSocketContext=new WebSocketContext();
         webSocketContext.setChannelHandlerContext(ctx);
         webSocketContext.setTextWebSocketFrame(msg);
-        this.webSocketAction.handle(webSocketContext);
+        this.webSocketAction.onMessage(webSocketContext);
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+        WebSocketContext webSocketContext=new WebSocketContext();
+        webSocketContext.setChannelHandlerContext(ctx);
+        this.webSocketAction.onConnect(webSocketContext);
+    }
+
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelUnregistered(ctx);
+        WebSocketContext webSocketContext=new WebSocketContext();
+        webSocketContext.setChannelHandlerContext(ctx);
+        this.webSocketAction.onClose(webSocketContext);
     }
 }

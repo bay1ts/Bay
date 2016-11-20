@@ -18,7 +18,7 @@ public class HelloWorld {
             }
             context.getChannelHandlerContext().writeAndFlush(new TextWebSocketFrame("不知道该做成什么样子,,,,"));
         }));
-        Config.builder().port(4566).enableHttps();
+        Config.builder().port(4566).enableHttps("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.key","F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.crt");
         //支持RESTful路由,可使用java8 lambda表达式简化编码
         get("/hello", (req, resp) -> {
                     System.out.println("呵了个呵");

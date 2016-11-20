@@ -11,6 +11,7 @@ import java.util.Properties;
 public class Config {
     private static Logger logger= LoggerFactory.getLogger(Config.class);
     private final static Config INSTANCE=new Config();
+
     private Config(){
 
     }
@@ -23,6 +24,8 @@ public class Config {
     private  int redisPort = 2333;
     private  String redisPassword = "toor";
     private  boolean enableHttps=false;
+    private String certPath;
+    private String privateKeyPath;
 
     public static Config builder(){
         return INSTANCE;
@@ -30,7 +33,9 @@ public class Config {
     public static Config instance(){
         return INSTANCE;
     }
-    public Config enableHttps(){
+    public Config enableHttps(String privateKeyPath, String certPath){
+        this.privateKeyPath=privateKeyPath;
+        this.certPath=certPath;
         this.enableHttps=true;
         return INSTANCE;
     }
@@ -117,5 +122,13 @@ public class Config {
 
     public String getRedisPassword() {
         return redisPassword;
+    }
+
+    public String getCertPath() {
+        return certPath;
+    }
+
+    public String getPrivateKeyPath() {
+        return privateKeyPath;
     }
 }

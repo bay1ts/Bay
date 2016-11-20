@@ -74,10 +74,12 @@ public class Service {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             if (Config.instance().isEnableHttps()) {
-                                File keyFile=new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.key");
-                                File cerFile=new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.crt");
+                                if (Config.instance().getCertPath()==null||Config.instance().getPrivateKeyPath()==null){
+                                    throw new Exception("秘钥或者证书路径有误,请检查");
+                                }
+                                File keyFile=new File(Config.instance().getPrivateKeyPath());
+                                File cerFile=new File(Config.instance().getCertPath());
                                 SslContext sslContext= SslContextBuilder.forServer(cerFile,keyFile).build();
-//                                SslContext sslContext= SslContextBuilder.forServer(new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\self.crt"),new File("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\self.key")).build();
                                 SSLEngine sslEngine=sslContext.newEngine(ch.alloc());
                                 sslEngine.setUseClientMode(false);
                                 ch.pipeline().addFirst("ssl",new SslHandler(sslEngine));

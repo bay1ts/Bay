@@ -18,9 +18,10 @@ public class HelloWorld {
             }
             context.getChannelHandlerContext().writeAndFlush(new TextWebSocketFrame("不知道该做成什么样子,,,,"));
         }));
-        Config.builder().enableRedisSession(true).redisIP("127.0.0.7").port(4566).redisPort(2333);
+        Config.builder().port(4566).enableHttps();
         //支持RESTful路由,可使用java8 lambda表达式简化编码
         get("/hello", (req, resp) -> {
+                    System.out.println("呵了个呵");
                     return "World";
                 }
         );

@@ -22,6 +22,7 @@ public class Config {
     private  String redisLocate = "127.0.0.1";
     private  int redisPort = 2333;
     private  String redisPassword = "toor";
+    private  boolean enableHttps=false;
 
     public static Config builder(){
         return INSTANCE;
@@ -29,10 +30,17 @@ public class Config {
     public static Config instance(){
         return INSTANCE;
     }
+    public Config enableHttps(){
+        this.enableHttps=true;
+        return INSTANCE;
+    }
     public Config port(int port){
         this.port=port;
         return INSTANCE;
     }
+    /*
+    可以用反射,在调用此方法之后,吧private的 redisip/port方法变成public的
+     */
     public Config enableRedisSession(boolean enable){
         this.enableSessionStore=enable;
         return INSTANCE;
@@ -94,6 +102,9 @@ public class Config {
 
     public boolean isEnableSessionStore() {
         return enableSessionStore;
+    }
+    public boolean isEnableHttps(){
+        return enableHttps;
     }
 
     public String getRedisLocate() {

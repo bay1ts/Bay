@@ -7,9 +7,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.UnsupportedMessageTypeException;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.websocketx.*;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,11 +19,12 @@ import org.slf4j.LoggerFactory;
  * Created by chenu on 2016/11/16.
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
-
+    private ChannelGroup channels=null;
     private final WebSocketAction webSocketAction;
-
-    public WebSocketServerHandler(WebSocketAction webSocketAction) {
+    WebSocketContext webSocketContext=new WebSocketContext();
+    public WebSocketServerHandler(WebSocketAction webSocketAction, ChannelGroup channels) {
         this.webSocketAction=webSocketAction;
+        this.channels=channels;
     }
 
     @Override
@@ -30,8 +33,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
-        WebSocketContext webSocketContext=new WebSocketContext();
-        webSocketContext.setChannelHandlerContext(ctx);
         webSocketContext.setTextWebSocketFrame(msg);
         this.webSocketAction.onMessage(webSocketContext);
     }
@@ -39,7 +40,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
         super.channelRegistered(ctx);
-        WebSocketContext webSocketContext=new WebSocketContext();
+        System.out.println("add a channel "+ctx.channel().id()+" to channels");
+        channels.add(ctx.channel());
+        webSocketContext.setChannels(channels);
         webSocketContext.setChannelHandlerContext(ctx);
         this.webSocketAction.onConnect(webSocketContext);
     }
@@ -47,8 +50,6 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);
-        WebSocketContext webSocketContext=new WebSocketContext();
-        webSocketContext.setChannelHandlerContext(ctx);
         this.webSocketAction.onClose(webSocketContext);
     }
 }

@@ -20,11 +20,7 @@ public class HelloWorld {
             @Override
             public void onMessage(WebSocketContext context) {
                 System.out.println("收到websocket消息");
-                System.out.println("共有 "+context.getChannels().size());
-                for(Channel channel:context.getChannels()){
-                    System.out.println("channel "+channel.id()+" pushing message");
-                    channel.writeAndFlush(new TextWebSocketFrame("channel "+channel.id()+" pushing message"));
-                }
+                context.broadcast("呵了个呵");
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {

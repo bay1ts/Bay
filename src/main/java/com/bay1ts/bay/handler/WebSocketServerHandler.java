@@ -35,8 +35,23 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
-        webSocketContext.setTextWebSocketFrame(msg);
-        action.onMessage(webSocketContext);
+        try {
+            CWebSocketServerProtocolHandshakeHandler handler=ctx.pipeline().get(CWebSocketServerProtocolHandshakeHandler.class);
+            ctx.pipeline().forEach((e)->{
+                System.out.println(e+" --");
+            });
+            System.out.println(handler+" is handler null!!!!!????");
+            FullHttpRequest request=handler.getRequest();
+            System.out.println(request+" is request null?????????");
+            String url = handler.getRequest().uri();
+            System.out.println("求log 正在为 ws请求 "+url+" 配置action");
+            this.action = webSocketRoutes.get(url);
+            webSocketContext.setTextWebSocketFrame(msg);
+            action.onMessage(webSocketContext);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -46,20 +61,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         channels.add(ctx.channel());
         webSocketContext.setChannels(channels);
         webSocketContext.setChannelHandlerContext(ctx);
-        System.out.println("-=-=-=");
-        ctx.pipeline().forEach((a)->{
-            System.out.println(a+" -");
-        });
-        CWebSocketServerProtocolHandshakeHandler handler=ctx.pipeline().get(CWebSocketServerProtocolHandshakeHandler.class);
-        System.out.println(handler+" is null???");
-        FullHttpRequest request=handler.getRequest();
-        System.out.println(request+"is null!!!!????");
-        String url = handler.getRequest().uri();
-        System.out.println(url+"------");
-        System.out.println("求log 正在为 ws请求 "+url+" 配置action");
-        this.action = webSocketRoutes.get(url);
-        System.out.println(action+"==============");
-        this.action.onConnect(webSocketContext);
+//        this.action.onConnect(webSocketContext);
     }
 
     @Override

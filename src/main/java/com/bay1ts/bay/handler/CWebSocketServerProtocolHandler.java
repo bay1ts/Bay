@@ -52,6 +52,16 @@ public class CWebSocketServerProtocolHandler extends WebSocketServerProtocolHand
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
         ChannelPipeline cp = ctx.pipeline();
+
+        //注意
+        //注意
+        //注意
+        //注意
+        //是不是考虑  把这个if改成循环,<wsroutes size的时候就添加,添加的是原生的 非修改的
+
+
+
+
         if (cp.get(CWebSocketServerProtocolHandshakeHandler.class) == null) {
             // Add the WebSocketHandshakeHandler before this one.
             ctx.pipeline().addBefore(ctx.name(), CWebSocketServerProtocolHandshakeHandler.class.getName(),
@@ -63,6 +73,10 @@ public class CWebSocketServerProtocolHandler extends WebSocketServerProtocolHand
             ctx.pipeline().addBefore(ctx.name(), Utf8FrameValidator.class.getName(),
                     new Utf8FrameValidator());
         }
+        System.out.println("cwebsocketserverprotocolhandler line 66");
+        ctx.pipeline().forEach((a)->{
+            System.out.println(a+"--");
+        });
     }
 
     @Override

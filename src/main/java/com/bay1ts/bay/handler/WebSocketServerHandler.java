@@ -15,15 +15,17 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
  * Created by chenu on 2016/11/16.
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
     private ChannelGroup channels=null;
-    private final WebSocketAction webSocketAction;
+    private final Map<String,WebSocketAction> webSocketRoutes;
     WebSocketContext webSocketContext=new WebSocketContext();
-    public WebSocketServerHandler(WebSocketAction webSocketAction, ChannelGroup channels) {
-        this.webSocketAction=webSocketAction;
+    public WebSocketServerHandler(Map<String, WebSocketAction> webSocketRoutes, ChannelGroup channels) {
+        this.webSocketRoutes=webSocketRoutes;
         this.channels=channels;
     }
 
@@ -33,8 +35,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
+        try {
+            System.out.println(((FullHttpRequest)msg).uri());
+        }catch (Exception e){
+            System.out.println(e.getStackTrace());
+        }
         webSocketContext.setTextWebSocketFrame(msg);
-        this.webSocketAction.onMessage(webSocketContext);
+        //现在唯一的问题 就是怎么把   path传送到这里来
+//        this.webSocketAction.onMessage(webSocketContext);
     }
 
     @Override
@@ -44,12 +52,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         channels.add(ctx.channel());
         webSocketContext.setChannels(channels);
         webSocketContext.setChannelHandlerContext(ctx);
-        this.webSocketAction.onConnect(webSocketContext);
+//        this.webSocketAction.onConnect(webSocketContext);
     }
 
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);
-        this.webSocketAction.onClose(webSocketContext);
+//        this.webSocketAction.onClose(webSocketContext);
     }
 }

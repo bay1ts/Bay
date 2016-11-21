@@ -121,11 +121,12 @@ public class Service {
     }
 
     private WebSocketServerHandler getWebSocketServerHandler(ChannelGroup channels) {
-        return new WebSocketServerHandler(this.webSocketAction,channels);
+        return new WebSocketServerHandler(this.webSocketRoutes,channels);
     }
 
     public void webSocket(String path, WebSocketAction action) {
         this.webSocketRoutes.put(path,action);
+        logger.info("adding websocket route "+path+"  now routes has "+webSocketRoutes.size()+" route");
         this.webSocketPath=path;
         this.webSocketAction=action;
     }

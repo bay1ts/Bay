@@ -28,8 +28,13 @@ public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
     private final boolean allowMaskMismatch;
+    private FullHttpRequest request;
 
-//    CWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
+    public FullHttpRequest getRequest() {
+        return request;
+    }
+
+    //    CWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
 //                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
 //        this.websocketPath = websocketPath;
 //        this.subprotocols = subprotocols;
@@ -49,6 +54,7 @@ public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest req = (FullHttpRequest) msg;
+        this.request=req;
         if (!webSocketRoutes.keySet().contains(req.uri())){
             ctx.fireChannelRead(msg);
             return;
@@ -70,6 +76,7 @@ public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
                     getWebSocketLocation(ctx.pipeline(), req, req.uri()), subprotocols,
                     allowExtensions, maxFramePayloadSize, allowMaskMismatch);
             final WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(req);
+            handshaker.uri();
             if (handshaker == null) {
                 WebSocketServerHandshakerFactory.sendUnsupportedVersionResponse(ctx.channel());
             } else {

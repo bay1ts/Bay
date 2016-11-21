@@ -4,6 +4,7 @@ import com.bay1ts.bay.Config;
 import com.bay1ts.bay.core.session.BaseSessionStore;
 import com.bay1ts.bay.core.session.MemoryBasedSessionStore;
 import com.bay1ts.bay.core.session.RedisBasedSessionStore;
+import com.bay1ts.bay.handler.CWebSocketServerProtocolHandler;
 import com.bay1ts.bay.handler.MainHandler;
 import com.bay1ts.bay.handler.WebSocketServerHandler;
 import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
@@ -99,7 +100,8 @@ public class Service {
                                     addLast("streamer", new ChunkedWriteHandler());
                             if (webSocketRoutes.size()>0) {
                                 ch.pipeline().
-                                        addLast("something", new WebSocketServerProtocolHandler(webSocketPath)).
+                                        addLast("something",new CWebSocketServerProtocolHandler(webSocketRoutes)).
+//                                        addLast("something", new WebSocketServerProtocolHandler(webSocketPath)).
                                         addLast("websocket", getWebSocketServerHandler(channels));
                             }
                             ch.pipeline().

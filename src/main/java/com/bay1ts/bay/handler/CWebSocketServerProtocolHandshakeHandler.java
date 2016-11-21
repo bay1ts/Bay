@@ -7,6 +7,7 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.util.AttributeKey;
 
 import java.util.Map;
 
@@ -19,16 +20,26 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * Created by chenu on 2016/11/21.
  */
 public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
-    private final Map<String,WebSocketAction> webSocketRoutes=null;
-    private final String websocketPath;
+    private static final AttributeKey<WebSocketServerHandshaker> HANDSHAKER_ATTR_KEY =
+            AttributeKey.valueOf(WebSocketServerHandshaker.class, "HANDSHAKER");
+    private final Map<String,WebSocketAction> webSocketRoutes;
+//    private final String websocketPath;
     private final String subprotocols;
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
     private final boolean allowMaskMismatch;
 
-    CWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
-                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
-        this.websocketPath = websocketPath;
+//    CWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
+//                                            boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
+//        this.websocketPath = websocketPath;
+//        this.subprotocols = subprotocols;
+//        this.allowExtensions = allowExtensions;
+//        maxFramePayloadSize = maxFrameSize;
+//        this.allowMaskMismatch = allowMaskMismatch;
+//    }
+    CWebSocketServerProtocolHandshakeHandler(Map<String,WebSocketAction> webSocketRoutes, String subprotocols,
+                                             boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
+        this.webSocketRoutes = webSocketRoutes;
         this.subprotocols = subprotocols;
         this.allowExtensions = allowExtensions;
         maxFramePayloadSize = maxFrameSize;
@@ -56,7 +67,7 @@ public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
             }
 
             final WebSocketServerHandshakerFactory wsFactory = new WebSocketServerHandshakerFactory(
-                    getWebSocketLocation(ctx.pipeline(), req, websocketPath), subprotocols,
+                    getWebSocketLocation(ctx.pipeline(), req, req.uri()), subprotocols,
                     allowExtensions, maxFramePayloadSize, allowMaskMismatch);
             final WebSocketServerHandshaker handshaker = wsFactory.newHandshaker(req);
             if (handshaker == null) {
@@ -74,9 +85,21 @@ public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
                         }
                     }
                 });
-                CWebSocketServerProtocolHandler.setHandshaker(ctx.channel(), handshaker);
+                ctx.channel().attr(HANDSHAKER_ATTR_KEY).set(handshaker);
                 ctx.pipeline().replace(this, "WS403Responder",
-                        CWebSocketServerProtocolHandler.forbiddenHttpRequestResponder());
+                        new ChannelInboundHandlerAdapter() {
+                            @Override
+                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+                                if (msg instanceof FullHttpRequest) {
+                                    ((FullHttpRequest) msg).release();
+                                    FullHttpResponse response =
+                                            new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN);
+                                    ctx.channel().writeAndFlush(response);
+                                } else {
+                                    ctx.fireChannelRead(msg);
+                                }
+                            }
+                        });
             }
         } finally {
             req.release();

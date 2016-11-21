@@ -1,11 +1,14 @@
 package com.bay1ts.bay.handler;
 
+import com.bay1ts.bay.core.WebSocketAction;
 import io.netty.channel.*;
 import io.netty.handler.codec.http.*;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
+
+import java.util.Map;
 
 import static io.netty.handler.codec.http.HttpMethod.GET;
 import static io.netty.handler.codec.http.HttpResponseStatus.FORBIDDEN;
@@ -16,6 +19,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  * Created by chenu on 2016/11/21.
  */
 public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
+    private final Map<String,WebSocketAction> webSocketRoutes=null;
     private final String websocketPath;
     private final String subprotocols;
     private final boolean allowExtensions;
@@ -34,11 +38,16 @@ public class CWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
         FullHttpRequest req = (FullHttpRequest) msg;
-        //这里用循环判断 所有path都不在这里,才传到下一个handler
-        if (!websocketPath.equals(req.uri())) {
+        if (!webSocketRoutes.keySet().contains(req.uri())){
             ctx.fireChannelRead(msg);
             return;
         }
+
+        //这里用循环判断 所有path都不在这里,才传到下一个handler
+//        if (!websocketPath.equals(req.uri())) {
+//            ctx.fireChannelRead(msg);
+//            return;
+//        }
 
         try {
             if (req.method() != GET) {

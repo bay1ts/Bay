@@ -11,6 +11,22 @@ public class HelloWorld {
     public static void main(String[] args) {
         //支持静态文件
         staticResources("/static");
+        webSocket("/path2", new WebSocketAction() {
+            @Override
+            public void onConnect(WebSocketContext context) {
+                System.out.println("/path2连接");
+            }
+
+            @Override
+            public void onMessage(WebSocketContext context) {
+                System.out.println("path2 收到消息");
+            }
+
+            @Override
+            public void onClose(WebSocketContext context) {
+
+            }
+        });
         webSocket("/path", new WebSocketAction() {
             @Override
             public void onConnect(WebSocketContext context) {

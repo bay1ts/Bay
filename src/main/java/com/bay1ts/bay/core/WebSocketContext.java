@@ -1,6 +1,7 @@
 package com.bay1ts.bay.core;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 /**
@@ -9,6 +10,7 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 public class WebSocketContext {
     private ChannelHandlerContext channelHandlerContext;
     private TextWebSocketFrame textWebSocketFrame;
+    private ChannelGroup channels;
 
     public ChannelHandlerContext getChannelHandlerContext() {
         return channelHandlerContext;
@@ -24,5 +26,13 @@ public class WebSocketContext {
 
     public void setTextWebSocketFrame(TextWebSocketFrame textWebSocketFrame) {
         this.textWebSocketFrame = textWebSocketFrame;
+    }
+
+    public ChannelGroup getChannels() {
+        return channels;
+    }
+
+    public void setChannels(ChannelGroup channels) {
+        this.channels = channels;
     }
 }

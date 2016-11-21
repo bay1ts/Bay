@@ -2,6 +2,7 @@
 import com.bay1ts.bay.Config;
 import com.bay1ts.bay.core.WebSocketAction;
 import com.bay1ts.bay.core.WebSocketContext;
+import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import static com.bay1ts.bay.core.Bay.*;
@@ -19,13 +20,17 @@ public class HelloWorld {
             @Override
             public void onMessage(WebSocketContext context) {
                 System.out.println("收到websocket消息");
-                context.getChannelHandlerContext().writeAndFlush(context.getTextWebSocketFrame().retain());
+                System.out.println("共有 "+context.getChannels().size());
+                for(Channel channel:context.getChannels()){
+                    System.out.println("channel "+channel.id()+" pushing message");
+                    channel.writeAndFlush(new TextWebSocketFrame("channel "+channel.id()+" pushing message"));
+                }
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                context.getChannelHandlerContext().writeAndFlush(new TextWebSocketFrame("不知道该做成什么样子,,,,"));
+                context.getChannelHandlerContext().writeAndFlush(new TextWebSocketFrame(context.getChannelHandlerContext().channel().id()+" 不知道该做成什么样子,,,,"));
             }
 
             @Override

@@ -123,8 +123,4 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
         return protocol + "://" + req.headers().get(HttpHeaderNames.HOST) + path;
     }
 
-    @Override
-    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-        ctx.pipeline().addAfter("something","a",);
-    }
 }

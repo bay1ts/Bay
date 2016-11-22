@@ -76,6 +76,7 @@ public class Service {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         ChannelGroup channels=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+        Map<String, ChannelGroup> pathChannels = new HashMap<>();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
@@ -102,7 +103,7 @@ public class Service {
                                 ch.pipeline().
                                         addLast("something",new CWebSocketServerProtocolHandler(webSocketRoutes)).
 //                                        addLast("something", new WebSocketServerProtocolHandler(webSocketPath)).
-                                        addLast("websocket", getWebSocketServerHandler(channels));
+                                        addLast("websocket", getWebSocketServerHandler(pathChannels));
                             }
                             ch.pipeline().
                                     addLast("mainHandler", getMainHandler());
@@ -120,7 +121,7 @@ public class Service {
         }
     }
 
-    private WebSocketServerHandler getWebSocketServerHandler(ChannelGroup channels) {
+    private WebSocketServerHandler getWebSocketServerHandler(Map<String, ChannelGroup> channels) {
         return new WebSocketServerHandler(this.webSocketRoutes,channels);
     }
 

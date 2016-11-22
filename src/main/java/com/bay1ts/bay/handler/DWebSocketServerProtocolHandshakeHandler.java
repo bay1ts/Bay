@@ -29,6 +29,19 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
     private final boolean allowMaskMismatch;
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        super.channelRegistered(ctx);
+        ctx.channel().attr(PATH).set(this.websocketPath);
+        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered");
+    }
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        super.handlerAdded(ctx);
+        ctx.channel().attr(PATH).set(this.websocketPath);
+    }
+
     private static final AttributeKey<WebSocketServerHandshaker> HANDSHAKER_ATTR_KEY =
             AttributeKey.valueOf(WebSocketServerHandshaker.class, "HANDSHAKER");
     private static final AttributeKey<String> PATH=AttributeKey.valueOf("PATH");
@@ -44,6 +57,7 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
+        System.out.println("DWebSocketServerProtocolHandshakeHandler line 54______channelRead");
         if (!(msg instanceof HttpRequest)){
             //测试 before 或者parrent方法
             ctx.fireChannelRead(msg);

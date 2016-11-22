@@ -5,34 +5,32 @@ import com.bay1ts.bay.core.WebSocketContext;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
-import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
+import io.netty.util.concurrent.GlobalEventExecutor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Created by chenu on 2016/11/16.
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
-    private ChannelGroup channels = null;
+    private Map<String, ChannelGroup> pathChannels = null;
     private final Map<String, WebSocketAction> webSocketRoutes;
     private WebSocketAction action;
     WebSocketContext webSocketContext = new WebSocketContext();
-    private static final AttributeKey<String> PATH=AttributeKey.valueOf("PATH");
+    private static final AttributeKey<String> PATH = AttributeKey.valueOf("PATH");
 
-    public WebSocketServerHandler(Map<String, WebSocketAction> webSocketRoutes, ChannelGroup channels) {
+    public WebSocketServerHandler(Map<String, WebSocketAction> webSocketRoutes, Map<String, ChannelGroup> channels) {
         this.webSocketRoutes = webSocketRoutes;
-        this.channels = channels;
+        this.pathChannels = channels;
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        try {
-            onCall(ctx, msg);
-        } catch (Exception e) {
-            System.out.println("read0");
-        }
+        onCall(ctx, msg);
 
     }
 
@@ -40,15 +38,15 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         try {
 
             //新问题,如果有多个handler,怎么保证 能取到对的那个呢
-            ctx.pipeline().forEach((e)->{
-                System.out.println(e+" --");
+            ctx.pipeline().forEach((e) -> {
+                System.out.println(e + " --");
             });
-            String url=ctx.channel().attr(PATH).get();
-            System.out.println("求log 正在为 ws请求 "+url+" 配置action");
+            String url = ctx.channel().attr(PATH).get();
+            System.out.println("求log 正在为 ws请求 " + url + " 配置action");
             this.action = webSocketRoutes.get(url);
             webSocketContext.setTextWebSocketFrame(msg);
             action.onMessage(webSocketContext);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -56,10 +54,19 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
-        System.out.println("add a channel " + ctx.channel().id() + " to channels");
-        channels.add(ctx.channel());
-        webSocketContext.setChannels(channels);
+        String url = ctx.channel().attr(PATH).get();
+        System.out.println(url+"websocketserverhandler line 61");
+        ChannelGroup channelGroup=null;
+        if (pathChannels.containsKey(url)){
+            System.out.println("if "+ url+" ================");
+            channelGroup=pathChannels.get(url);
+        }else {
+            System.out.println("else "+ url+" ================");
+            channelGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+            pathChannels.put(url,channelGroup);
+        }
+        channelGroup.add(ctx.channel());
+        webSocketContext.setChannels(pathChannels.get(url));
         webSocketContext.setChannelHandlerContext(ctx);
 //        this.action.onConnect(webSocketContext);
     }

@@ -4,6 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.AttributeKey;
 
 /**
  * Created by chenu on 2016/11/17.
@@ -12,9 +13,14 @@ public class WebSocketContext {
     private ChannelHandlerContext channelHandlerContext;
     private TextWebSocketFrame textWebSocketFrame;
     private ChannelGroup channels;
+    private static final AttributeKey<String> PATH = AttributeKey.valueOf("PATH");
 
     public void broadcast(String message){
         for (Channel channel:channels){
+            if (channel.attr(PATH).get()!=null){
+                String url=channel.attr(PATH).get();
+                System.out.println("websocketcontext line 22 "+url+" _________________________");
+            }
             channel.writeAndFlush(new TextWebSocketFrame(message));
         }
     }

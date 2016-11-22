@@ -25,18 +25,27 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
     private final boolean allowMaskMismatch;
-    @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        ctx.channel().attr(PATH).set(this.websocketPath);
-        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered,adding path "+websocketPath+"  to "+ctx.channel().id());
-    }
+
+//    @Override
+//    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+//        ctx.channel().attr(PATH).set(this.websocketPath);
+//        System.out.println("请注意啊请注意 handshaker已经添加了,");
+//        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered,adding path "+websocketPath+"  to "+ctx.channel().id());
+//    }
+
+//    @Override
+//    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+//        ctx.channel().attr(PATH).set(this.websocketPath);
+//        System.out.println("请注意啊请注意 handshaker已经注册了,看看业务handler是否已经注册了");
+//        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered,adding path "+websocketPath+"  to "+ctx.channel().id());
+//    }
 
 
     private static final AttributeKey<WebSocketServerHandshaker> HANDSHAKER_ATTR_KEY =
             AttributeKey.valueOf(WebSocketServerHandshaker.class, "HANDSHAKER");
     private static final AttributeKey<String> PATH=AttributeKey.valueOf("PATH");
 
-    DWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
+    public DWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
             boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
         this.websocketPath = websocketPath;
         this.subprotocols = subprotocols;
@@ -47,7 +56,7 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-        System.out.println("DWebSocketServerProtocolHandshakeHandler line 54______channelRead");
+
         if (!(msg instanceof HttpRequest)){
             //测试 before 或者parrent方法
             ctx.fireChannelRead(msg);
@@ -59,7 +68,8 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
             ctx.fireChannelRead(msg);
             return;
         }
-
+        System.out.println("注意啦各位,握手已经读到东西啦,现在就在往 channel "+ctx.channel().id()+" 写入path");
+        ctx.channel().attr(PATH).set(this.websocketPath);
         try {
             if (req.method() != GET) {
                 sendHttpResponse(ctx, req, new DefaultFullHttpResponse(HTTP_1_1, FORBIDDEN));
@@ -86,7 +96,6 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
                     }
                 });
                 ctx.channel().attr(HANDSHAKER_ATTR_KEY).set(handshaker);
-                ctx.channel().attr(PATH).set(websocketPath);
 //                ctx.pipeline().replace(this, "WS403Responder",
 //                        new ChannelInboundHandlerAdapter() {
 //                            @Override

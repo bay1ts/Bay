@@ -30,8 +30,33 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
+        System.out.println("可以假装这里是 链接");
+        onIn(ctx);
         onCall(ctx, msg);
+        System.out.println("可以假装这里是 断开");
 
+    }
+
+    private void onIn(ChannelHandlerContext ctx) {
+        System.out.println("业务handler 激活了");
+        String url = ctx.channel().attr(PATH).get();
+        System.out.println("业务handler 激活,从 "+ctx.channel().id()+" channel中拿出来了 url "+ url);
+        ChannelGroup channelGroup=null;
+        if (pathChannels.containsKey(url)){
+            System.out.println("if "+ url+" ================");
+            channelGroup=pathChannels.get(url);
+        }else {
+            System.out.println("else "+ url+" ================");
+            channelGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+            pathChannels.put(url,channelGroup);
+        }
+        channelGroup.add(ctx.channel());
+        //该检查检查map里都有些什么
+        pathChannels.forEach((a,b)->{
+            System.out.println("url "+a+" contains channels : "+b.size());
+        });
+        webSocketContext.setChannels(pathChannels.get(url));
+        webSocketContext.setChannelHandlerContext(ctx);
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
@@ -53,30 +78,32 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     }
 
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("d active -=-=-=-=-aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-        String url = ctx.channel().attr(PATH).get();
-        ChannelGroup channelGroup=null;
-        if (pathChannels.containsKey(url)){
-            System.out.println("if "+ url+" ================");
-            channelGroup=pathChannels.get(url);
-        }else {
-            System.out.println("else "+ url+" ================");
-            channelGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-            pathChannels.put(url,channelGroup);
-        }
-        channelGroup.add(ctx.channel());
-        //该检查检查map里都有些什么
-        pathChannels.forEach((a,b)->{
-            System.out.println("url "+a+" contains channels : "+b.size());
-        });
-        webSocketContext.setChannels(pathChannels.get(url));
-        webSocketContext.setChannelHandlerContext(ctx);
-    }
+//    @Override
+//    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+//        System.out.println("业务handler 激活了");
+//        String url = ctx.channel().attr(PATH).get();
+//        System.out.println("业务handler 激活,从 "+ctx.channel().id()+" channel中拿出来了 url "+ url);
+//        ChannelGroup channelGroup=null;
+//        if (pathChannels.containsKey(url)){
+//            System.out.println("if "+ url+" ================");
+//            channelGroup=pathChannels.get(url);
+//        }else {
+//            System.out.println("else "+ url+" ================");
+//            channelGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+//            pathChannels.put(url,channelGroup);
+//        }
+//        channelGroup.add(ctx.channel());
+//        //该检查检查map里都有些什么
+//        pathChannels.forEach((a,b)->{
+//            System.out.println("url "+a+" contains channels : "+b.size());
+//        });
+//        webSocketContext.setChannels(pathChannels.get(url));
+//        webSocketContext.setChannelHandlerContext(ctx);
+//    }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("业务handler 注册了");
 //        String url = ctx.channel().attr(PATH).get();
 //        System.out.println(url+"websocketserverhandler line 61");
 //        ChannelGroup channelGroup=null;

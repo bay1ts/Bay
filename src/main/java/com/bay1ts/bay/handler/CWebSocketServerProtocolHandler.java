@@ -58,15 +58,15 @@ public class CWebSocketServerProtocolHandler extends WebSocketServerProtocolHand
         //注意
         //注意
         //是不是考虑  把这个if改成循环,<wsroutes size的时候就添加,添加的是原生的 非修改的
-        if (cp.get(DWebSocketServerProtocolHandshakeHandler.class)==null){
-            int i=0;
-            for (String path:webSocketRoutes.keySet()){
-                System.out.println("CWEBsocketserver handler line 64,generating Dwebsocketserverprotocolhandshakehandler "+path+" to pipline");
-                ctx.pipeline().addBefore(ctx.name(),DWebSocketServerProtocolHandshakeHandler.class.getName()+"_for_"+path,new DWebSocketServerProtocolHandshakeHandler(path, subprotocols,
-                        allowExtensions, maxFramePayloadLength, allowMaskMismatch));
-                i++;
-            }
-        }
+//        if (cp.get(DWebSocketServerProtocolHandshakeHandler.class)==null){
+//            int i=0;
+//            for (String path:webSocketRoutes.keySet()){
+//                System.out.println("CWEBsocketserver handler line 64,generating Dwebsocketserverprotocolhandshakehandler "+path+" to pipline");
+//                ctx.pipeline().addBefore(ctx.name(),DWebSocketServerProtocolHandshakeHandler.class.getName()+"_for_"+path,new DWebSocketServerProtocolHandshakeHandler(path, subprotocols,
+//                        allowExtensions, maxFramePayloadLength, allowMaskMismatch));
+//                i++;
+//            }
+//        }
 
         if (cp.get(Utf8FrameValidator.class) == null) {
             // Add the UFT8 checking before this one.

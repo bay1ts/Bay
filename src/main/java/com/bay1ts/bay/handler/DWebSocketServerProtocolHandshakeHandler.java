@@ -31,6 +31,7 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     private final boolean allowMaskMismatch;
     private static final AttributeKey<WebSocketServerHandshaker> HANDSHAKER_ATTR_KEY =
             AttributeKey.valueOf(WebSocketServerHandshaker.class, "HANDSHAKER");
+    private static final AttributeKey<String> PATH=AttributeKey.valueOf("PATH");
 
     DWebSocketServerProtocolHandshakeHandler(String websocketPath, String subprotocols,
             boolean allowExtensions, int maxFrameSize, boolean allowMaskMismatch) {
@@ -81,6 +82,7 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
                     }
                 });
                 ctx.channel().attr(HANDSHAKER_ATTR_KEY).set(handshaker);
+                ctx.channel().attr(PATH).set(websocketPath);
 //                ctx.pipeline().replace(this, "WS403Responder",
 //                        new ChannelInboundHandlerAdapter() {
 //                            @Override

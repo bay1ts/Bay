@@ -19,6 +19,7 @@ public class HelloWorld {
 
             @Override
             public void onMessage(WebSocketContext context) {
+                context.broadcast("呵呵哒");
                 System.out.println("path2 收到消息");
             }
 

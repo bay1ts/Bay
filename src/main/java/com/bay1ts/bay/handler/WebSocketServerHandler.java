@@ -7,6 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.util.AttributeKey;
 
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     private final Map<String, WebSocketAction> webSocketRoutes;
     private WebSocketAction action;
     WebSocketContext webSocketContext = new WebSocketContext();
+    private static final AttributeKey<String> PATH=AttributeKey.valueOf("PATH");
 
     public WebSocketServerHandler(Map<String, WebSocketAction> webSocketRoutes, ChannelGroup channels) {
         this.webSocketRoutes = webSocketRoutes;
@@ -38,12 +40,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         try {
 
             //新问题,如果有多个handler,怎么保证 能取到对的那个呢
-            DWebSocketServerProtocolHandshakeHandler handler=ctx.pipeline().get(DWebSocketServerProtocolHandshakeHandler.class);
             ctx.pipeline().forEach((e)->{
                 System.out.println(e+" --");
             });
-            System.out.println(handler+" is handler null!!!!!????");
-            String url = handler.getWebsocketPath();
+            String url=ctx.channel().attr(PATH).get();
             System.out.println("求log 正在为 ws请求 "+url+" 配置action");
             this.action = webSocketRoutes.get(url);
             webSocketContext.setTextWebSocketFrame(msg);

@@ -76,4 +76,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         super.channelUnregistered(ctx);
         this.action.onClose(webSocketContext);
     }
+
+    @Override
+    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("Dwebsocketserver... added");
+        System.out.println(ctx.channel().attr(PATH).get()+"-=-=-=-=-=");
+    }
 }

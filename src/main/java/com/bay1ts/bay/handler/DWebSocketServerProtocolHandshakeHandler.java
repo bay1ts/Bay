@@ -20,10 +20,6 @@ import static io.netty.handler.codec.http.HttpVersion.*;
 
 public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
 
-    public String getWebsocketPath() {
-        return websocketPath;
-    }
-
     private final String websocketPath;
     private final String subprotocols;
     private final boolean allowExtensions;
@@ -38,7 +34,11 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        super.handlerAdded(ctx);
+        System.out.println("Dwebsocketserverprotocolhandshakehandler line 38 "+this.websocketPath+" +++++++++++++");
+        if (ctx.channel().attr(PATH).get()!=null){
+            System.out.println(ctx.channel().attr(PATH).get()+"===============");
+            System.out.println("这大概是 第二个这个handler增加的时候,如果有,就说明  之前添加的东西被覆盖了");
+        }
         ctx.channel().attr(PATH).set(this.websocketPath);
     }
 

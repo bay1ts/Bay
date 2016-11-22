@@ -61,6 +61,7 @@ public class CWebSocketServerProtocolHandler extends WebSocketServerProtocolHand
         if (cp.get(DWebSocketServerProtocolHandshakeHandler.class)==null){
             int i=0;
             for (String path:webSocketRoutes.keySet()){
+                System.out.println("CWEBsocketserver handler line 64,generating Dwebsocketserverprotocolhandshakehandler "+path+" to pipline");
                 ctx.pipeline().addBefore(ctx.name(),DWebSocketServerProtocolHandshakeHandler.class.getName()+"_for_"+path,new DWebSocketServerProtocolHandshakeHandler(path, subprotocols,
                         allowExtensions, maxFramePayloadLength, allowMaskMismatch));
                 i++;
@@ -72,10 +73,6 @@ public class CWebSocketServerProtocolHandler extends WebSocketServerProtocolHand
             ctx.pipeline().addBefore(ctx.name(), Utf8FrameValidator.class.getName(),
                     new Utf8FrameValidator());
         }
-        System.out.println("cwebsocketserverprotocolhandler line 66");
-        ctx.pipeline().forEach((a)->{
-            System.out.println(a+"--");
-        });
     }
 
     @Override

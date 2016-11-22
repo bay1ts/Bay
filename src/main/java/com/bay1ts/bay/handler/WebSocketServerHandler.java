@@ -52,10 +52,11 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     }
 
+
     @Override
-    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("d active -=-=-=-=-aaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         String url = ctx.channel().attr(PATH).get();
-        System.out.println(url+"websocketserverhandler line 61");
         ChannelGroup channelGroup=null;
         if (pathChannels.containsKey(url)){
             System.out.println("if "+ url+" ================");
@@ -66,8 +67,30 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
             pathChannels.put(url,channelGroup);
         }
         channelGroup.add(ctx.channel());
+        //该检查检查map里都有些什么
+        pathChannels.forEach((a,b)->{
+            System.out.println("url "+a+" contains channels : "+b.size());
+        });
         webSocketContext.setChannels(pathChannels.get(url));
         webSocketContext.setChannelHandlerContext(ctx);
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+//        String url = ctx.channel().attr(PATH).get();
+//        System.out.println(url+"websocketserverhandler line 61");
+//        ChannelGroup channelGroup=null;
+//        if (pathChannels.containsKey(url)){
+//            System.out.println("if "+ url+" ================");
+//            channelGroup=pathChannels.get(url);
+//        }else {
+//            System.out.println("else "+ url+" ================");
+//            channelGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+//            pathChannels.put(url,channelGroup);
+//        }
+//        channelGroup.add(ctx.channel());
+//        webSocketContext.setChannels(pathChannels.get(url));
+//        webSocketContext.setChannelHandlerContext(ctx);
 //        this.action.onConnect(webSocketContext);
     }
 
@@ -77,9 +100,4 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         this.action.onClose(webSocketContext);
     }
 
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Dwebsocketserver... added");
-        System.out.println(ctx.channel().attr(PATH).get()+"-=-=-=-=-=");
-    }
 }

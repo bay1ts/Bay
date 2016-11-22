@@ -27,20 +27,10 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     private final boolean allowMaskMismatch;
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelRegistered(ctx);
         ctx.channel().attr(PATH).set(this.websocketPath);
-        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered");
+        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered,adding path "+websocketPath+"  to "+ctx.channel().id());
     }
 
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("Dwebsocketserverprotocolhandshakehandler line 38 "+this.websocketPath+" +++++++++++++");
-        if (ctx.channel().attr(PATH).get()!=null){
-            System.out.println(ctx.channel().attr(PATH).get()+"===============");
-            System.out.println("这大概是 第二个这个handler增加的时候,如果有,就说明  之前添加的东西被覆盖了");
-        }
-        ctx.channel().attr(PATH).set(this.websocketPath);
-    }
 
     private static final AttributeKey<WebSocketServerHandshaker> HANDSHAKER_ATTR_KEY =
             AttributeKey.valueOf(WebSocketServerHandshaker.class, "HANDSHAKER");
@@ -131,5 +121,10 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
             protocol = "wss";
         }
         return protocol + "://" + req.headers().get(HttpHeaderNames.HOST) + path;
+    }
+
+    @Override
+    public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+        ctx.pipeline().addAfter("something","a",);
     }
 }

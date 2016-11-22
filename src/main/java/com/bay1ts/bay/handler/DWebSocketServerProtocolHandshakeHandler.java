@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.http.*;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
@@ -18,6 +19,10 @@ import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
 
 public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
+
+    public String getWebsocketPath() {
+        return websocketPath;
+    }
 
     private final String websocketPath;
     private final String subprotocols;
@@ -38,6 +43,12 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
+        if (!(msg instanceof HttpRequest)){
+            //测试 before 或者parrent方法
+            ctx.fireChannelRead(msg);
+            return;
+        }
+        System.out.println("this is handshaker for "+websocketPath);
         FullHttpRequest req = (FullHttpRequest) msg;
         if (!websocketPath.equals(req.uri())) {
             ctx.fireChannelRead(msg);
@@ -70,20 +81,20 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
                     }
                 });
                 ctx.channel().attr(HANDSHAKER_ATTR_KEY).set(handshaker);
-                ctx.pipeline().replace(this, "WS403Responder",
-                        new ChannelInboundHandlerAdapter() {
-                            @Override
-                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-                                if (msg instanceof FullHttpRequest) {
-                                    ((FullHttpRequest) msg).release();
-                                    FullHttpResponse response =
-                                            new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN);
-                                    ctx.channel().writeAndFlush(response);
-                                } else {
-                                    ctx.fireChannelRead(msg);
-                                }
-                            }
-                        });
+//                ctx.pipeline().replace(this, "WS403Responder",
+//                        new ChannelInboundHandlerAdapter() {
+//                            @Override
+//                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+//                                if (msg instanceof FullHttpRequest) {
+//                                    ((FullHttpRequest) msg).release();
+//                                    FullHttpResponse response =
+//                                            new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN);
+//                                    ctx.channel().writeAndFlush(response);
+//                                } else {
+//                                    ctx.fireChannelRead(msg);
+//                                }
+//                            }
+//                        });
             }
         } finally {
             req.release();

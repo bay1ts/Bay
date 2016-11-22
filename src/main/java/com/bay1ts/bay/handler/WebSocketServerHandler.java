@@ -36,14 +36,14 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
         try {
-            CWebSocketServerProtocolHandshakeHandler handler=ctx.pipeline().get(CWebSocketServerProtocolHandshakeHandler.class);
+
+            //新问题,如果有多个handler,怎么保证 能取到对的那个呢
+            DWebSocketServerProtocolHandshakeHandler handler=ctx.pipeline().get(DWebSocketServerProtocolHandshakeHandler.class);
             ctx.pipeline().forEach((e)->{
                 System.out.println(e+" --");
             });
             System.out.println(handler+" is handler null!!!!!????");
-            FullHttpRequest request=handler.getRequest();
-            System.out.println(request+" is request null?????????");
-            String url = handler.getRequest().uri();
+            String url = handler.getWebsocketPath();
             System.out.println("求log 正在为 ws请求 "+url+" 配置action");
             this.action = webSocketRoutes.get(url);
             webSocketContext.setTextWebSocketFrame(msg);

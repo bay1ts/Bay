@@ -12,10 +12,6 @@ public class HelloWorld {
         //支持静态文件
         staticResources("/static");
         webSocket("/path2", new WebSocketAction() {
-            @Override
-            public void onConnect(WebSocketContext context) {
-                System.out.println("/path2连接");
-            }
 
             @Override
             public void onMessage(WebSocketContext context) {
@@ -27,13 +23,13 @@ public class HelloWorld {
             public void onClose(WebSocketContext context) {
 
             }
+
+            @Override
+            public void onError(WebSocketContext webSocketContext) {
+
+            }
         });
         webSocket("/path", new WebSocketAction() {
-            @Override
-            public void onConnect(WebSocketContext context) {
-                System.out.println("websocket链接已建立");
-            }
-
             @Override
             public void onMessage(WebSocketContext context) {
                 System.out.println("收到websocket消息");
@@ -44,6 +40,11 @@ public class HelloWorld {
                     e.printStackTrace();
                 }
                 context.getChannelHandlerContext().writeAndFlush(new TextWebSocketFrame(context.getChannelHandlerContext().channel().id()+" 不知道该做成什么样子,,,,"));
+            }
+
+            @Override
+            public void onError(WebSocketContext webSocketContext) {
+
             }
 
             @Override

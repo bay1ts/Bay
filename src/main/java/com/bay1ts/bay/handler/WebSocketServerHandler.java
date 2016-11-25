@@ -41,40 +41,45 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     }
 
     private void onIn(ChannelHandlerContext ctx) {
-        System.out.println("业务handler 激活了");
+        logger.info("exec before onMessage");
         String url = ctx.channel().attr(PATH).get();
-        System.out.println("业务handler 激活,从 "+ctx.channel().id()+" channel中拿出来了 url "+ url);
+        logger.info("从 "+ctx.channel().id()+" channel中得到 url "+ url);
         ChannelGroup channelGroup=null;
         if (pathChannels.containsKey(url)){
-            System.out.println("if "+ url+" ================");
+            logger.info("path "+url+" requested by others channel");
             channelGroup=pathChannels.get(url);
         }else {
-            System.out.println("else "+ url+" ================");
+            logger.info("this is the first time url "+url+" was requested by any channel");
             channelGroup=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
             pathChannels.put(url,channelGroup);
         }
+        logger.info("adding channel "+ctx.channel()+" to channelGroup "+url);
         channelGroup.add(ctx.channel());
         //该检查检查map里都有些什么
-        pathChannels.forEach((a,b)->{
-            System.out.println("url "+a+" contains channels : "+b.size());
+        pathChannels.forEach((path,channelGroupTmp)->{
+            logger.info("url "+path+" contains channels : "+channelGroupTmp.size());
         });
         webSocketContext.setChannels(pathChannels.get(url));
         webSocketContext.setChannelHandlerContext(ctx);
+        //attention ,don't add onConnect callback method there
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
         try {
             String url = ctx.channel().attr(PATH).get();
-            System.out.println("求log 正在为 ws请求 " + url + " 配置action");
+            logger.info("searching action for websocket "+url);
             this.action = webSocketRoutes.get(url);
             webSocketContext.setTextWebSocketFrame(msg);
+            logger.info("calling callback method onMessage");
             action.onMessage(webSocketContext);
         } catch (Exception e) {
-            e.printStackTrace();
+            // TODO: 2016/11/25 add onError callback there
+            action.onError(webSocketContext);
         }
 
     }
 
+    //maybe channel inactive
     @Override
     public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);

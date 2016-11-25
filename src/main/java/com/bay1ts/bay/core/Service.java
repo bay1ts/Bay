@@ -101,7 +101,7 @@ public class Service {
                                     addLast("deflater", new HttpContentCompressor(9)).
                                     addLast("streamer", new ChunkedWriteHandler());
                             if (webSocketRoutes.size()>0) {
-                                System.out.println("Service line 104 这意味着 在从新从pipline中add handler");
+                                //// TODO: 2016/11/25  不用多说,看得出来
                                 ch.pipeline().
                                         addLast("path",new DWebSocketServerProtocolHandshakeHandler("/path",null,false,65536,false)).
                                         addLast("path2",new DWebSocketServerProtocolHandshakeHandler("/path2",null,false,65536,false)).

@@ -17,10 +17,6 @@ public class WebSocketContext {
 
     public void broadcast(String message){
         for (Channel channel:channels){
-            if (channel.attr(PATH).get()!=null){
-                String url=channel.attr(PATH).get();
-                System.out.println("websocketcontext line 22 "+url+" _________________________");
-            }
             channel.writeAndFlush(new TextWebSocketFrame(message));
         }
     }

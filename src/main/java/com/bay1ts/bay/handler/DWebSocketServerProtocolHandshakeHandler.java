@@ -12,6 +12,8 @@ import io.netty.handler.codec.http.websocketx.WebSocketServerHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.util.AttributeKey;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static io.netty.handler.codec.http.HttpUtil.*;
 import static io.netty.handler.codec.http.HttpMethod.*;
@@ -19,27 +21,13 @@ import static io.netty.handler.codec.http.HttpResponseStatus.*;
 import static io.netty.handler.codec.http.HttpVersion.*;
 
 public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHandlerAdapter {
+    private Logger logger= LoggerFactory.getLogger(DWebSocketServerProtocolHandshakeHandler.class);
 
     private final String websocketPath;
     private final String subprotocols;
     private final boolean allowExtensions;
     private final int maxFramePayloadSize;
     private final boolean allowMaskMismatch;
-
-//    @Override
-//    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-//        ctx.channel().attr(PATH).set(this.websocketPath);
-//        System.out.println("请注意啊请注意 handshaker已经添加了,");
-//        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered,adding path "+websocketPath+"  to "+ctx.channel().id());
-//    }
-
-//    @Override
-//    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
-//        ctx.channel().attr(PATH).set(this.websocketPath);
-//        System.out.println("请注意啊请注意 handshaker已经注册了,看看业务handler是否已经注册了");
-//        System.out.println("DWebSocketServerProtocolHandshakeHandler line 36______channelRegistered,adding path "+websocketPath+"  to "+ctx.channel().id());
-//    }
-
 
     private static final AttributeKey<WebSocketServerHandshaker> HANDSHAKER_ATTR_KEY =
             AttributeKey.valueOf(WebSocketServerHandshaker.class, "HANDSHAKER");
@@ -56,19 +44,18 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
+        logger.info("channel read");
 
         if (!(msg instanceof HttpRequest)){
-            //测试 before 或者parrent方法
             ctx.fireChannelRead(msg);
             return;
         }
-        System.out.println("this is handshaker for "+websocketPath);
         FullHttpRequest req = (FullHttpRequest) msg;
         if (!websocketPath.equals(req.uri())) {
             ctx.fireChannelRead(msg);
             return;
         }
-        System.out.println("注意啦各位,握手已经读到东西啦,现在就在往 channel "+ctx.channel().id()+" 写入path");
+        logger.info("writing path "+this.websocketPath+" to channel "+ctx.channel().id());
         ctx.channel().attr(PATH).set(this.websocketPath);
         try {
             if (req.method() != GET) {
@@ -96,20 +83,6 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
                     }
                 });
                 ctx.channel().attr(HANDSHAKER_ATTR_KEY).set(handshaker);
-//                ctx.pipeline().replace(this, "WS403Responder",
-//                        new ChannelInboundHandlerAdapter() {
-//                            @Override
-//                            public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-//                                if (msg instanceof FullHttpRequest) {
-//                                    ((FullHttpRequest) msg).release();
-//                                    FullHttpResponse response =
-//                                            new DefaultFullHttpResponse(HTTP_1_1, HttpResponseStatus.FORBIDDEN);
-//                                    ctx.channel().writeAndFlush(response);
-//                                } else {
-//                                    ctx.fireChannelRead(msg);
-//                                }
-//                            }
-//                        });
             }
         } finally {
             req.release();

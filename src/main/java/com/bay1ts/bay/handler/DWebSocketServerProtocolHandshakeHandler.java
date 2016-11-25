@@ -42,6 +42,13 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
         this.allowMaskMismatch = allowMaskMismatch;
     }
 
+
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+        System.out.println("aa");
+        //此处可以获得path
+    }
+
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
         logger.info("channel read");

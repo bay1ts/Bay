@@ -9,14 +9,17 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.util.AttributeKey;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Created by chenu on 2016/11/16.
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+    private Logger logger= LoggerFactory.getLogger(WebSocketServerHandler.class);
     private Map<String, ChannelGroup> pathChannels = null;
     private final Map<String, WebSocketAction> webSocketRoutes;
     private WebSocketAction action;

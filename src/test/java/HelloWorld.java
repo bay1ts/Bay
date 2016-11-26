@@ -37,6 +37,11 @@ public class HelloWorld {
             public void onClose(WebSocketContext context) {
                 System.out.println("websocket链接已关闭");
             }
+
+            @Override
+            public void onError(WebSocketContext webSocketContext) {
+
+            }
         });
 //        Config.builder().port(4566).enableHttps("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.key","F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.crt");
         //支持RESTful路由,可使用java8 lambda表达式简化编码

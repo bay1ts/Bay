@@ -7,4 +7,6 @@ public interface WebSocketAction {
     void onConnect(WebSocketContext context);
     void onMessage(WebSocketContext context);
     void onClose(WebSocketContext context);
+
+    void onError(WebSocketContext webSocketContext);
 }

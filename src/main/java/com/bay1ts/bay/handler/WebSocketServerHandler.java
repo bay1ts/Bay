@@ -15,6 +15,8 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.spec.ECField;
+
 /**
  * Created by chenu on 2016/11/16.
  */
@@ -29,7 +31,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        onCall(ctx,msg);
+        try {
+            onCall(ctx,msg);
+        }catch (Exception e){
+            webSocketAction.onError(webSocketContext);
+        }
+
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
@@ -48,7 +55,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     }
 
     @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelUnregistered(ctx);
         this.webSocketAction.onClose(webSocketContext);
     }

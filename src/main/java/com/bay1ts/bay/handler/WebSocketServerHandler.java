@@ -19,6 +19,7 @@ import java.util.Map;
  * Created by chenu on 2016/11/16.
  */
 public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+    boolean read =false;
     private Logger logger= LoggerFactory.getLogger(WebSocketServerHandler.class);
     private Map<String, ChannelGroup> pathChannels = null;
     private final Map<String, WebSocketAction> webSocketRoutes;
@@ -33,7 +34,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws Exception {
-        onIn(ctx);
+        if (!read){
+            onIn(ctx);
+            read=true;
+        }
         //可以把context的初始化,放在in方法中,然后在这个位置上可以 做个连接 的回调(假装)
         //有小点点局限,就是发过一次消息才算 连接上了
         onCall(ctx, msg);

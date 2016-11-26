@@ -55,8 +55,6 @@ public class Service {
     private static Routes routes;
     private static StaticMatcher staticMatcher;
     private static Map<String,WebSocketAction> webSocketRoutes;
-    private WebSocketAction webSocketAction = null;
-    private String webSocketPath = null;
 
     public static Routes getRouterMatcher() {
         return routes;
@@ -132,8 +130,6 @@ public class Service {
     public void webSocket(String path, WebSocketAction action) {
         this.webSocketRoutes.put(path,action);
         logger.info("adding websocket route "+path+"  now routes has "+webSocketRoutes.size()+" route");
-        this.webSocketPath=path;
-        this.webSocketAction=action;
     }
 
     private MainHandler getMainHandler() {

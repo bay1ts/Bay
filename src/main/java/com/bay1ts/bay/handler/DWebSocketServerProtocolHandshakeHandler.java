@@ -43,16 +43,9 @@ public class DWebSocketServerProtocolHandshakeHandler extends ChannelInboundHand
     }
 
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        System.out.println("aa");
-        //此处可以获得path
-    }
 
     @Override
     public void channelRead(final ChannelHandlerContext ctx, Object msg) throws Exception {
-        logger.info("channel read");
-
         if (!(msg instanceof HttpRequest)){
             ctx.fireChannelRead(msg);
             return;

@@ -4,6 +4,8 @@ import com.bay1ts.bay.Config;
 import com.bay1ts.bay.core.session.BaseSessionStore;
 import com.bay1ts.bay.core.session.MemoryBasedSessionStore;
 import com.bay1ts.bay.core.session.RedisBasedSessionStore;
+import com.bay1ts.bay.handler.CWebSocketServerProtocolHandler;
+import com.bay1ts.bay.handler.DWebSocketServerProtocolHandshakeHandler;
 import com.bay1ts.bay.handler.MainHandler;
 import com.bay1ts.bay.handler.WebSocketServerHandler;
 import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
@@ -39,7 +41,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -50,8 +54,7 @@ public class Service {
     private Logger logger = LoggerFactory.getLogger(Service.class);
     private static Routes routes;
     private static StaticMatcher staticMatcher;
-    private WebSocketAction webSocketAction = null;
-    private String webSocketPath = null;
+    private static Map<String,WebSocketAction> webSocketRoutes;
 
     public static Routes getRouterMatcher() {
         return routes;
@@ -64,6 +67,7 @@ public class Service {
     protected Service() {
         routes = Routes.create();
         staticMatcher = new StaticMatcher();
+        webSocketRoutes=new HashMap<>();
     }
 
     public void listenAndStart() throws Exception {
@@ -71,6 +75,7 @@ public class Service {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         ChannelGroup channels=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+        Map<String, ChannelGroup> pathChannels = new HashMap<>();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
@@ -93,10 +98,11 @@ public class Service {
                                     addLast("aggregator", new HttpObjectAggregator(65536)).
                                     addLast("deflater", new HttpContentCompressor(9)).
                                     addLast("streamer", new ChunkedWriteHandler());
-                            if (webSocketPath != null && webSocketAction != null) {
+                            if (webSocketRoutes.size()>0) {
+                                //// TODO: 2016/11/25  不用多说,看得出来
                                 ch.pipeline().
-                                        addLast("something", new WebSocketServerProtocolHandler(webSocketPath)).
-                                        addLast("websocket", getWebSocketServerHandler(channels));
+                                        addLast("something",new CWebSocketServerProtocolHandler(webSocketRoutes)).
+                                        addLast("websocket", getWebSocketServerHandler(pathChannels));
                             }
                             ch.pipeline().
                                     addLast("mainHandler", getMainHandler());
@@ -114,13 +120,13 @@ public class Service {
         }
     }
 
-    private WebSocketServerHandler getWebSocketServerHandler(ChannelGroup channels) {
-        return new WebSocketServerHandler(this.webSocketAction,channels);
+    private WebSocketServerHandler getWebSocketServerHandler(Map<String, ChannelGroup> channels) {
+        return new WebSocketServerHandler(this.webSocketRoutes,channels);
     }
 
     public void webSocket(String path, WebSocketAction action) {
-        this.webSocketPath = path;
-        this.webSocketAction = action;
+        this.webSocketRoutes.put(path,action);
+        logger.info("adding websocket route "+path+"  now routes has "+webSocketRoutes.size()+" route");
     }
 
     private MainHandler getMainHandler() {
@@ -129,24 +135,6 @@ public class Service {
                 .addInterceptor(new ChannelInterceptor())
                 .addInterceptor(new SessionInterceptor(getHttpSessionStore()));
         return handler;
-    }
-
-    private void getSSLHandler() throws Exception {
-        String keyStorePath = "F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\ks.jks";
-        String password1 = "bay1ts";
-        String password2 = "bay1ts";
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        InputStream in = new FileInputStream(keyStorePath);
-        keyStore.load(in, password1.toCharArray());
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-        keyManagerFactory.init(keyStore, password2.toCharArray());
-
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
-
-        SSLEngine engine = sslContext.createSSLEngine();
-        engine.setUseClientMode(false);
-//        ch.pipeline().addFirst("ssl", new SslHandler(engine));
     }
 
     private BaseSessionStore getHttpSessionStore() {

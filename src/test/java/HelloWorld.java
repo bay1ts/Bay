@@ -11,20 +11,34 @@ public class HelloWorld {
     public static void main(String[] args) {
         //支持静态文件
         staticResources("/static");
-        webSocket("/path", new WebSocketAction() {
-            @Override
-            public void onConnect(WebSocketContext context) {
-                System.out.println("websocket链接已建立");
-            }
+        webSocket("/path2", new WebSocketAction() {
 
             @Override
             public void onMessage(WebSocketContext context) {
+                context.broadcast("呵呵哒");
+                System.out.println("path2 收到消息");
+            }
+
+            @Override
+            public void onClose(WebSocketContext context) {
+                System.err.println("ws已断开");
+            }
+
+            @Override
+            public void onError(WebSocketContext webSocketContext) {
+
+            }
+
+            @Override
+            public void onConnect(WebSocketContext webSocketContext) {
+                System.err.println("ws已连接");
+            }
+        });
+        webSocket("/path", new WebSocketAction() {
+            @Override
+            public void onMessage(WebSocketContext context) {
                 System.out.println("收到websocket消息");
-                System.out.println("共有 "+context.getChannels().size());
-                for(Channel channel:context.getChannels()){
-                    System.out.println("channel "+channel.id()+" pushing message");
-                    channel.writeAndFlush(new TextWebSocketFrame("channel "+channel.id()+" pushing message"));
-                }
+                context.broadcast("呵了个呵");
                 try {
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
@@ -34,8 +48,18 @@ public class HelloWorld {
             }
 
             @Override
+            public void onError(WebSocketContext webSocketContext) {
+
+            }
+
+            @Override
+            public void onConnect(WebSocketContext webSocketContext) {
+                System.err.println("path1 链接");
+            }
+
+            @Override
             public void onClose(WebSocketContext context) {
-                System.out.println("websocket链接已关闭");
+                System.out.println("websocket链接 path1已关闭");
             }
         });
 //        Config.builder().port(4566).enableHttps("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.key","F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.crt");

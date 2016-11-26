@@ -77,7 +77,7 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
             action.onMessage(webSocketContext);
         } catch (Exception e) {
             // TODO: 2016/11/25 add onError callback there
-            action.onError(webSocketContext);
+            action.onError(webSocketContext,e);
         }
 
     }

@@ -13,12 +13,17 @@ public class WebSocketContext {
     private ChannelHandlerContext channelHandlerContext;
     private TextWebSocketFrame textWebSocketFrame;
     private ChannelGroup channels;
-    private static final AttributeKey<String> PATH = AttributeKey.valueOf("PATH");
 
     public void broadcast(String message){
         for (Channel channel:channels){
             channel.writeAndFlush(new TextWebSocketFrame(message));
         }
+    }
+    public void sendText(String message){
+        channelHandlerContext.channel().writeAndFlush(new TextWebSocketFrame(message));
+    }
+    public String receiveText(){
+        return this.textWebSocketFrame.text();
     }
 
     public ChannelHandlerContext getChannelHandlerContext() {

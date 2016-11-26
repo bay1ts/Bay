@@ -101,10 +101,7 @@ public class Service {
                             if (webSocketRoutes.size()>0) {
                                 //// TODO: 2016/11/25  不用多说,看得出来
                                 ch.pipeline().
-                                        addLast("path",new DWebSocketServerProtocolHandshakeHandler("/path",null,false,65536,false)).
-                                        addLast("path2",new DWebSocketServerProtocolHandshakeHandler("/path2",null,false,65536,false)).
                                         addLast("something",new CWebSocketServerProtocolHandler(webSocketRoutes)).
-//                                        addLast("something", new WebSocketServerProtocolHandler(webSocketPath)).
                                         addLast("websocket", getWebSocketServerHandler(pathChannels));
                             }
                             ch.pipeline().

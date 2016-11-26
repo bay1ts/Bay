@@ -8,4 +8,6 @@ public interface WebSocketAction {
     void onClose(WebSocketContext context);
 
     void onError(WebSocketContext webSocketContext);
+
+    void onConnect(WebSocketContext webSocketContext);
 }

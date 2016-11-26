@@ -21,12 +21,17 @@ public class HelloWorld {
 
             @Override
             public void onClose(WebSocketContext context) {
-
+                System.err.println("ws已断开");
             }
 
             @Override
             public void onError(WebSocketContext webSocketContext) {
 
+            }
+
+            @Override
+            public void onConnect(WebSocketContext webSocketContext) {
+                System.err.println("ws已连接");
             }
         });
         webSocket("/path", new WebSocketAction() {
@@ -48,8 +53,13 @@ public class HelloWorld {
             }
 
             @Override
+            public void onConnect(WebSocketContext webSocketContext) {
+                System.err.println("path1 链接");
+            }
+
+            @Override
             public void onClose(WebSocketContext context) {
-                System.out.println("websocket链接已关闭");
+                System.out.println("websocket链接 path1已关闭");
             }
         });
 //        Config.builder().port(4566).enableHttps("F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.key","F:\\Dev\\IDEA_Projects\\NoServletWebFrameWork\\src\\main\\resources\\nginx2.crt");

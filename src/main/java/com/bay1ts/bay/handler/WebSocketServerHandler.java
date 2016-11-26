@@ -45,9 +45,10 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
     }
 
     private void onIn(ChannelHandlerContext ctx) {
-        logger.info("exec before onMessage");
         String url = ctx.channel().attr(PATH).get();
         logger.info("从 "+ctx.channel().id()+" channel中得到 url "+ url);
+        this.action = webSocketRoutes.get(url);
+        logger.info("exec before onMessage");
         ChannelGroup channelGroup=null;
         if (pathChannels.containsKey(url)){
             logger.info("path "+url+" requested by others channel");
@@ -65,14 +66,12 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
         });
         webSocketContext.setChannels(pathChannels.get(url));
         webSocketContext.setChannelHandlerContext(ctx);
-        //attention ,don't add onConnect callback method there
+
+        action.onConnect(webSocketContext);
     }
 
     private void onCall(ChannelHandlerContext ctx, TextWebSocketFrame msg) throws InterruptedException {
         try {
-            String url = ctx.channel().attr(PATH).get();
-            logger.info("searching action for websocket "+url);
-            this.action = webSocketRoutes.get(url);
             webSocketContext.setTextWebSocketFrame(msg);
             logger.info("calling callback method onMessage");
             action.onMessage(webSocketContext);
@@ -83,11 +82,9 @@ public class WebSocketServerHandler extends SimpleChannelInboundHandler<TextWebS
 
     }
 
-    //maybe channel inactive
     @Override
-    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
-        super.channelUnregistered(ctx);
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        logger.info("channel "+ctx.channel().id()+" inactive,calling action.onClose callback");
         this.action.onClose(webSocketContext);
     }
-
 }

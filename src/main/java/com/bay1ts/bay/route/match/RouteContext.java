@@ -3,7 +3,7 @@ package com.bay1ts.bay.route.match;
 import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.core.HttpMethod;
-import com.bay1ts.bay.route.Routes;
+import com.bay1ts.bay.route.MemoryRoutes;
 import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
@@ -16,7 +16,7 @@ public final class RouteContext {
      */
 
 
-    private Routes routeMatcher;
+    private MemoryRoutes routeMatcher;
     private FullHttpRequest httpRequest;
     private String uri;
     private String acceptType;
@@ -33,11 +33,11 @@ public final class RouteContext {
         // hidden
     }
 
-    public Routes routeMatcher() {
+    public MemoryRoutes routeMatcher() {
         return routeMatcher;
     }
 
-    public RouteContext withMatcher(Routes routeMatcher) {
+    public RouteContext withMatcher(MemoryRoutes routeMatcher) {
         this.routeMatcher = routeMatcher;
         return this;
     }

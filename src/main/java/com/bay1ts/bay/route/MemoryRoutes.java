@@ -11,18 +11,20 @@ import java.util.*;
 
 /**
  * Created by chenu on 2016/10/12.
+ *
  */
-public class Routes {
-    private Logger logger= LoggerFactory.getLogger(Routes.class);
+// TODO: 2016/11/26 要像session一样,抽取出来Routes的核心接口,做成,memory的,redis的.多机环境下要用redis的,防止出现动态路由的情况
+public class MemoryRoutes implements RouteStore{
+    private Logger logger= LoggerFactory.getLogger(MemoryRoutes.class);
     private List<RouteEntry> routes;
-    public static Routes create(){
-        return new Routes();
+    public static MemoryRoutes create(){
+        return new MemoryRoutes();
     }
 
-    protected Routes() {
+    protected MemoryRoutes() {
         routes = new ArrayList<>();
     }
-    public Routes(List<RouteEntry> routes) {
+    public MemoryRoutes(List<RouteEntry> routes) {
         this.routes = routes;
     }
 
@@ -31,6 +33,7 @@ public class Routes {
      * @param httpMethod
      * @param route
      */
+    @Override
     public void add(String httpMethod,RouteImpl route){
         String path=route.getPath();
         HttpMethod method;
@@ -58,9 +61,6 @@ public class Routes {
             logger.info("adding route "+method.name()+" "+path+" "+acceptType);
         }
         routes.add(entry);
-        //下面这个刚开始没看懂
-        //是个 showing all the mapped routes
-        // TODO: 2016/10/12  package spark.route.Routes.java line 190 本程序没有支持 route overview
     }
 
 
@@ -71,6 +71,7 @@ public class Routes {
      * @param acceptType
      * @return
      */
+    @Override
     public RouteMatch find(HttpMethod httpMethod,String path,String acceptType){
         List<RouteEntry> routeEntries=findActionForRequestedRoute(httpMethod,path);
         RouteEntry entry=findActionWithGivenAcceptType(routeEntries,acceptType);
@@ -85,9 +86,10 @@ public class Routes {
      * @param acceptType the accept type
      * @return the targets
      */
+    @Override
     public List<RouteMatch> findMultiple(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteMatch> matchSet = new ArrayList<>();
-        List<RouteEntry> routeEntries = findActionsForRequestedRoute(httpMethod, path);
+        List<RouteEntry> routeEntries = findActionForRequestedRoute(httpMethod, path);
 
         for (RouteEntry routeEntry : routeEntries) {
             if (acceptType != null) {
@@ -104,30 +106,18 @@ public class Routes {
         return matchSet;
     }
 
-
-    //attition 下面的慎用
-    /**
-     * Removes a particular route from the collection of those that have been previously routed.
-     * Search for a previously established routes using the given path and removes any matches that are found.
-     *
-     * @param path the route path
-     * @return <tt>true</tt> if this a matching route has been previously routed
-     * @throws java.lang.IllegalArgumentException if <tt>path</tt> is null or blank
-     * @since 2.2
-     */
-    public boolean remove(String path) {
-//        if (StringUtils.isEmpty(path)) {
+    @Override
+    public void clear() {
+        routes.clear();
+    }
+    @Override
+    public boolean removeRoute(HttpMethod httpMethod, String path) {
         if ("".equals(path)||path==null){
             throw new IllegalArgumentException("path cannot be null or blank");
         }
-
-        return removeRoute((HttpMethod) null, path);
-    }
-    public void clear() {
-        routes.clear();
-//        RouteOverview.routes.clear();
-    }
-    private boolean removeRoute(HttpMethod httpMethod, String path) {
+        if (httpMethod==null){
+            throw new IllegalArgumentException("httpMethod cannot be null");
+        }
         List<RouteEntry> forRemoval = new ArrayList<>();
 
         for (RouteEntry routeEntry : routes) {
@@ -139,7 +129,6 @@ public class Routes {
             }
 
             if (routeEntry.matches(httpMethodToMatch, path)) {
-                // TODO: 2016/10/12 打日志 正删除呢
                 forRemoval.add(routeEntry);
             }
         }
@@ -147,15 +136,6 @@ public class Routes {
         return routes.removeAll(forRemoval);
     }
 
-    private List<RouteEntry> findActionsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
-        for (RouteEntry entry : routes) {
-            if (entry.matches(httpMethod, path)) {
-                matchSet.add(entry);
-            }
-        }
-        return matchSet;
-    }
     private List<RouteEntry> findActionForRequestedRoute(HttpMethod httpMethod, String path) {
         List<RouteEntry> matchSet=new ArrayList<>();
         for (RouteEntry entry: routes){

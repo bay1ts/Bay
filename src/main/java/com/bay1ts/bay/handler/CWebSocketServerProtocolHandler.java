@@ -53,11 +53,6 @@ public class CWebSocketServerProtocolHandler extends WebSocketServerProtocolHand
     public void handlerAdded(ChannelHandlerContext ctx) {
         ChannelPipeline cp = ctx.pipeline();
 
-        //注意
-        //注意
-        //注意
-        //注意
-        //是不是考虑  把这个if改成循环,<wsroutes size的时候就添加,添加的是原生的 非修改的
         if (cp.get(DWebSocketServerProtocolHandshakeHandler.class)==null){
             int i=0;
             for (String path:webSocketRoutes.keySet()){

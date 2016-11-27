@@ -1,8 +1,6 @@
 
-import com.bay1ts.bay.Config;
 import com.bay1ts.bay.core.WebSocketAction;
 import com.bay1ts.bay.core.WebSocketContext;
-import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import static com.bay1ts.bay.core.Bay.*;
@@ -25,7 +23,7 @@ public class HelloWorld {
             }
 
             @Override
-            public void onError(WebSocketContext webSocketContext) {
+            public void onError(WebSocketContext webSocketContext, Exception e) {
 
             }
 
@@ -48,7 +46,7 @@ public class HelloWorld {
             }
 
             @Override
-            public void onError(WebSocketContext webSocketContext) {
+            public void onError(WebSocketContext webSocketContext, Exception e) {
 
             }
 

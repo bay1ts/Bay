@@ -5,7 +5,6 @@ import com.bay1ts.bay.core.session.BaseSessionStore;
 import com.bay1ts.bay.core.session.MemoryBasedSessionStore;
 import com.bay1ts.bay.core.session.RedisBasedSessionStore;
 import com.bay1ts.bay.handler.CWebSocketServerProtocolHandler;
-import com.bay1ts.bay.handler.DWebSocketServerProtocolHandshakeHandler;
 import com.bay1ts.bay.handler.MainHandler;
 import com.bay1ts.bay.handler.WebSocketServerHandler;
 import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
@@ -24,23 +23,16 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
-import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,11 +44,11 @@ import java.util.Map;
  */
 public class Service {
     private Logger logger = LoggerFactory.getLogger(Service.class);
-    private static Routes routes;
+    private static RouteStore routes;
     private static StaticMatcher staticMatcher;
     private static Map<String,WebSocketAction> webSocketRoutes;
 
-    public static Routes getRouterMatcher() {
+    public static RouteStore getRouterMatcher() {
         return routes;
     }
 
@@ -65,7 +57,9 @@ public class Service {
     }
 
     protected Service() {
-        routes = Routes.create();
+        // TODO: 2016/11/27 此处,根据配置的 环境模式来选择routes的实现
+        //有个小问题,如果部署多台的话,路由会重复注册啊.
+        routes = MemoryRoutes.create();
         staticMatcher = new StaticMatcher();
         webSocketRoutes=new HashMap<>();
     }
@@ -74,7 +68,6 @@ public class Service {
         // 配置服务端的NIO线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        ChannelGroup channels=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
         Map<String, ChannelGroup> pathChannels = new HashMap<>();
         try {
             ServerBootstrap b = new ServerBootstrap();
@@ -82,6 +75,8 @@ public class Service {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            // TODO: 2016/11/26 处理一下 丰富https的对程序员暴露的接口
+
                             if (Config.instance().isEnableHttps()) {
                                 if (Config.instance().getCertPath()==null||Config.instance().getPrivateKeyPath()==null){
                                     throw new Exception("秘钥或者证书路径有误,请检查");
@@ -99,7 +94,6 @@ public class Service {
                                     addLast("deflater", new HttpContentCompressor(9)).
                                     addLast("streamer", new ChunkedWriteHandler());
                             if (webSocketRoutes.size()>0) {
-                                //// TODO: 2016/11/25  不用多说,看得出来
                                 ch.pipeline().
                                         addLast("something",new CWebSocketServerProtocolHandler(webSocketRoutes)).
                                         addLast("websocket", getWebSocketServerHandler(pathChannels));

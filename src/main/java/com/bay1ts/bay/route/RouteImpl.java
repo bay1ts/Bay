@@ -25,21 +25,11 @@ public class RouteImpl {
         return new RouteImpl(path,acceptType,action);
     }
 
-//    private static RouteImpl create(String path, String acceptType, Action action) {
-//        return new RouteImpl(path,acceptType,action){
-//            @Override
-//            public Object handle(FullHttpRequest request, FullHttpResponse response) {
-//                return action.handle(request,response);
-//            }
-//        };
-//    }
 
     public RouteImpl(String path, String acceptType,Action action) {
         this(path,acceptType);
         this.action=action;
     }
-//    public abstract Object handle(FullHttpRequest request, FullHttpResponse response);
-
 
     public String getPath() {
         return path;

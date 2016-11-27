@@ -7,7 +7,7 @@ public interface WebSocketAction {
     void onMessage(WebSocketContext context);
     void onClose(WebSocketContext context);
 
-    void onError(WebSocketContext webSocketContext);
+    void onError(WebSocketContext webSocketContext, Exception e);
 
     void onConnect(WebSocketContext webSocketContext);
 }

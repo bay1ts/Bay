@@ -1,13 +1,12 @@
 package com.bay1ts.bay.handler;
 import com.bay1ts.bay.core.*;
 import com.bay1ts.bay.core.HttpMethod;
-import com.bay1ts.bay.core.session.HttpSessionImpl;
-import com.bay1ts.bay.core.session.HttpSessionThreadLocal;
 import com.bay1ts.bay.handler.intercepters.Interceptor;
-import com.bay1ts.bay.route.Routes;
+import com.bay1ts.bay.route.MemoryRoutes;
 import com.bay1ts.bay.route.StaticMatcher;
+import com.bay1ts.bay.route.filter.AfterFilters;
+import com.bay1ts.bay.route.filter.BeforeFilters;
 import com.bay1ts.bay.route.match.*;
-import com.bay1ts.bay.utils.Utils;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -15,11 +14,10 @@ import io.netty.handler.codec.TooLongFrameException;
 import io.netty.handler.codec.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import io.netty.handler.codec.http.cookie.Cookie;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static io.netty.handler.codec.http.HttpHeaders.Names.*;
@@ -32,7 +30,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private Logger logger= LoggerFactory.getLogger(MainHandler.class);
-    private Routes routeMatcher= Service.getRouterMatcher();
+    private MemoryRoutes routeMatcher= Service.getRouterMatcher();
     private StaticMatcher staticMatcher=Service.staticMatcher();
     private List<Interceptor> interceptors;
     private static final String SERVER_NAME="Bay1ts'Server YEE!!!";
@@ -70,13 +68,10 @@ public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
             interceptor.onRequestReceived(ctx,fullHttpRequest);
         }
 
-        //refer to servletbridgehandler.java line283
-
         //handle dynamic request
         HttpMethod httpMethod = HttpMethod.valueOf(fullHttpRequest.method().name().toLowerCase());
         String acceptType = fullHttpRequest.headers().get(HttpHeaderNames.ACCEPT);
         Response response=new Response(fullHttpResponse);
-        // TODO: 2016/10/12 routecontext package spark.http.matching.MatcherFilter line 112
         RouteContext context = RouteContext.create();
         Body body = Body.create();
         Request request=new Request(null,fullHttpRequest);

@@ -82,6 +82,8 @@ public class Service {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            // TODO: 2016/11/26 处理一下 丰富https的对程序员暴露的接口
+
                             if (Config.instance().isEnableHttps()) {
                                 if (Config.instance().getCertPath()==null||Config.instance().getPrivateKeyPath()==null){
                                     throw new Exception("秘钥或者证书路径有误,请检查");

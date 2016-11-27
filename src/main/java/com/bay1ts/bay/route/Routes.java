@@ -11,7 +11,9 @@ import java.util.*;
 
 /**
  * Created by chenu on 2016/10/12.
+ *
  */
+// TODO: 2016/11/26 要像session一样,抽取出来Routes的核心接口,做成,memory的,redis的.多机环境下要用redis的,防止出现动态路由的情况
 public class Routes {
     private Logger logger= LoggerFactory.getLogger(Routes.class);
     private List<RouteEntry> routes;
@@ -58,9 +60,6 @@ public class Routes {
             logger.info("adding route "+method.name()+" "+path+" "+acceptType);
         }
         routes.add(entry);
-        //下面这个刚开始没看懂
-        //是个 showing all the mapped routes
-        // TODO: 2016/10/12  package spark.route.Routes.java line 190 本程序没有支持 route overview
     }
 
 
@@ -87,7 +86,7 @@ public class Routes {
      */
     public List<RouteMatch> findMultiple(HttpMethod httpMethod, String path, String acceptType) {
         List<RouteMatch> matchSet = new ArrayList<>();
-        List<RouteEntry> routeEntries = findActionsForRequestedRoute(httpMethod, path);
+        List<RouteEntry> routeEntries = findActionForRequestedRoute(httpMethod, path);
 
         for (RouteEntry routeEntry : routeEntries) {
             if (acceptType != null) {
@@ -125,7 +124,6 @@ public class Routes {
     }
     public void clear() {
         routes.clear();
-//        RouteOverview.routes.clear();
     }
     private boolean removeRoute(HttpMethod httpMethod, String path) {
         List<RouteEntry> forRemoval = new ArrayList<>();
@@ -147,15 +145,6 @@ public class Routes {
         return routes.removeAll(forRemoval);
     }
 
-    private List<RouteEntry> findActionsForRequestedRoute(HttpMethod httpMethod, String path) {
-        List<RouteEntry> matchSet = new ArrayList<RouteEntry>();
-        for (RouteEntry entry : routes) {
-            if (entry.matches(httpMethod, path)) {
-                matchSet.add(entry);
-            }
-        }
-        return matchSet;
-    }
     private List<RouteEntry> findActionForRequestedRoute(HttpMethod httpMethod, String path) {
         List<RouteEntry> matchSet=new ArrayList<>();
         for (RouteEntry entry: routes){

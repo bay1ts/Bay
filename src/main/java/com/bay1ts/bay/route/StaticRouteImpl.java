@@ -1,12 +1,10 @@
 package com.bay1ts.bay.route;
 
 import com.bay1ts.bay.core.Request;
-import io.netty.handler.codec.http.FullHttpRequest;
+import com.bay1ts.bay.route.util.ClassPathResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.util.List;
 

@@ -68,7 +68,6 @@ public class Service {
         // 配置服务端的NIO线程组
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        ChannelGroup channels=new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
         Map<String, ChannelGroup> pathChannels = new HashMap<>();
         try {
             ServerBootstrap b = new ServerBootstrap();
@@ -95,7 +94,6 @@ public class Service {
                                     addLast("deflater", new HttpContentCompressor(9)).
                                     addLast("streamer", new ChunkedWriteHandler());
                             if (webSocketRoutes.size()>0) {
-                                //// TODO: 2016/11/25  不用多说,看得出来
                                 ch.pipeline().
                                         addLast("something",new CWebSocketServerProtocolHandler(webSocketRoutes)).
                                         addLast("websocket", getWebSocketServerHandler(pathChannels));

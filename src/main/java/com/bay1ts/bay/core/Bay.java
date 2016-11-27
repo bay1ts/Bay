@@ -76,6 +76,9 @@ public class Bay {
     }
 
     //暴露给外面的接口.最基本的  restful 接口
+
+    // TODO: 2016/11/27 增加accepttype
+    // TODO: 2016/11/27 增加动态路由,在接口上应该有所显示,这是动态添加的,应该将路由保存到 redis中去(在 集群环境,单机环境保存在内存中即可)
     public static void get(final String path, final Action action) {
         getInstance().get(path, action);
     }
@@ -111,7 +114,6 @@ public class Bay {
     public static void options(final String path, final Action action) {
         getInstance().options(path, action);
     }
-    // TODO: 2016/10/16 any
 
     public static TreeNode NSGet(String path, Action action) {
         return getInstance().NSAdd(HttpMethod.get, path, action);

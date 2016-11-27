@@ -1,4 +1,4 @@
-package com.bay1ts.bay.route;
+package com.bay1ts.bay.route.util;
 
 import com.bay1ts.bay.utils.Assert;
 import com.bay1ts.bay.utils.ClassUtils;

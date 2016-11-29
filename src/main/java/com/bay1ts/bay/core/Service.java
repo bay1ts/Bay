@@ -1,6 +1,5 @@
 package com.bay1ts.bay.core;
 
-import com.bay1ts.bay.Config;
 import com.bay1ts.bay.core.session.BaseSessionStore;
 import com.bay1ts.bay.core.session.MemoryBasedSessionStore;
 import com.bay1ts.bay.core.session.RedisBasedSessionStore;
@@ -16,7 +15,6 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
-import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -27,7 +25,6 @@ import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.util.concurrent.GlobalEventExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +129,7 @@ public class Service {
     }
 
     private BaseSessionStore getHttpSessionStore() {
-        BaseSessionStore sessionStore = Config.instance().isEnableSessionStore() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
+        BaseSessionStore sessionStore = Config.instance().isEnableScale() ? new RedisBasedSessionStore() : new MemoryBasedSessionStore();
         new Thread(new Runnable() {
             boolean watchingSession = false;
 
@@ -196,6 +193,9 @@ public class Service {
     // TODO: 2016/10/12 像beego学习,加上any
 
 
+    public void dynamicAdd(HttpMethod method,String path,Action action){
+
+    }
     public void before(String path, Action action) {
         addFilter(HttpMethod.before.name(), RouteImpl.create(path, action));
     }

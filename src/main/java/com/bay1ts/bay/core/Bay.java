@@ -1,27 +1,6 @@
 package com.bay1ts.bay.core;
 
-import com.bay1ts.bay.Config;
-import com.bay1ts.bay.core.session.BaseSessionStore;
-import com.bay1ts.bay.core.session.MemoryBasedSessionStore;
-import com.bay1ts.bay.core.session.RedisBasedSessionStore;
-import com.bay1ts.bay.handler.MainHandler;
-import com.bay1ts.bay.handler.intercepters.ChannelInterceptor;
-import com.bay1ts.bay.handler.intercepters.SessionInterceptor;
 import com.bay1ts.bay.route.TreeNode;
-import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.http.HttpContentCompressor;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.HttpServerCodec;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.timeout.IdleStateHandler;
-import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,36 +58,100 @@ public class Bay {
 
     // TODO: 2016/11/27 增加accepttype
     // TODO: 2016/11/27 增加动态路由,在接口上应该有所显示,这是动态添加的,应该将路由保存到 redis中去(在 集群环境,单机环境保存在内存中即可)
+    public static void dynamicGet(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.get,path,action);
+        }else {
+            getInstance().get(path, action);
+        }
+    }
     public static void get(final String path, final Action action) {
         getInstance().get(path, action);
+    }
+    public static void dynamicPost(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.post,path,action);
+        }else {
+            getInstance().post(path, action);
+        }
     }
 
     public static void post(final String path, final Action action) {
         getInstance().post(path, action);
+    }
+    public static void dynamicPut(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.put,path,action);
+        }else {
+            getInstance().put(path, action);
+        }
     }
 
     public static void put(final String path, final Action action) {
         getInstance().put(path, action);
     }
 
+    public static void dynamicPatch(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.patch,path,action);
+        }else {
+            getInstance().patch(path, action);
+        }
+    }
     public static void patch(final String path, final Action action) {
         getInstance().patch(path, action);
     }
-
+    public static void dynamicDelete(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.delete,path,action);
+        }else {
+            getInstance().delete(path, action);
+        }
+    }
     public static void delete(final String path, final Action action) {
         getInstance().delete(path, action);
+    }
+
+    public static void dynamicHead(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.head,path,action);
+        }else {
+            getInstance().head(path, action);
+        }
     }
 
     public static void head(final String path, final Action action) {
         getInstance().head(path, action);
     }
+    public static void dynamicTrace(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.trace,path,action);
+        }else {
+            getInstance().trace(path, action);
+        }
+    }
 
     public static void trace(final String path, final Action action) {
         getInstance().trace(path, action);
     }
+    public static void dynamicConnect(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.connect,path,action);
+        }else {
+            getInstance().connect(path, action);
+        }
+    }
 
     public static void connect(final String path, final Action action) {
         getInstance().connect(path, action);
+    }
+
+    public static void dynamicOptions(String path,Action action){
+        if (Config.instance().isEnableScale()){
+            getInstance().dynamicAdd(HttpMethod.options,path,action);
+        }else {
+            getInstance().options(path, action);
+        }
     }
 
     public static void options(final String path, final Action action) {

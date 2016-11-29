@@ -1,6 +1,6 @@
 package com.bay1ts.bay.core.session;
 
-import com.bay1ts.bay.Config;
+import com.bay1ts.bay.core.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;

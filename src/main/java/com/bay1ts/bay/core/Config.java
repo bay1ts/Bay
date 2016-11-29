@@ -1,12 +1,7 @@
-package com.bay1ts.bay;
+package com.bay1ts.bay.core;
 
-import com.bay1ts.bay.route.match.DoRoute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.rmi.runtime.Log;
-
-import java.io.IOException;
-import java.util.Properties;
 
 public class Config {
     private static Logger logger= LoggerFactory.getLogger(Config.class);
@@ -19,7 +14,7 @@ public class Config {
     private  String welcomeFile = "index.html";
     private  int port = 5677;
     private  int sessionExpireSecond = 3600;
-    private  boolean enableSessionStore = false;//redis store
+    private  boolean enableScale = false;//redis store
     private  String redisLocate = "127.0.0.1";
     private  int redisPort = 2333;
     private  String redisPassword = "toor";
@@ -46,12 +41,12 @@ public class Config {
     /*
     可以用反射,在调用此方法之后,吧private的 redisip/port方法变成public的
      */
-    public Config enableRedisSession(boolean enable){
-        this.enableSessionStore=enable;
+    public Config enableScale(boolean enable){
+        this.enableScale =enable;
         return INSTANCE;
     }
     public Config redisIP(String ip) {
-        if (this.enableSessionStore){
+        if (this.enableScale){
             this.redisLocate=ip;
             return INSTANCE;
         }else {
@@ -59,7 +54,7 @@ public class Config {
         }
     }
     public Config redisPort(int port){
-        if (this.enableSessionStore){
+        if (this.enableScale){
             this.redisPort=port;
             return INSTANCE;
         }else {
@@ -67,7 +62,7 @@ public class Config {
         }
     }
     public Config redisPassword(String  password){
-        if (this.enableSessionStore){
+        if (this.enableScale){
             this.redisPassword=password;
             return INSTANCE;
         }else {
@@ -87,7 +82,7 @@ public class Config {
 //        welcomeFile=properties.getProperty("welcomeFile");
 //        port=Integer.valueOf(properties.getProperty("port"));
 //        sessionExpireSecond=Integer.valueOf(properties.getProperty("sessionExpireSecond"));
-//        enableSessionStore=Boolean.valueOf(properties.getProperty("enableSessionStore"));
+//        enableScale=Boolean.valueOf(properties.getProperty("enableScale"));
 //        redisLocate=properties.getProperty("redisLocate");
 //        redisUsername=properties.getProperty("redisUsername");
 //        redisPassword=properties.getProperty("redisPassword");
@@ -105,8 +100,8 @@ public class Config {
         return sessionExpireSecond;
     }
 
-    public boolean isEnableSessionStore() {
-        return enableSessionStore;
+    public boolean isEnableScale() {
+        return enableScale;
     }
     public boolean isEnableHttps(){
         return enableHttps;

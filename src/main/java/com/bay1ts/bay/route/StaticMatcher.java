@@ -1,7 +1,7 @@
 package com.bay1ts.bay.route;
 
+import com.bay1ts.bay.core.Config;
 import com.bay1ts.bay.core.Request;
-import com.bay1ts.bay.*;
 import com.bay1ts.bay.route.util.ClassPathResource;
 import com.bay1ts.bay.utils.Assert;
 import com.bay1ts.bay.utils.IOUtils;

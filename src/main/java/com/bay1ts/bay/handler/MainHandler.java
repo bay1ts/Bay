@@ -3,6 +3,7 @@ import com.bay1ts.bay.core.*;
 import com.bay1ts.bay.core.HttpMethod;
 import com.bay1ts.bay.handler.intercepters.Interceptor;
 import com.bay1ts.bay.route.MemoryRoutes;
+import com.bay1ts.bay.route.RouteStore;
 import com.bay1ts.bay.route.StaticMatcher;
 import com.bay1ts.bay.route.filter.AfterFilters;
 import com.bay1ts.bay.route.filter.BeforeFilters;
@@ -30,7 +31,7 @@ import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
  */
 public class MainHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     private Logger logger= LoggerFactory.getLogger(MainHandler.class);
-    private MemoryRoutes routeMatcher= Service.getRouterMatcher();
+    private RouteStore routeMatcher= Service.getRouterMatcher();
     private StaticMatcher staticMatcher=Service.staticMatcher();
     private List<Interceptor> interceptors;
     private static final String SERVER_NAME="Bay1ts'Server YEE!!!";

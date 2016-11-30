@@ -4,6 +4,7 @@ import com.bay1ts.bay.core.Request;
 import com.bay1ts.bay.core.Response;
 import com.bay1ts.bay.core.HttpMethod;
 import com.bay1ts.bay.route.MemoryRoutes;
+import com.bay1ts.bay.route.RouteStore;
 import io.netty.handler.codec.http.FullHttpRequest;
 
 /**
@@ -16,7 +17,7 @@ public final class RouteContext {
      */
 
 
-    private MemoryRoutes routeMatcher;
+    private RouteStore routeMatcher;
     private FullHttpRequest httpRequest;
     private String uri;
     private String acceptType;
@@ -33,11 +34,11 @@ public final class RouteContext {
         // hidden
     }
 
-    public MemoryRoutes routeMatcher() {
+    public RouteStore routeMatcher() {
         return routeMatcher;
     }
 
-    public RouteContext withMatcher(MemoryRoutes routeMatcher) {
+    public RouteContext withMatcher(RouteStore routeMatcher) {
         this.routeMatcher = routeMatcher;
         return this;
     }
